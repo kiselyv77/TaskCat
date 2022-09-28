@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.domain.use_cases.GetUserByToken
+import com.example.tasksapp.domain.use_cases.LogOut
 import com.example.tasksapp.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -14,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getUserByToken: GetUserByToken,
+    private val logOutUseCase: LogOut,
     ) : ViewModel() {
 
     private val _state = mutableStateOf(ProfileState())
@@ -27,6 +29,35 @@ class ProfileViewModel @Inject constructor(
         when(event){
             is ProfileEvent.Refresh ->{
                 loadData(Token.token)
+            }
+            is ProfileEvent.LogOut ->{
+                logOut()
+            }
+        }
+    }
+
+    private fun logOut(){
+        viewModelScope.launch {
+            logOutUseCase().collect{ result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let { message->
+                            _state.value = _state.value.copy(
+                                isLogOut = true,
+                                error = result.message ?: "",
+                                isLoading = false)
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(error = result.message ?: "", isLoading = false)
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            isLoading = result.isLoading,
+                            error = result.message ?: ""
+                        )
+                    }
+                }
             }
         }
     }

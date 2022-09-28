@@ -21,12 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CloseIconTextField
 import com.example.tasksapp.presentation.commonComponents.SingleLineTextField
+import com.example.tasksapp.presentation.screens.NavGraphs
 import com.example.tasksapp.presentation.screens.destinations.LoginScreenDestination
-import com.example.tasksapp.presentation.screens.destinations.MainScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
+import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-
+import com.ramcosta.composedestinations.navigation.popUpTo
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -52,6 +53,7 @@ fun RegistrationScreen(
                 ) {
                     focusManager.clearFocus()
                 },
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SingleLineTextField(
                 value = state.name,
@@ -108,7 +110,20 @@ fun RegistrationScreen(
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navigator.navigate(LoginScreenDestination())
+                        navigator.navigate(LoginScreenDestination()){
+                            // Pop up to the root of the graph to
+                            // avoid building up a large stack of destinations
+                            // on the back stack as users select items
+                            popUpTo(NavGraphs.root) {
+                                saveState = true
+                            }
+
+                            // Avoid multiple copies of the same destination when
+                            // reselecting the same item
+                            launchSingleTop = true
+                            // Restore state when reselecting a previously selected item
+                            restoreState = true
+                        }
                     }) {
                     Text(text = "Войти")
                 }
@@ -128,7 +143,7 @@ fun RegistrationScreen(
                     color = Color.Green,
                     text = "Вы успешно зарегистрировались"
                 )
-                navigator.navigate(MainScreenDestination()) {
+                navigator.navigate(WorkSpacesListDestination()) {
                     //Удаление экранов регистрации и входа из бэк стэка
                     this.popUpTo(LoginScreenDestination.route) {
                         inclusive = true

@@ -94,7 +94,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-swiperefresh:0.24.2-alpha"
 
     // Compose Nav Destinations
-    implementation 'io.github.raamcosta.compose-destinations:core:1.5.20-beta'
+    implementation 'io.github.raamcosta.compose-destinations:animations-core:1.5.20-beta'
     ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.20-beta'
 
 

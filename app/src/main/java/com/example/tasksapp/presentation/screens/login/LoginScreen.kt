@@ -1,41 +1,39 @@
 package com.example.tasksapp.presentation.screens.login
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CloseIconTextField
 import com.example.tasksapp.presentation.commonComponents.SingleLineTextField
+import com.example.tasksapp.presentation.screens.NavGraphs
 import com.example.tasksapp.presentation.screens.destinations.LoginScreenDestination
-import com.example.tasksapp.presentation.screens.destinations.MainScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
+import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
+
 
 @Composable
-@Destination
+@Destination()
 fun LoginScreen(
     navigator: DestinationsNavigator,
     viewModel: LoginViewModel = hiltViewModel()
@@ -96,7 +94,20 @@ fun LoginScreen(
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    navigator.popBackStack()
+                    navigator.navigate(RegistrationScreenDestination()){
+                        // Pop up to the root of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(NavGraphs.root) {
+                            saveState = true
+                        }
+
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
                 }) {
                 Text(text = "Регистрация")
             }
@@ -117,7 +128,7 @@ fun LoginScreen(
                 color = Color.Green,
                 text = "Вы успешно вошли в свой аккаунт"
             )
-            navigator.navigate(MainScreenDestination()) {
+            navigator.navigate(WorkSpacesListDestination()) {
                 //Удаление экранов регистрации и входа из бэк стэка
                 this.popUpTo(LoginScreenDestination.route) {
                     inclusive = true

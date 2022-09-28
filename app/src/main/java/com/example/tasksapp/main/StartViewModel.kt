@@ -1,4 +1,4 @@
-package com.example.tasksapp.presentation.screens.start
+package com.example.tasksapp.main
 
 import android.util.Log
 import androidx.compose.runtime.State
@@ -36,7 +36,7 @@ private val getTokenUseCase: GetToken
                         Log.d("GettokenFromRoom", isTokenValid.toString())
                         _state.value = _state.value.copy(isTokenValid = isTokenValid, isLoading = false, error = result.message?:"")
                     }
-                    is Resource.Error ->{
+                    is Resource.Error -> {
                         _state.value = _state.value.copy(isTokenValid = false, isLoading = false, error = result.message?:"")
                     }
                     is Resource.Loading ->{

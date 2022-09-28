@@ -1,4 +1,4 @@
-package com.example.tasksapp.presentation.screens.start
+package com.example.tasksapp.main
 
 data class StartState(
     val isLoading:Boolean = true,

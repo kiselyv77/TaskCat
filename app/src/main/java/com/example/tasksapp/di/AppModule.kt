@@ -6,7 +6,6 @@ import com.example.tasksapp.data.local.TasksDatabase
 import com.example.tasksapp.data.remote.TasksApi
 import com.example.tasksapp.data.repository.TasksRepositoryImpl
 import com.example.tasksapp.domain.repository.TasksRepository
-import com.example.tasksapp.domain.use_cases.GetToken
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +22,7 @@ object AppModule {
     @Singleton
     fun provideCryptoApi(): TasksApi {
         return Retrofit.Builder()
-            .baseUrl("https://7c41-213-33-195-2.eu.ngrok.io")
+            .baseUrl("https://b1f2-213-33-195-2.eu.ngrok.io")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(TasksApi::class.java)
