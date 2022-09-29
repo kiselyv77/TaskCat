@@ -1,6 +1,5 @@
 package com.example.tasksapp
 
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
@@ -11,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
 import com.example.tasksapp.main.StartViewModel
 import com.example.tasksapp.main.components.BottomBar
 import com.example.tasksapp.presentation.screens.NavGraphs
@@ -41,9 +38,8 @@ fun App(viewModel: StartViewModel) {
 
     val navController = engine.rememberNavController()
 
-    Log.d("mainState", state.toString())
+    val startRoute = if (true) NavGraphs.root.startRoute else RegistrationScreenDestination
 
-    val startRoute = if (state.isTokenValid) NavGraphs.root.startRoute else RegistrationScreenDestination
     if(!state.isLoading){
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -73,7 +69,7 @@ fun App(viewModel: StartViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Loading...",fontSize = 50.sp)
+            //Text(text = "Loading...",fontSize = 50.sp)
         }
     }
 }

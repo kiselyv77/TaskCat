@@ -8,7 +8,6 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
@@ -16,7 +15,9 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun SingleLineTextField(
+fun CustomTextField(
+    modifier: Modifier = Modifier,
+    singleLine:Boolean = true,
     value: String,
     label: String,
     isError: Boolean,
@@ -32,11 +33,11 @@ fun SingleLineTextField(
 
 ) {
     OutlinedTextField(
-        modifier = Modifier
+        modifier = modifier
             .padding(16.dp)
             .fillMaxWidth(),
         value = value,
-        singleLine = true,
+        singleLine = singleLine,
         label = { Text(label) },
         isError = isError,
         trailingIcon = { trailingIcon() },

@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CloseIconTextField
-import com.example.tasksapp.presentation.commonComponents.SingleLineTextField
+import com.example.tasksapp.presentation.commonComponents.CustomTextField
 import com.example.tasksapp.presentation.screens.NavGraphs
 import com.example.tasksapp.presentation.screens.destinations.LoginScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
@@ -52,7 +52,7 @@ fun LoginScreen(
             },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SingleLineTextField(
+        CustomTextField(
             value = state.login,
             label = "login",
             isError = viewModel.state.value.error.isNotEmpty(),
@@ -64,7 +64,7 @@ fun LoginScreen(
                 keyboardType = KeyboardType.Text
             )
         )
-        SingleLineTextField(
+        CustomTextField(
             value = state.password,
             label = "password",
             isError = viewModel.state.value.error.isNotEmpty(),
