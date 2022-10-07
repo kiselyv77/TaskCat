@@ -9,7 +9,7 @@ import com.example.tasksapp.domain.repository.TasksRepository
 class TasksRepositoryImpl(
     private val api: TasksApi,
     private val db: TasksDatabase
-): TasksRepository {
+) : TasksRepository {
 
     // Users Repository
     override suspend fun registerNewUser(name: String, login: String, password: String): TokenDTO {
@@ -21,7 +21,7 @@ class TasksRepositoryImpl(
     }
 
     // Tokens Repository
-    override suspend fun saveToken(token:String) {
+    override suspend fun saveToken(token: String) {
         db.dao.insertToken(TokenEntity(token = token))
     }
 
@@ -29,11 +29,19 @@ class TasksRepositoryImpl(
         return db.dao.getToken().token
     }
 
-    override suspend fun deleteToken(){
+    override suspend fun deleteToken() {
         db.dao.deleteToken()
     }
 
     override suspend fun getUserByToken(token: String): UserDTO {
         return api.getUserByToken(GetUsersReceiveDTO(value = token))
+    }
+
+    override suspend fun addWorkSpace(token: String, name: String, description: String): WorkSpaceDTO {
+        return api.addWorkSpace(AddWorkSpaceReceiveDTO(token, name, description))
+    }
+
+    override suspend fun getWorkSpaces(token: String): List<WorkSpaceDTO> {
+        return api.getWorkSpaces(GetWorkSpacesReceiveDTO(value = token))
     }
 }

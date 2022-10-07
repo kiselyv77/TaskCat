@@ -1,14 +1,10 @@
 package com.example.tasksapp.main.components
 
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import com.example.tasksapp.presentation.screens.NavGraphs
@@ -24,11 +20,18 @@ import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 fun BottomBar(
     navController: NavHostController
 ) {
-    BottomNavigation(backgroundColor = Color.White) {
+    BottomNavigation() {
         BottomBarItem.values().forEach { destination ->
+            val ifFirst = destination.direction.route ==
+                    WorkSpacesListDestination.route
+                    && navController.currentDestination ==
+                    null
             val isCurrentDestOnBackStack = navController.isRouteOnBackStack(destination.direction)
+
             BottomNavigationItem(
-                selected = isCurrentDestOnBackStack,
+                selected = isCurrentDestOnBackStack||ifFirst,
+                selectedContentColor = MaterialTheme.colors.onPrimary,
+                unselectedContentColor = MaterialTheme.colors.primaryVariant,
                 onClick = {
                     if (isCurrentDestOnBackStack) {
                         // When we click again on a bottom bar item and it was already selected
@@ -59,6 +62,7 @@ fun BottomBar(
                     )
                 },
                 label = { Text(destination.label) },
+                alwaysShowLabel = false
             )
         }
     }
@@ -70,5 +74,6 @@ enum class BottomBarItem(
     val label: String
 ) {
     WorkSpaceList(WorkSpacesListDestination, Icons.Default.List, "WorkSpaceList"),
+    //Notifications(NotificationsScreenDestination, Icons.Default.Notifications, "Notifications"),
     Profile(ProfileScreenDestination, Icons.Default.Person, "Profile"),
 }

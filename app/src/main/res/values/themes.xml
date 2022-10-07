@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.TasksApp" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
+    <style name="Theme.TasksApp" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@color/primaryColor</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="SplashScreenTheme" parent="Theme.TasksApp">
-        <item name="android:windowBackground">@drawable/task_ic</item>
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:background">@color/white</item>
-    </style>
 </resources>

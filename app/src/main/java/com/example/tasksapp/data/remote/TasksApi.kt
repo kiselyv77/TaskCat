@@ -1,9 +1,7 @@
 package com.example.tasksapp.data.remote
 
 import com.example.tasksapp.data.remote.dto.*
-import com.example.tasksapp.domain.use_cases.GetUserByToken
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface TasksApi {
@@ -15,4 +13,10 @@ interface TasksApi {
 
     @POST("/getUserByToken")
     suspend fun getUserByToken(@Body body: GetUsersReceiveDTO): UserDTO
+
+    @POST("/addWorkSpace")
+    suspend fun addWorkSpace(@Body body: AddWorkSpaceReceiveDTO) : WorkSpaceDTO
+
+    @POST("/getWorkSpaces")
+    suspend fun getWorkSpaces(@Body body: GetWorkSpacesReceiveDTO): List<WorkSpaceDTO>
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -15,7 +16,8 @@ fun TextPlaceHolder(
     modifier: Modifier = Modifier,
     text: String,
     fontSize: TextUnit,
-    isPlaceholderVisible:Boolean
+    isPlaceholderVisible: Boolean,
+    textAlign: TextAlign? = null
 ) {
     val valueText = if(isPlaceholderVisible) "Placeholder:)" else text
     Text(
@@ -25,6 +27,7 @@ fun TextPlaceHolder(
             highlight = PlaceholderHighlight.shimmer()
         ),
         text = valueText,
-        fontSize = fontSize
+        fontSize = fontSize,
+        textAlign = textAlign
     )
 }

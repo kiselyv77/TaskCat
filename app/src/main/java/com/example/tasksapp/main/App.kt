@@ -38,7 +38,7 @@ fun App(viewModel: StartViewModel) {
 
     val navController = engine.rememberNavController()
 
-    val startRoute = if (true) NavGraphs.root.startRoute else RegistrationScreenDestination
+    val startRoute = if (state.isTokenValid) NavGraphs.root.startRoute else RegistrationScreenDestination
 
     if(!state.isLoading){
         Surface(

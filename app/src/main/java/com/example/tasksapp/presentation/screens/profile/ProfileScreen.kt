@@ -18,14 +18,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.destinations.ProfileScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
@@ -51,30 +49,10 @@ fun ProfileScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        snackbarHost = { snackbarHostState ->
-            SnackbarHost(
-                modifier = Modifier.padding(16.dp),
-                hostState = snackbarHostState
-            ) { data ->
-                Snackbar(
-                    backgroundColor = White,
-                    contentColor = MaterialTheme.colors.error,
-                    action = {
-                        TextButton(onClick = { data.performAction() }) {
-                            Text(
-                                color = Black,
-                                text = "Повторить",
-                            )
-                        }
-                    }
-                ) {
-                    Text(
-                        text = "Ошибка загрузки",
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colors.error,
-                    )
-                }
-            }
+        snackbarHost = { snackbarHostState->
+            CustomSnackbarHost(
+                snackbarHostState = snackbarHostState
+            )
         },
     ) {
         SwipeRefresh(

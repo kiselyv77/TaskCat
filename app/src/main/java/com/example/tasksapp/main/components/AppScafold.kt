@@ -1,10 +1,15 @@
 package com.example.tasksapp
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
@@ -39,6 +44,7 @@ fun SampleScaffold(
         sheetShape = RoundedCornerShape(16.dp)
     ) {
         Scaffold(
+            topBar = { TopAppBar() { Text(modifier = Modifier.padding(start = 16.dp), text = destination.route, fontSize = 22.sp)}},
             bottomBar = { bottomBar(destination) },
             content = content
         )

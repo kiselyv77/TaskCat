@@ -13,18 +13,16 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    primary = PrimaryColor,
+    primaryVariant = PrimaryVariantColor,
+    secondary = SecondaryColor,
+    secondaryVariant = SecondaryVariantColor,
+    onPrimary = OnPrimaryColor,
+    onSecondary = OnSecondaryColor,
+    onBackground = OnBackgroundColor,
+    onSurface = OnBackgroundColor,
+    background = BackgroundColor,
+    surface = SurfaceColor
 )
 
 @Composable
@@ -34,7 +32,6 @@ fun TasksAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composab
     } else {
         LightColorPalette
     }
-
     MaterialTheme(
         colors = colors,
         typography = Typography,
