@@ -34,7 +34,7 @@ class TasksRepositoryImpl(
     }
 
     override suspend fun getUserByToken(token: String): UserDTO {
-        return api.getUserByToken(GetUsersReceiveDTO(value = token))
+        return api.getUserByToken(token)
     }
 
     override suspend fun addWorkSpace(token: String, name: String, description: String): WorkSpaceDTO {
@@ -42,6 +42,23 @@ class TasksRepositoryImpl(
     }
 
     override suspend fun getWorkSpaces(token: String): List<WorkSpaceDTO> {
-        return api.getWorkSpaces(GetWorkSpacesReceiveDTO(value = token))
+        return api.getWorkSpaces(token)
+    }
+
+    override suspend fun getWorkSpaceById(token:String, id: String): WorkSpaceDTO {
+        return api.getWorkSpaceById(token, id)
+    }
+
+    override suspend fun getTasksFromWorkSpace(token: String, workSpaceId: String): List<TaskDTO> {
+        return api.getTasksFromWorkSpace(token, workSpaceId)
+    }
+
+    override suspend fun addTaskToWorkSpace(
+        token: String,
+        name: String,
+        description: String,
+        workSpaceId: String
+    ): TaskDTO {
+        return api.addTaskToWorkSpace(AddTaskReceiveDTO(token, name, description, workSpaceId))
     }
 }

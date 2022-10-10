@@ -54,7 +54,8 @@ class AddWorkSpaceViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 error = result.message ?: "",
                                 isLoading = false,
-                                isSuccess = true
+                                isSuccess = true,
+                                workSpace = it
                             )
                         }
                     }

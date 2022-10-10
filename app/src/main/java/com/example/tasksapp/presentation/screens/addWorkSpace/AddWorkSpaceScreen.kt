@@ -99,7 +99,7 @@ fun AddWorkSpaceScreen(
             }
 
             if(state.isSuccess){
-                navigator.navigate(WorkSpaceDetailScreenDestination){
+                navigator.navigate(WorkSpaceDetailScreenDestination(state.workSpace.id)){
                     //Удаление экранов регистрации и входа из бэк стэка
                     this.popUpTo(AddWorkSpaceScreenDestination.route) {
                         inclusive = true

@@ -1,5 +1,6 @@
 package com.example.tasksapp.domain.repository
 
+import com.example.tasksapp.data.remote.dto.TaskDTO
 import com.example.tasksapp.data.remote.dto.TokenDTO
 import com.example.tasksapp.data.remote.dto.UserDTO
 import com.example.tasksapp.data.remote.dto.WorkSpaceDTO
@@ -20,4 +21,10 @@ interface TasksRepository {
     suspend fun addWorkSpace(token: String, name: String, description: String): WorkSpaceDTO
 
     suspend fun getWorkSpaces(token: String): List<WorkSpaceDTO>
+
+    suspend fun getWorkSpaceById(token:String, id:String):WorkSpaceDTO
+
+    suspend fun getTasksFromWorkSpace(token: String, workSpaceId: String): List<TaskDTO>
+
+    suspend fun addTaskToWorkSpace(token: String, name: String, description: String, workSpaceId: String): TaskDTO
 }

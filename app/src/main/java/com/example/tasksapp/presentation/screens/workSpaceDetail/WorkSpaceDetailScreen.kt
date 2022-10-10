@@ -1,18 +1,17 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarResult
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -27,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.screens.workSpaceDetail.components.CustomAlertDialog
 import com.example.tasksapp.presentation.screens.workSpaceDetail.components.ItemTask
 import com.example.tasksapp.presentation.screens.workSpaceDetail.components.TasksInfo
 import com.example.tasksapp.presentation.screens.workSpaceDetail.components.WorkSpaceControlPanel
@@ -39,7 +39,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination
 fun WorkSpaceDetailScreen(
     navigator: DestinationsNavigator,
-    viewModel: WorkSpaceDetailViewModel = hiltViewModel()
+    viewModel: WorkSpaceDetailViewModel = hiltViewModel(),
+    id: String
 ) {
     val state = viewModel.state.value
     val focusManager = LocalFocusManager.current
@@ -73,7 +74,7 @@ fun WorkSpaceDetailScreen(
                     bottom = it.calculateBottomPadding()
                 ),
             state = swipeRefreshState,
-            onRefresh = { }
+            onRefresh = { viewModel.onEvent(WorkSpaceDetailEvent.OnRefresh) }
         ) {
             Column(
                 modifier = Modifier
@@ -93,9 +94,9 @@ fun WorkSpaceDetailScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp, vertical = 8.dp),
-                        text = "Work space name",
+                        text = state.workspaceDetail.name,
                         fontSize = 30.sp,
-                        isPlaceholderVisible = false
+                        isPlaceholderVisible = state.isLoading || state.error.isNotEmpty()
                     )
                 }
 
@@ -105,16 +106,18 @@ fun WorkSpaceDetailScreen(
                             .fillMaxSize()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                             .heightIn(max = screenHeight / 3),
-                        text = "a".repeat(300),
+                        text = state.workspaceDetail.description,
                         fontSize = 20.sp,
-                        isPlaceholderVisible = false
+                        isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
+                        textPlaceHolderLength = 200
                     )
                 }
-
-                WorkSpaceControlPanel()
-                Card(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)) {
+                WorkSpaceControlPanel(addTask = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseDialog)})
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
                     Column() {
                         TasksInfo("Всего задач", "10")
                         TasksInfo("Всего задач", "10")
@@ -122,32 +125,60 @@ fun WorkSpaceDetailScreen(
                         TasksInfo("Всего задач", "10")
                     }
                 }
-                LazyRow(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .wrapContentSize()
-                        .clip(shape = RoundedCornerShape(6)),
-                ) {
-                    items(100) { count ->
-                        ItemTask(
-                            modifier = Modifier
-                                .width(screenWidth / 2)
-                                .padding(4.dp),
-                            count = count + 1,
-                            name = "task name",
-                            description = "a".repeat(100),
-                            isPlaceholdersVisible = false
-                        )
+                Log.d("tasksState", state.tasksState.isSuccess.toString())
+                if (state.tasksState.tasks.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .wrapContentSize()
+                            .clip(shape = RoundedCornerShape(6)),
+                    ) {
+                        items(state.tasksState.tasks) { task ->
+                            ItemTask(
+                                modifier = Modifier
+                                    .width(screenWidth / 2)
+                                    .padding(4.dp),
+                                count = 0,
+                                name = task.name,
+                                description = task.description,
+                                isPlaceholdersVisible = false
+                            )
+                        }
                     }
+                } else if(state.tasksState.isSuccess) {
+                    Card(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxSize()
+                    ) {
+                        Column(Modifier.fillMaxSize()) {
+                            Text(
+                                modifier = Modifier.padding(16.dp),
+                                text = "Добавте первую задачу!"
+                            )
+                        }
+                    }
+                }else if(state.tasksState.isLoading) {
+                    CircularProgressIndicator()
                 }
+
             }
+        }
+
+        if(state.dialogState.isOpen) {
+            CustomAlertDialog(
+                state = state.dialogState,
+                dismiss = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseDialog)},
+                onNameChanged = {viewModel.onEvent(WorkSpaceDetailEvent.SetTaskNameInDialog(it))},
+                onDescriptionChanged = {viewModel.onEvent(WorkSpaceDetailEvent.SetTaskDescriptionInDialog(it))},
+                addTask = {viewModel.onEvent(WorkSpaceDetailEvent.AddTask)},
+            )
         }
 
         if (state.error.isNotEmpty()) {
             LaunchedEffect(scaffoldState.snackbarHostState) {
                 val result = scaffoldState.snackbarHostState.showSnackbar("")
-                if (result == SnackbarResult.ActionPerformed) {
-                }
+                if (result == SnackbarResult.ActionPerformed) { }
             }
         }
     }
