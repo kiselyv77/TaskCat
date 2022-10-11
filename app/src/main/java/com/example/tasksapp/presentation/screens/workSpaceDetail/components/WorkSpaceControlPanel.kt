@@ -1,7 +1,6 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
@@ -18,7 +17,11 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun WorkSpaceControlPanel(modifier: Modifier = Modifier, addTask: () -> Unit) {
+fun WorkSpaceControlPanel(
+    modifier: Modifier = Modifier,
+    addTask: () -> Unit,
+    addUser: () -> Unit
+) {
     Card(
         modifier
             .fillMaxWidth()
@@ -28,7 +31,7 @@ fun WorkSpaceControlPanel(modifier: Modifier = Modifier, addTask: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceAround
         ){
             IconButton(
-                onClick = { /*TODO*/ }
+                onClick = { addUser() }
             ) {
                 Image(
                     modifier = Modifier
@@ -40,13 +43,12 @@ fun WorkSpaceControlPanel(modifier: Modifier = Modifier, addTask: () -> Unit) {
                 )
             }
             IconButton(
-                onClick = { /*TODO*/ }
+                onClick = { addTask() }
             ) {
                 Image(
                     modifier = Modifier
                         .size(50.dp)
-                        .padding(8.dp)
-                        .clickable { addTask() },
+                        .padding(8.dp),
                     imageVector = Icons.Default.Add,
                     contentDescription = "",
                     colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)

@@ -8,10 +8,11 @@ data class WorkSpaceDetailState(
     val isSuccess:Boolean = false,
     val isLoading:Boolean = false,
     val error:String = "",
-    val dialogState: DialogState = DialogState(),
+    val addTaskDialogState: AddTaskDialogState = AddTaskDialogState(),
+    val addUserDialogState: AddUserDialogState = AddUserDialogState(),
     val tasksState: TasksState = TasksState(),
 
-)
+    )
 
 data class TasksState(
     val isSuccess:Boolean = false,
@@ -20,11 +21,19 @@ data class TasksState(
     val tasks:List<TaskDTO> = emptyList(),
 )
 
-data class DialogState(
+data class AddTaskDialogState(
     val isOpen:Boolean = false,
     val name:String = "",
     val description:String = "",
     val error:String = "",
     val isSuccess:Boolean = false,
     val isLoading:Boolean = false,
+)
+
+data class AddUserDialogState(
+    val isOpen:Boolean = false,
+    val userLogin:String = "",
+    val isSuccess:Boolean = false,
+    val isLoading:Boolean = false,
+    val error:String = "",
 )

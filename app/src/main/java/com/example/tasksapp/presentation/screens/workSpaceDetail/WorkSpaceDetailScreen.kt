@@ -5,7 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,10 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
-import com.example.tasksapp.presentation.screens.workSpaceDetail.components.CustomAlertDialog
-import com.example.tasksapp.presentation.screens.workSpaceDetail.components.ItemTask
-import com.example.tasksapp.presentation.screens.workSpaceDetail.components.TasksInfo
-import com.example.tasksapp.presentation.screens.workSpaceDetail.components.WorkSpaceControlPanel
+import com.example.tasksapp.presentation.screens.workSpaceDetail.components.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -44,6 +42,7 @@ fun WorkSpaceDetailScreen(
 ) {
     val state = viewModel.state.value
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
     val interactionSource = remember { MutableInteractionSource() }
     val scaffoldState = rememberScaffoldState()
     val swipeRefreshState = rememberSwipeRefreshState(
@@ -109,22 +108,16 @@ fun WorkSpaceDetailScreen(
                         text = state.workspaceDetail.description,
                         fontSize = 20.sp,
                         isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
-                        textPlaceHolderLength = 200
+                        textPlaceHolderLength = 120
                     )
                 }
-                WorkSpaceControlPanel(addTask = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseDialog)})
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Column() {
-                        TasksInfo("Всего задач", "10")
-                        TasksInfo("Всего задач", "10")
-                        TasksInfo("Всего задач", "10")
-                        TasksInfo("Всего задач", "10")
-                    }
-                }
+                WorkSpaceControlPanel(
+                    addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
+                    addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) }
+                )
+
+                TasksInfoBlock("0","0","0","0","0",)
+
                 Log.d("tasksState", state.tasksState.isSuccess.toString())
                 if (state.tasksState.tasks.isNotEmpty()) {
                     LazyRow(
@@ -133,19 +126,19 @@ fun WorkSpaceDetailScreen(
                             .wrapContentSize()
                             .clip(shape = RoundedCornerShape(6)),
                     ) {
-                        items(state.tasksState.tasks) { task ->
+                        itemsIndexed(state.tasksState.tasks) {index, task ->
                             ItemTask(
                                 modifier = Modifier
                                     .width(screenWidth / 2)
+                                    .height(screenHeight / 4)
                                     .padding(4.dp),
-                                count = 0,
+                                count = index+1,
                                 name = task.name,
                                 description = task.description,
-                                isPlaceholdersVisible = false
                             )
                         }
                     }
-                } else if(state.tasksState.isSuccess) {
+                } else if (state.tasksState.isSuccess) {
                     Card(
                         modifier = Modifier
                             .padding(vertical = 8.dp)
@@ -158,27 +151,40 @@ fun WorkSpaceDetailScreen(
                             )
                         }
                     }
-                }else if(state.tasksState.isLoading) {
+                } else if (state.tasksState.isLoading) {
                     CircularProgressIndicator()
                 }
 
             }
         }
 
-        if(state.dialogState.isOpen) {
-            CustomAlertDialog(
-                state = state.dialogState,
-                dismiss = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseDialog)},
-                onNameChanged = {viewModel.onEvent(WorkSpaceDetailEvent.SetTaskNameInDialog(it))},
-                onDescriptionChanged = {viewModel.onEvent(WorkSpaceDetailEvent.SetTaskDescriptionInDialog(it))},
-                addTask = {viewModel.onEvent(WorkSpaceDetailEvent.AddTask)},
+        if (state.addTaskDialogState.isOpen) {
+            AddTaskDialog(
+                state = state.addTaskDialogState,
+                dismiss = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
+                onNameChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskNameInDialog(it)) },
+                onDescriptionChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskDescriptionInDialog(it)) },
+                addTask = { viewModel.onEvent(WorkSpaceDetailEvent.AddTask) },
+                update = { viewModel.onEvent(WorkSpaceDetailEvent.OnRefresh) }
+            )
+        }
+
+        if(state.addUserDialogState.isOpen){
+            AddUserDialog(
+                state = state.addUserDialogState,
+                dismiss = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) },
+                onLoginUserChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetUserLoginInDialog(it)) },
+                addUser = { },
+                update = { }
             )
         }
 
         if (state.error.isNotEmpty()) {
             LaunchedEffect(scaffoldState.snackbarHostState) {
                 val result = scaffoldState.snackbarHostState.showSnackbar("")
-                if (result == SnackbarResult.ActionPerformed) { }
+                if (result == SnackbarResult.ActionPerformed) {
+                    viewModel.onEvent(WorkSpaceDetailEvent.OnRefresh)
+                }
             }
         }
     }

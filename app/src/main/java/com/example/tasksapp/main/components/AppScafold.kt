@@ -14,7 +14,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
 import com.example.tasksapp.presentation.screens.appCurrentDestinationAsState
-import com.example.tasksapp.presentation.screens.destinations.Destination
+import com.example.tasksapp.presentation.screens.destinations.*
 import com.example.tasksapp.presentation.screens.startAppDestination
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -44,10 +44,22 @@ fun SampleScaffold(
         sheetShape = RoundedCornerShape(16.dp)
     ) {
         Scaffold(
-            topBar = { TopAppBar() { Text(modifier = Modifier.padding(start = 16.dp), text = destination.route, fontSize = 22.sp)}},
+            topBar = { TopAppBar() { Text(modifier = Modifier.padding(start = 16.dp), text = getScreenTitle(destination.route) , fontSize = 22.sp)}},
             bottomBar = { bottomBar(destination) },
             content = content
         )
+    }
+}
+
+private fun getScreenTitle(route: String):String{
+    return when (route){
+        WorkSpacesListDestination.route -> "Список рабочих пространств"
+        ProfileScreenDestination.route -> "Профиль"
+        LoginScreenDestination.route -> "Войти"
+        RegistrationScreenDestination.route -> "Зарегистрироватся"
+        AddWorkSpaceScreenDestination.route -> "Добавить рабочее пространство"
+        WorkSpaceDetailScreenDestination.route -> "Рабочее пространство"
+        else -> ""
     }
 }
 

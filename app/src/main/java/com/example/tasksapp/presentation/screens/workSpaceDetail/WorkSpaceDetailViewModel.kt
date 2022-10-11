@@ -36,23 +36,51 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 getWorkSpace()
                 getTasks()
             }
-            WorkSpaceDetailEvent.OpenCloseDialog -> {
+            WorkSpaceDetailEvent.OpenCloseAddTaskDialog -> {
                 _state.value = _state.value.copy(
-                    dialogState = _state.value.dialogState.copy(isOpen = !_state.value.dialogState.isOpen)
+                    addTaskDialogState = AddTaskDialogState().copy(isOpen = !_state.value.addTaskDialogState.isOpen)
                 )
             }
             is WorkSpaceDetailEvent.SetTaskNameInDialog -> {
                 _state.value = _state.value.copy(
-                    dialogState = _state.value.dialogState.copy(name = event.newName)
+                    addTaskDialogState = _state.value.addTaskDialogState.copy(name = event.newName)
                 )
             }
             is WorkSpaceDetailEvent.SetTaskDescriptionInDialog -> {
                 _state.value = _state.value.copy(
-                    dialogState = _state.value.dialogState.copy(description = event.newDescription)
+                    addTaskDialogState = _state.value.addTaskDialogState.copy(description = event.newDescription)
                 )
             }
             WorkSpaceDetailEvent.AddTask -> {
-                addTask()
+                if(_state.value.addTaskDialogState.name.isNotEmpty()
+                    &&_state.value.addTaskDialogState.description.isNotEmpty()){
+                    addTask()
+                }
+                else{
+                    _state.value = _state.value.copy(
+                        addTaskDialogState = _state.value.addTaskDialogState.copy(error = "Заполните все поля")
+                    )
+                }
+            }
+            WorkSpaceDetailEvent.OpenCloseAddUserDialog -> {
+                _state.value = _state.value.copy(
+                    addUserDialogState = AddUserDialogState().copy(isOpen = !_state.value.addUserDialogState.isOpen)
+                )
+            }
+            WorkSpaceDetailEvent.AddUser -> {
+                if(_state.value.addUserDialogState.userLogin.isNotEmpty()){
+                    addUser()
+                }
+                else{
+                    _state.value = _state.value.copy(
+                        addUserDialogState = _state.value.addUserDialogState.copy(error = "Заполните все поля")
+                    )
+                }
+            }
+            is WorkSpaceDetailEvent.SetUserLoginInDialog -> {
+                _state.value = _state.value.copy(
+                    addUserDialogState = _state.value.addUserDialogState.copy(userLogin = event.newUserLogin)
+                )
             }
         }
     }
@@ -121,7 +149,6 @@ class WorkSpaceDetailViewModel @Inject constructor(
                         )
                     }
                 }
-
             }
         }
     }
@@ -131,8 +158,8 @@ class WorkSpaceDetailViewModel @Inject constructor(
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
             addTaskToWorkSpaceUseCase(
                 token = Token.token,
-                name = _state.value.dialogState.name,
-                description = _state.value.dialogState.description,
+                name = _state.value.addTaskDialogState.name,
+                description = _state.value.addTaskDialogState.description,
                 workSpaceId = workSpaceId
             ).collect{ result ->
                 when (result) {
@@ -140,7 +167,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                         result.data?.let{
                             Log.d("addWorkspace", it.toString())
                             _state.value = _state.value.copy(
-                               dialogState = _state.value.dialogState.copy(
+                               addTaskDialogState = _state.value.addTaskDialogState.copy(
                                    isSuccess = true,
                                    isLoading = false,
                                    error = ""
@@ -151,7 +178,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     is Resource.Error -> {
                         Log.d("addTask", result.message?:"")
                         _state.value = _state.value.copy(
-                            dialogState = _state.value.dialogState.copy(
+                            addTaskDialogState = _state.value.addTaskDialogState.copy(
                                 error = result.message?: "",
                                 isLoading = false
                             )
@@ -159,7 +186,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(
-                            dialogState = _state.value.dialogState.copy(
+                            addTaskDialogState = _state.value.addTaskDialogState.copy(
                                 isLoading = result.isLoading,
                                 error = result.message ?: ""
                             )
@@ -167,6 +194,14 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun getUsers(){}
+
+    private fun addUser(){
+        viewModelScope.launch {
+
         }
     }
 }
