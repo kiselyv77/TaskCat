@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -19,7 +20,8 @@ fun TextPlaceHolder(
     fontSize: TextUnit,
     isPlaceholderVisible: Boolean,
     textAlign: TextAlign? = null,
-    textPlaceHolderLength: Int = 15
+    textPlaceHolderLength: Int = 15,
+    maxLines: Int = Int.MAX_VALUE
 ) {
     val valueText = if(isPlaceholderVisible) "A".repeat(textPlaceHolderLength) else text
     val color = if(isPlaceholderVisible) Color.White.copy(alpha = 0.0f) else Color.Unspecified
@@ -32,6 +34,8 @@ fun TextPlaceHolder(
         text = valueText,
         fontSize = fontSize,
         textAlign = textAlign,
-        color = color
+        color = color,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = maxLines
     )
 }

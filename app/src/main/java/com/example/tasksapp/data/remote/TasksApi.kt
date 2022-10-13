@@ -26,8 +26,17 @@ interface TasksApi {
     suspend fun getWorkSpaceById(@Path("token") token: String, @Path("id") id: String): WorkSpaceDTO
 
     @GET("getTasksFromWorkSpace/{token}/{workSpaceId}")
-    suspend fun getTasksFromWorkSpace(@Path("token") token: String, @Path("workSpaceId") id: String) : List<TaskDTO>
+    suspend fun getTasksFromWorkSpace(@Path("token") token: String, @Path("workSpaceId") workSpaceId: String) : List<TaskDTO>
 
     @POST("/addTaskToWorkSpace")
     suspend fun addTaskToWorkSpace(@Body body: AddTaskReceiveDTO): TaskDTO
+
+    @POST("/addUserToWorkSpace")
+    suspend fun addUserToWorkSpace(@Body body: AddUserToWorkSpaceReceiveDTO): UserDTO
+
+    @GET("/getUsersFromWorkSpace/{token}/{workSpaceId}")
+    suspend fun getUsersFromWorkSpace(@Path("token") token: String, @Path("workSpaceId") workSpaceId: String): List<UserDTO>
+
+    @POST("/setTaskStatus/{token}/{taskId}/{newStatus}")
+    suspend fun setTaskStatus(@Path("token") token: String, @Path("taskId") taskId: String, @Path("newStatus") newStatus:String): String
 }

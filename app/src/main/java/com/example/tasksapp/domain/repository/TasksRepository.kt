@@ -27,4 +27,10 @@ interface TasksRepository {
     suspend fun getTasksFromWorkSpace(token: String, workSpaceId: String): List<TaskDTO>
 
     suspend fun addTaskToWorkSpace(token: String, name: String, description: String, workSpaceId: String): TaskDTO
+
+    suspend fun addUserToWorkSpace(token:String, userLogin: String, workSpaceId: String): UserDTO
+
+    suspend fun getUsersFromWorkSpace(token: String, workSpaceId: String): List<UserDTO>
+
+    suspend fun setTaskStatus(token: String, taskId: String, newStatus:String):String
 }

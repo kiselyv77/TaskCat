@@ -1,5 +1,7 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,18 +16,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ItemTask(
     modifier: Modifier,
     count: Int,
     name: String,
     description: String,
-) {
+    onLongClick: () -> Unit,
+    onClick: () -> Unit,
+
+    ) {
     Card(
         modifier = modifier,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().combinedClickable(
+                onClick = { onClick() },
+                onLongClick = { onLongClick() }
+            ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 

@@ -7,9 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
-import com.example.tasksapp.domain.use_cases.AddTask
-import com.example.tasksapp.domain.use_cases.GetTasksFromWorkSpace
-import com.example.tasksapp.domain.use_cases.GetWorkSpaceById
+import com.example.tasksapp.domain.use_cases.*
 import com.example.tasksapp.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,6 +18,9 @@ class WorkSpaceDetailViewModel @Inject constructor(
     private val getWorkSpaceById: GetWorkSpaceById,
     private val getTasksFromWorkSpace: GetTasksFromWorkSpace,
     private val addTaskToWorkSpaceUseCase: AddTask,
+    private val addUserToWorkSpace: AddUserToWorkSpace,
+    private val getUsersFromWorkSpace: GetUsersFromWorkSpace,
+    private val setTaskStatusUseCase: SetTaskStatus,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = mutableStateOf(WorkSpaceDetailState())
@@ -28,13 +29,15 @@ class WorkSpaceDetailViewModel @Inject constructor(
     init {
         getWorkSpace()
         getTasks()
+        getUsers()
     }
 
     fun onEvent(event: WorkSpaceDetailEvent) {
         when (event) {
-            is WorkSpaceDetailEvent.OnRefresh -> {
+            is WorkSpaceDetailEvent.OnAllRefresh -> {
                 getWorkSpace()
                 getTasks()
+                getUsers()
             }
             WorkSpaceDetailEvent.OpenCloseAddTaskDialog -> {
                 _state.value = _state.value.copy(
@@ -82,6 +85,25 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     addUserDialogState = _state.value.addUserDialogState.copy(userLogin = event.newUserLogin)
                 )
             }
+            is WorkSpaceDetailEvent.SetTaskStatus -> {
+                setTaskStatus(taskId = event.taskId, newStatus = event.newStatus)
+            }
+            WorkSpaceDetailEvent.OnTasksRefresh -> {
+                getTasks()
+            }
+            WorkSpaceDetailEvent.OnUsersRefresh -> {
+                getUsers()
+            }
+            WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog -> {
+                _state.value = _state.value.copy(
+                    setTaskStatusDialogState = SetTaskStatusDialogState().copy(isOpen = !_state.value.setTaskStatusDialogState.isOpen)
+                )
+            }
+            is WorkSpaceDetailEvent.SetTaskStatusDialog -> {
+                _state.value = _state.value.copy(
+                    setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(selectedStatus = event.newStatus)
+                )
+            }
         }
     }
 
@@ -122,6 +144,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let { tasks ->
+                            Log.d("tasks", tasks.toString())
                             _state.value = _state.value.copy(
                                 tasksState = _state.value.tasksState.copy(
                                     isSuccess = true,
@@ -165,7 +188,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let{
-                            Log.d("addWorkspace", it.toString())
+                            Log.d("addTask", it.toString())
                             _state.value = _state.value.copy(
                                addTaskDialogState = _state.value.addTaskDialogState.copy(
                                    isSuccess = true,
@@ -173,6 +196,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                                    error = ""
                                )
                             )
+                            onEvent(WorkSpaceDetailEvent.OnTasksRefresh)
                         }
                     }
                     is Resource.Error -> {
@@ -197,11 +221,103 @@ class WorkSpaceDetailViewModel @Inject constructor(
         }
     }
 
-    private fun getUsers(){}
+    private fun getUsers(){
+        viewModelScope.launch {
+            val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
+            getUsersFromWorkSpace(Token.token, workSpaceId).collect{ result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let { users ->
+                            _state.value = _state.value.copy(
+                                usersState = _state.value.usersState.copy(
+                                    isSuccess = true,
+                                    users = users,
+                                    error = "",
+                                    isLoading = false
+                                )
+                            )
+
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value =
+                            _state.value.copy(
+                                usersState = _state.value.usersState.copy(
+                                    error = result.message ?: "", isLoading = false
+                                )
+                            )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            usersState = _state.value.usersState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
+
+            }
+        }
+    }
 
     private fun addUser(){
         viewModelScope.launch {
+            val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
+            addUserToWorkSpace(Token.token, _state.value.addUserDialogState.userLogin, workSpaceId).collect{ result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let{
+                            Log.d("addWorkspace", it.toString())
+                            _state.value = _state.value.copy(
+                                addUserDialogState = _state.value.addUserDialogState.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                            onEvent(WorkSpaceDetailEvent.OnUsersRefresh)
+                        }
+                    }
+                    is Resource.Error -> {
+                        Log.d("addTask", result.message?:"")
+                        _state.value = _state.value.copy(
+                            addUserDialogState = _state.value.addUserDialogState.copy(
+                                error = result.message?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            addUserDialogState = _state.value.addUserDialogState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
 
+    private fun setTaskStatus(taskId:String, newStatus:String){
+        viewModelScope.launch {
+            setTaskStatusUseCase(Token.token, taskId, newStatus).collect{ result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let{
+
+                        }
+                    }
+                    is Resource.Error -> {
+
+                    }
+                    is Resource.Loading -> {
+
+                    }
+                }
+            }
         }
     }
 }

@@ -61,4 +61,16 @@ class TasksRepositoryImpl(
     ): TaskDTO {
         return api.addTaskToWorkSpace(AddTaskReceiveDTO(token, name, description, workSpaceId))
     }
+
+    override suspend fun addUserToWorkSpace(token:String, userLogin: String, workSpaceId: String): UserDTO {
+        return api.addUserToWorkSpace(AddUserToWorkSpaceReceiveDTO(token, userLogin, workSpaceId))
+    }
+
+    override suspend fun getUsersFromWorkSpace(token: String, workSpaceId: String): List<UserDTO> {
+        return api.getUsersFromWorkSpace(token, workSpaceId)
+    }
+
+    override suspend fun setTaskStatus(token: String, taskId: String, newStatus: String): String {
+        return api.setTaskStatus(token, taskId, newStatus)
+    }
 }

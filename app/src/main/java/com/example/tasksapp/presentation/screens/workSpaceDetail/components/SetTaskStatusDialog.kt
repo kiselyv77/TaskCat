@@ -1,34 +1,35 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.tasksapp.presentation.commonComponents.CustomTextField
-import com.example.tasksapp.presentation.screens.workSpaceDetail.AddUserDialogState
+import com.example.tasksapp.presentation.screens.workSpaceDetail.SetTaskStatusDialogState
+import com.example.tasksapp.util.TaskStatus.TASK_TYPES
 
 
 @Composable
-fun AddUserDialog(
-    state: AddUserDialogState,
+fun SetTaskStatusDialog(
+    state: SetTaskStatusDialogState,
     dismiss: () -> Unit,
-    onLoginUserChanged: (newLoginUser:String) -> Unit,
-    addUser: () -> Unit,
+    setTaskStatus: () -> Unit,
+    radioButtonClick:(newStatus:String) -> Unit,
 ) {
-    val focusManager = LocalFocusManager.current
     if(state.isSuccess){
-        onLoginUserChanged("")
         dismiss()
     }
+
     Dialog(
         properties = DialogProperties(),
         onDismissRequest = {
@@ -40,15 +41,19 @@ fun AddUserDialog(
                 .clip(shape = RoundedCornerShape(4.dp))
                 .background(color = Color.White)
         ) {
-            CustomTextField(
-                modifier = Modifier,
-                value = state.userLogin,
-                label = "login user",
-                isError = state.error.isNotEmpty(),
-                trailingIcon = { /*TODO*/ },
-                onValueChange = { onLoginUserChanged(it) },
-                onAction = {focusManager.clearFocus()}
-            )
+
+            TASK_TYPES.forEach {
+                Row(
+                    Modifier.fillMaxWidth().clickable { radioButtonClick(it) },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = state.selectedStatus == it,
+                        onClick = { radioButtonClick(it) }
+                    )
+                    Text(it)
+                }
+            }
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
@@ -61,11 +66,12 @@ fun AddUserDialog(
                 OutlinedButton(
                     modifier = Modifier.padding(end = 16.dp, start = 16.dp, bottom = 8.dp),
                     onClick = {
-                        addUser()
+                        setTaskStatus()
                     }) {
                     Text(text = "Пригласить")
                 }
             }
         }
+
     }
 }

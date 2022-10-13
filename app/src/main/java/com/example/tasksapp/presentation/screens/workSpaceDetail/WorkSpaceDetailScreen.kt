@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +27,7 @@ import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionBu
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.workSpaceDetail.components.*
+import com.example.tasksapp.util.TaskStatus
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -42,7 +42,6 @@ fun WorkSpaceDetailScreen(
 ) {
     val state = viewModel.state.value
     val focusManager = LocalFocusManager.current
-    val context = LocalContext.current
     val interactionSource = remember { MutableInteractionSource() }
     val scaffoldState = rememberScaffoldState()
     val swipeRefreshState = rememberSwipeRefreshState(
@@ -73,7 +72,7 @@ fun WorkSpaceDetailScreen(
                     bottom = it.calculateBottomPadding()
                 ),
             state = swipeRefreshState,
-            onRefresh = { viewModel.onEvent(WorkSpaceDetailEvent.OnRefresh) }
+            onRefresh = { viewModel.onEvent(WorkSpaceDetailEvent.OnAllRefresh) }
         ) {
             Column(
                 modifier = Modifier
@@ -111,12 +110,22 @@ fun WorkSpaceDetailScreen(
                         textPlaceHolderLength = 120
                     )
                 }
+                UsersPanel(
+                    isPlaceholderVisible = state.usersState.isLoading||state.usersState.error.isNotEmpty(),
+                    usersCount = state.usersState.users.size
+                )
                 WorkSpaceControlPanel(
                     addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
                     addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) }
                 )
 
-                TasksInfoBlock("0","0","0","0","0",)
+                TasksInfoBlock(
+                    completed = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.COMPLITED_TYPE }.size,
+                    inProgress = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.INPROGRESS_TYPE }.size,
+                    inPlan = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.INPLAN_TYPE }.size,
+                    overdue = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.INPLAN_TYPE }.size,
+                    all = state.tasksState.tasks.size
+                )
 
                 Log.d("tasksState", state.tasksState.isSuccess.toString())
                 if (state.tasksState.tasks.isNotEmpty()) {
@@ -129,12 +138,15 @@ fun WorkSpaceDetailScreen(
                         itemsIndexed(state.tasksState.tasks) {index, task ->
                             ItemTask(
                                 modifier = Modifier
+
                                     .width(screenWidth / 2)
                                     .height(screenHeight / 4)
                                     .padding(4.dp),
                                 count = index+1,
                                 name = task.name,
                                 description = task.description,
+                                onClick = { },
+                                onLongClick = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog)}
                             )
                         }
                     }
@@ -165,17 +177,24 @@ fun WorkSpaceDetailScreen(
                 onNameChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskNameInDialog(it)) },
                 onDescriptionChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskDescriptionInDialog(it)) },
                 addTask = { viewModel.onEvent(WorkSpaceDetailEvent.AddTask) },
-                update = { viewModel.onEvent(WorkSpaceDetailEvent.OnRefresh) }
             )
         }
 
         if(state.addUserDialogState.isOpen){
             AddUserDialog(
                 state = state.addUserDialogState,
-                dismiss = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) },
-                onLoginUserChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetUserLoginInDialog(it)) },
-                addUser = { },
-                update = { }
+                dismiss = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog)},
+                onLoginUserChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetUserLoginInDialog(it))},
+                addUser = {viewModel.onEvent(WorkSpaceDetailEvent.AddUser)},
+            )
+        }
+
+        if(state.setTaskStatusDialogState.isOpen){
+            SetTaskStatusDialog(
+                state = state.setTaskStatusDialogState,
+                dismiss = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog) },
+                setTaskStatus = { },
+                radioButtonClick = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskStatusDialog(newStatus = it))}
             )
         }
 
@@ -183,9 +202,10 @@ fun WorkSpaceDetailScreen(
             LaunchedEffect(scaffoldState.snackbarHostState) {
                 val result = scaffoldState.snackbarHostState.showSnackbar("")
                 if (result == SnackbarResult.ActionPerformed) {
-                    viewModel.onEvent(WorkSpaceDetailEvent.OnRefresh)
+                    viewModel.onEvent(WorkSpaceDetailEvent.OnAllRefresh)
                 }
             }
         }
+
     }
 }

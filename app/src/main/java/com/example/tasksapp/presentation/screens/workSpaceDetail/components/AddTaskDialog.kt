@@ -22,7 +22,6 @@ import com.example.tasksapp.presentation.screens.workSpaceDetail.AddTaskDialogSt
 @Composable
 fun AddTaskDialog(
     dismiss: () -> Unit,
-    update: () -> Unit,
     onNameChanged: (newName: String) -> Unit,
     onDescriptionChanged: (newDescription: String) -> Unit,
     addTask: () -> Unit,
@@ -33,7 +32,6 @@ fun AddTaskDialog(
         onNameChanged("")
         onDescriptionChanged("")
         dismiss()
-        update()
     }
     Dialog(
         properties = DialogProperties(),
