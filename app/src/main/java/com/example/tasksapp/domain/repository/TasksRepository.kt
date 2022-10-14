@@ -1,9 +1,6 @@
 package com.example.tasksapp.domain.repository
 
-import com.example.tasksapp.data.remote.dto.TaskDTO
-import com.example.tasksapp.data.remote.dto.TokenDTO
-import com.example.tasksapp.data.remote.dto.UserDTO
-import com.example.tasksapp.data.remote.dto.WorkSpaceDTO
+import com.example.tasksapp.data.remote.dto.*
 
 interface TasksRepository {
     suspend fun registerNewUser(name:String, login:String, password:String): TokenDTO
@@ -32,5 +29,5 @@ interface TasksRepository {
 
     suspend fun getUsersFromWorkSpace(token: String, workSpaceId: String): List<UserDTO>
 
-    suspend fun setTaskStatus(token: String, taskId: String, newStatus:String):String
+    suspend fun setTaskStatus(token: String, taskId: String, newStatus:String): SucsefullResponseDTO
 }

@@ -25,7 +25,7 @@ fun ItemTask(
     description: String,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
-
+    taskStatus: String
     ) {
     Card(
         modifier = modifier,
@@ -52,6 +52,14 @@ fun ItemTask(
                 fontSize = 15.sp,
                 textAlign = TextAlign.Center,
                 maxLines = 6,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
+                text = taskStatus,
+                fontSize = 15.sp,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }

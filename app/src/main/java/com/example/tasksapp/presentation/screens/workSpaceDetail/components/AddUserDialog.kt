@@ -3,6 +3,7 @@ package com.example.tasksapp.presentation.screens.workSpaceDetail.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -53,6 +54,9 @@ fun AddUserDialog(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
+                if(state.isLoading){
+                    CircularProgressIndicator()
+                }
                 OutlinedButton(
                     modifier = Modifier.padding(end = 16.dp, start = 16.dp, bottom = 8.dp),
                     onClick = { dismiss() }) {

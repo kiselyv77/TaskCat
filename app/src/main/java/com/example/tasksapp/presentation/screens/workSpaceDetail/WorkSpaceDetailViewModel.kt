@@ -39,9 +39,29 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 getTasks()
                 getUsers()
             }
-            WorkSpaceDetailEvent.OpenCloseAddTaskDialog -> {
+            is WorkSpaceDetailEvent.OnTasksRefresh -> {
+                getTasks()
+            }
+            is WorkSpaceDetailEvent.OnUsersRefresh -> {
+                getUsers()
+            }
+
+            is WorkSpaceDetailEvent.OpenCloseAddTaskDialog -> {
                 _state.value = _state.value.copy(
                     addTaskDialogState = AddTaskDialogState().copy(isOpen = !_state.value.addTaskDialogState.isOpen)
+                )
+            }
+            is WorkSpaceDetailEvent.OpenCloseAddUserDialog -> {
+                _state.value = _state.value.copy(
+                    addUserDialogState = AddUserDialogState().copy(isOpen = !_state.value.addUserDialogState.isOpen)
+                )
+            }
+            is WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog -> {
+                _state.value = _state.value.copy(
+                    setTaskStatusDialogState = SetTaskStatusDialogState().copy(
+                        taskId = event.taskId,
+                        isOpen = !_state.value.setTaskStatusDialogState.isOpen
+                    )
                 )
             }
             is WorkSpaceDetailEvent.SetTaskNameInDialog -> {
@@ -54,7 +74,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     addTaskDialogState = _state.value.addTaskDialogState.copy(description = event.newDescription)
                 )
             }
-            WorkSpaceDetailEvent.AddTask -> {
+            is WorkSpaceDetailEvent.AddTask -> {
                 if(_state.value.addTaskDialogState.name.isNotEmpty()
                     &&_state.value.addTaskDialogState.description.isNotEmpty()){
                     addTask()
@@ -65,12 +85,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     )
                 }
             }
-            WorkSpaceDetailEvent.OpenCloseAddUserDialog -> {
-                _state.value = _state.value.copy(
-                    addUserDialogState = AddUserDialogState().copy(isOpen = !_state.value.addUserDialogState.isOpen)
-                )
-            }
-            WorkSpaceDetailEvent.AddUser -> {
+            is WorkSpaceDetailEvent.AddUser -> {
                 if(_state.value.addUserDialogState.userLogin.isNotEmpty()){
                     addUser()
                 }
@@ -86,18 +101,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 )
             }
             is WorkSpaceDetailEvent.SetTaskStatus -> {
-                setTaskStatus(taskId = event.taskId, newStatus = event.newStatus)
-            }
-            WorkSpaceDetailEvent.OnTasksRefresh -> {
-                getTasks()
-            }
-            WorkSpaceDetailEvent.OnUsersRefresh -> {
-                getUsers()
-            }
-            WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog -> {
-                _state.value = _state.value.copy(
-                    setTaskStatusDialogState = SetTaskStatusDialogState().copy(isOpen = !_state.value.setTaskStatusDialogState.isOpen)
-                )
+                setTaskStatus()
             }
             is WorkSpaceDetailEvent.SetTaskStatusDialog -> {
                 _state.value = _state.value.copy(
@@ -301,20 +305,39 @@ class WorkSpaceDetailViewModel @Inject constructor(
         }
     }
 
-    private fun setTaskStatus(taskId:String, newStatus:String){
+    private fun setTaskStatus(){
         viewModelScope.launch {
+            val taskId = _state.value.setTaskStatusDialogState.taskId
+            val newStatus = _state.value.setTaskStatusDialogState.selectedStatus
             setTaskStatusUseCase(Token.token, taskId, newStatus).collect{ result ->
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let{
-
+                            _state.value = _state.value.copy(
+                                setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                            onEvent(WorkSpaceDetailEvent.OnTasksRefresh)
                         }
                     }
                     is Resource.Error -> {
-
+                        _state.value = _state.value.copy(
+                            setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                error = result.message?: "",
+                                isLoading = false
+                            )
+                        )
                     }
                     is Resource.Loading -> {
-
+                        _state.value = _state.value.copy(
+                            setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
                     }
                 }
             }

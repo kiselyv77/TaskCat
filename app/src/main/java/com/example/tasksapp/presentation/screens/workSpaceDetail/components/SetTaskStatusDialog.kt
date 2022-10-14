@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
@@ -17,6 +18,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.tasksapp.presentation.screens.workSpaceDetail.SetTaskStatusDialogState
 import com.example.tasksapp.util.TaskStatus.TASK_TYPES
+import com.example.tasksapp.util.TaskStatus.getTaskStatusName
 
 
 @Composable
@@ -43,6 +45,7 @@ fun SetTaskStatusDialog(
         ) {
 
             TASK_TYPES.forEach {
+                val name = getTaskStatusName(it)
                 Row(
                     Modifier.fillMaxWidth().clickable { radioButtonClick(it) },
                     verticalAlignment = Alignment.CenterVertically
@@ -51,13 +54,16 @@ fun SetTaskStatusDialog(
                         selected = state.selectedStatus == it,
                         onClick = { radioButtonClick(it) }
                     )
-                    Text(it)
+                    Text(name)
                 }
             }
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
+                if(state.isLoading){
+                    CircularProgressIndicator()
+                }
                 OutlinedButton(
                     modifier = Modifier.padding(end = 16.dp, start = 16.dp, bottom = 8.dp),
                     onClick = { dismiss() }) {
@@ -68,7 +74,7 @@ fun SetTaskStatusDialog(
                     onClick = {
                         setTaskStatus()
                     }) {
-                    Text(text = "Пригласить")
+                    Text(text = "Изменить")
                 }
             }
         }

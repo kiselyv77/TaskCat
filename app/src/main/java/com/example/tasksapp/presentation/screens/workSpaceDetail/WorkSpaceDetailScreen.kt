@@ -123,11 +123,11 @@ fun WorkSpaceDetailScreen(
                     completed = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.COMPLITED_TYPE }.size,
                     inProgress = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.INPROGRESS_TYPE }.size,
                     inPlan = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.INPLAN_TYPE }.size,
-                    overdue = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.INPLAN_TYPE }.size,
+                    overdue = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.OVERDUE_TYPE }.size,
                     all = state.tasksState.tasks.size
                 )
 
-                Log.d("tasksState", state.tasksState.isSuccess.toString())
+                Log.d("tasksState", state.tasksState.tasks.toString())
                 if (state.tasksState.tasks.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier
@@ -146,7 +146,8 @@ fun WorkSpaceDetailScreen(
                                 name = task.name,
                                 description = task.description,
                                 onClick = { },
-                                onLongClick = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog)}
+                                onLongClick = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog(task.id))},
+                                taskStatus = TaskStatus.getTaskStatusName(task.taskStatus)
                             )
                         }
                     }
@@ -192,8 +193,8 @@ fun WorkSpaceDetailScreen(
         if(state.setTaskStatusDialogState.isOpen){
             SetTaskStatusDialog(
                 state = state.setTaskStatusDialogState,
-                dismiss = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog) },
-                setTaskStatus = { },
+                dismiss = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog()) },
+                setTaskStatus = {viewModel.onEvent(WorkSpaceDetailEvent.SetTaskStatus)},
                 radioButtonClick = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskStatusDialog(newStatus = it))}
             )
         }

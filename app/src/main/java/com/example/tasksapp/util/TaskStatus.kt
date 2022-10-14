@@ -7,4 +7,14 @@ object TaskStatus {
     const val OVERDUE_TYPE = "OVERDUE_TYPE"
 
     val TASK_TYPES = listOf<String>(COMPLITED_TYPE, INPROGRESS_TYPE, INPLAN_TYPE, OVERDUE_TYPE)
+
+    fun getTaskStatusName(type:String): String{
+        return when(type) {
+            COMPLITED_TYPE -> "Выполнено"
+            INPROGRESS_TYPE -> "В процессе"
+            INPLAN_TYPE -> "В плане"
+            OVERDUE_TYPE -> "Долги"
+            else -> {"error"}
+        }
+    }
 }

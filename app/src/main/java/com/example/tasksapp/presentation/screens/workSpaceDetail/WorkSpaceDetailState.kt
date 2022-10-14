@@ -47,6 +47,7 @@ data class AddUserDialogState(
 )
 
 data class SetTaskStatusDialogState(
+    val taskId:String = "",
     val selectedStatus:String = "",
     val isOpen:Boolean = false,
     val isSuccess:Boolean = false,
