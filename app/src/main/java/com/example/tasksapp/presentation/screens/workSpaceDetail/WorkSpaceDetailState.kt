@@ -21,6 +21,8 @@ data class TasksState(
     val error:String = "",
     val isLoading:Boolean = false,
     val tasks:List<TaskDTO> = emptyList(),
+    val filteredTasks:List<TaskDTO> = emptyList(),
+    val selectedTasksFilter:String = "",
 )
 data class UsersState(
     val isSuccess:Boolean = false,

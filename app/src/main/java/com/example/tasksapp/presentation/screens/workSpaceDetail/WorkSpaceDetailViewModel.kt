@@ -108,6 +108,12 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(selectedStatus = event.newStatus)
                 )
             }
+            is WorkSpaceDetailEvent.SetTasksFilter -> {
+                Log.d("filter", event.filter)
+                _state.value = _state.value.copy(
+                    tasksState = _state.value.tasksState.copy(selectedTasksFilter = event.filter)
+                )
+            }
         }
     }
 

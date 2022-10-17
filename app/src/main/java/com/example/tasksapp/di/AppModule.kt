@@ -22,7 +22,7 @@ object AppModule {
     @Singleton
     fun provideCryptoApi(): TasksApi {
         return Retrofit.Builder()
-            .baseUrl("https://2f96-194-28-28-187.eu.ngrok.io")
+            .baseUrl("https://8361-213-33-195-2.eu.ngrok.io")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(TasksApi::class.java)

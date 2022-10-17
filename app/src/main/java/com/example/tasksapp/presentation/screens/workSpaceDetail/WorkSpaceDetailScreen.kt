@@ -124,7 +124,9 @@ fun WorkSpaceDetailScreen(
                     inProgress = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.INPROGRESS_TYPE }.size,
                     inPlan = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.INPLAN_TYPE }.size,
                     overdue = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.OVERDUE_TYPE }.size,
-                    all = state.tasksState.tasks.size
+                    all = state.tasksState.tasks.size,
+                    selectFilter = { viewModel.onEvent(WorkSpaceDetailEvent.SetTasksFilter(it)) },
+                    selectedFilter = state.tasksState.selectedTasksFilter
                 )
 
                 Log.d("tasksState", state.tasksState.tasks.toString())

@@ -1,7 +1,10 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -9,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.util.TaskStatus
 
 @Composable
 fun TasksInfo(modifier: Modifier, label: String, value: String) {
@@ -34,7 +38,9 @@ fun TasksInfoBlock(
     inPlan: Int,
     overdue: Int,
     all: Int,
-    ) {
+    selectFilter: (filter: String) -> Unit,
+    selectedFilter: String,
+) {
     Box(contentAlignment = Alignment.Center) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
             Row(
@@ -49,7 +55,13 @@ fun TasksInfoBlock(
                         .fillMaxWidth(0.5f)
                         .padding(end = 4.dp)
                 ) {
+                    val type = TaskStatus.INPLAN_TYPE
                     Column(
+                        modifier = Modifier
+                            .clickable { selectFilter(type) }
+                            .background(
+                                color = if (selectedFilter == type) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+                            ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -62,8 +74,13 @@ fun TasksInfoBlock(
                         .fillMaxWidth()
                         .padding(start = 4.dp)
                 ) {
+                    val type = TaskStatus.INPROGRESS_TYPE
                     Column(
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .clickable { selectFilter(type) }
+                            .background(
+                                color = if (selectedFilter == type) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+                            ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -82,7 +99,13 @@ fun TasksInfoBlock(
                         .fillMaxWidth(0.5f)
                         .padding(end = 4.dp)
                 ) {
+                    val type = TaskStatus.COMPLITED_TYPE
                     Column(
+                        modifier = Modifier
+                            .clickable { selectFilter(type) }
+                            .background(
+                                color = if (selectedFilter == type) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+                            ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -95,8 +118,13 @@ fun TasksInfoBlock(
                         .fillMaxWidth()
                         .padding(start = 4.dp)
                 ) {
+                    val type = TaskStatus.OVERDUE_TYPE
                     Column(
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .clickable { selectFilter(type) }
+                            .background(
+                                color = if (selectedFilter == type) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+                            ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {

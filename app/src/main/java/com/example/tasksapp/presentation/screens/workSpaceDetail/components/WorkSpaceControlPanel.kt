@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
+import java.util.*
 
 
 @Composable
@@ -55,7 +56,7 @@ fun WorkSpaceControlPanel(
                 )
             }
             IconButton(
-                onClick = { /*TODO*/ }
+                onClick = { }
             ) {
                 Image(
                     modifier = Modifier
@@ -69,4 +70,10 @@ fun WorkSpaceControlPanel(
             }
         }
     }
+}
+
+fun getC(){
+
+    val cur = Currency.getInstance(Locale.getDefault()).currencyCode
+
 }

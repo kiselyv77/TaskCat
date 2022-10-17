@@ -2,7 +2,6 @@ package com.example.tasksapp.presentation.screens.workSpaceDetail
 
 sealed class WorkSpaceDetailEvent {
 
-
     object OnAllRefresh: WorkSpaceDetailEvent()
     object OnTasksRefresh: WorkSpaceDetailEvent()
     object OnUsersRefresh: WorkSpaceDetailEvent()
@@ -16,6 +15,7 @@ sealed class WorkSpaceDetailEvent {
     data class SetUserLoginInDialog(val newUserLogin:String): WorkSpaceDetailEvent()
     data class SetTaskStatusDialog(val newStatus: String): WorkSpaceDetailEvent()
 
+    data class SetTasksFilter(val filter:String): WorkSpaceDetailEvent()
 
     object AddTask: WorkSpaceDetailEvent()
     object AddUser: WorkSpaceDetailEvent()
