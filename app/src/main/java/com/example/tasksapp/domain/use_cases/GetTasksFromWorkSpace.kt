@@ -27,7 +27,7 @@ class GetTasksFromWorkSpace @Inject constructor(
             val debugMessage = exception.message
             Log.d("debugMessage", debugMessage.toString())
             val message = "Ошибка подключения проверьте подключение к сети"
-            emit(Resource.Error<List<TaskDTO>>(message))
+            emit(Resource.Error<List<TaskDTO>>(message.toString()))
         }
     }
 }

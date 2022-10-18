@@ -59,7 +59,6 @@ fun AddTaskDialog(
                 trailingIcon = { /*TODO*/ },
                 onValueChange = { onDescriptionChanged(it) },
                 onAction = { focusManager.clearFocus() })
-
             // Buttons
             Row(
                 horizontalArrangement = Arrangement.End,

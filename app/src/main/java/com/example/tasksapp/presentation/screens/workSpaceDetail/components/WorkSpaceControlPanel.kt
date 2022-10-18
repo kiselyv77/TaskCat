@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import java.util.*
@@ -21,7 +22,8 @@ import java.util.*
 fun WorkSpaceControlPanel(
     modifier: Modifier = Modifier,
     addTask: () -> Unit,
-    addUser: () -> Unit
+    addUser: () -> Unit,
+    isAdmin: Boolean
 ) {
     Card(
         modifier
@@ -32,27 +34,35 @@ fun WorkSpaceControlPanel(
             horizontalArrangement = Arrangement.SpaceAround
         ){
             IconButton(
-                onClick = { addUser() }
+                onClick = { addUser() },
+                enabled = isAdmin
             ) {
+                val color =
+                    if(isAdmin) MaterialTheme.colors.primary
+                    else Color.Gray
                 Image(
                     modifier = Modifier
                         .size(50.dp)
                         .padding(8.dp),
                     imageVector = Icons.Default.PersonAdd,
                     contentDescription = "",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+                    colorFilter = ColorFilter.tint(color)
                 )
             }
             IconButton(
-                onClick = { addTask() }
+                onClick = { addTask() },
+                enabled = isAdmin
             ) {
+                val color =
+                    if(isAdmin) MaterialTheme.colors.primary
+                    else Color.Gray
                 Image(
                     modifier = Modifier
                         .size(50.dp)
                         .padding(8.dp),
                     imageVector = Icons.Default.Add,
                     contentDescription = "",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+                    colorFilter = ColorFilter.tint(color)
                 )
             }
             IconButton(
@@ -73,7 +83,5 @@ fun WorkSpaceControlPanel(
 }
 
 fun getC(){
-
     val cur = Currency.getInstance(Locale.getDefault()).currencyCode
-
 }

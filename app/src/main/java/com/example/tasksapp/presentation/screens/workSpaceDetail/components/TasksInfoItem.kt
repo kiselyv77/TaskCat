@@ -41,6 +41,9 @@ fun TasksInfoBlock(
     selectFilter: (filter: String) -> Unit,
     selectedFilter: String,
 ) {
+
+    val selectedColor = MaterialTheme.colors.primary
+    val unSelectedColor = MaterialTheme.colors.surface
     Box(contentAlignment = Alignment.Center) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
             Row(
@@ -60,7 +63,7 @@ fun TasksInfoBlock(
                         modifier = Modifier
                             .clickable { selectFilter(type) }
                             .background(
-                                color = if (selectedFilter == type) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+                                color = if (selectedFilter == type) selectedColor else unSelectedColor
                             ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -79,7 +82,7 @@ fun TasksInfoBlock(
                         modifier = Modifier
                             .clickable { selectFilter(type) }
                             .background(
-                                color = if (selectedFilter == type) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+                                color = if (selectedFilter == type) selectedColor else unSelectedColor
                             ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -104,7 +107,7 @@ fun TasksInfoBlock(
                         modifier = Modifier
                             .clickable { selectFilter(type) }
                             .background(
-                                color = if (selectedFilter == type) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+                                color = if (selectedFilter == type) selectedColor else unSelectedColor
                             ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -123,7 +126,7 @@ fun TasksInfoBlock(
                         modifier = Modifier
                             .clickable { selectFilter(type) }
                             .background(
-                                color = if (selectedFilter == type) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+                                color = if (selectedFilter == type) selectedColor else unSelectedColor
                             ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -136,10 +139,17 @@ fun TasksInfoBlock(
             }
         }
         Card(modifier = Modifier.size(45.dp), elevation = 2.dp) {
-            Box(contentAlignment = Alignment.Center) {
+            val type = TaskStatus.ALL_TASKS
+            Box(
+                modifier = Modifier
+                    .clickable {selectFilter(type)}
+                    .background(
+                        color = if (selectedFilter == type) selectedColor else unSelectedColor
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(text = all.toString(), fontSize = 20.sp)
             }
         }
     }
-
 }

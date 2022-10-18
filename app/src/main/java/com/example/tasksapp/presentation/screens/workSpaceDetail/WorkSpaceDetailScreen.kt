@@ -50,6 +50,7 @@ fun WorkSpaceDetailScreen(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
+
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
@@ -110,14 +111,19 @@ fun WorkSpaceDetailScreen(
                         textPlaceHolderLength = 120
                     )
                 }
+
                 UsersPanel(
                     isPlaceholderVisible = state.usersState.isLoading||state.usersState.error.isNotEmpty(),
                     usersCount = state.usersState.users.size
                 )
+
+
                 WorkSpaceControlPanel(
+                    isAdmin = state.myLogin == state.workspaceDetail.creator,
                     addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
                     addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) }
                 )
+
 
                 TasksInfoBlock(
                     completed = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.COMPLITED_TYPE }.size,
@@ -137,10 +143,9 @@ fun WorkSpaceDetailScreen(
                             .wrapContentSize()
                             .clip(shape = RoundedCornerShape(6)),
                     ) {
-                        itemsIndexed(state.tasksState.tasks) {index, task ->
+                        itemsIndexed(state.tasksState.filteredTasks) {index, task ->
                             ItemTask(
                                 modifier = Modifier
-
                                     .width(screenWidth / 2)
                                     .height(screenHeight / 4)
                                     .padding(4.dp),

@@ -6,6 +6,8 @@ object TaskStatus {
     const val INPLAN_TYPE = "INPLAN_TYPE"
     const val OVERDUE_TYPE = "OVERDUE_TYPE"
 
+    const val ALL_TASKS = "ALL_TASKS"
+
     val TASK_TYPES = listOf<String>(COMPLITED_TYPE, INPROGRESS_TYPE, INPLAN_TYPE, OVERDUE_TYPE)
 
     fun getTaskStatusName(type:String): String{

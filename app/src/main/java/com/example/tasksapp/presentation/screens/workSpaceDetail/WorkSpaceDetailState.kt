@@ -3,8 +3,10 @@ package com.example.tasksapp.presentation.screens.workSpaceDetail
 import com.example.tasksapp.data.remote.dto.TaskDTO
 import com.example.tasksapp.data.remote.dto.UserDTO
 import com.example.tasksapp.data.remote.dto.WorkSpaceDTO
+import com.example.tasksapp.util.TaskStatus
 
 data class WorkSpaceDetailState(
+    val myLogin:String = "",
     val workspaceDetail: WorkSpaceDTO = WorkSpaceDTO("", "", "", "", emptyList(), emptyList()),
     val isSuccess:Boolean = false,
     val isLoading:Boolean = false,
@@ -21,9 +23,10 @@ data class TasksState(
     val error:String = "",
     val isLoading:Boolean = false,
     val tasks:List<TaskDTO> = emptyList(),
-    val filteredTasks:List<TaskDTO> = emptyList(),
-    val selectedTasksFilter:String = "",
+    val filteredTasks:List<TaskDTO> = tasks,
+    val selectedTasksFilter: String = TaskStatus.ALL_TASKS,
 )
+
 data class UsersState(
     val isSuccess:Boolean = false,
     val error:String = "",
