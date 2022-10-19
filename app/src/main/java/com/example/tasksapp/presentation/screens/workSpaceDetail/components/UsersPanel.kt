@@ -1,6 +1,7 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -18,7 +19,8 @@ import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 @Composable
 fun UsersPanel(
     isPlaceholderVisible: Boolean,
-    usersCount: Int
+    usersCount: Int,
+    clickable: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -27,6 +29,7 @@ fun UsersPanel(
             .fillMaxWidth()
             .padding(vertical = 8.dp)) {
         Row(
+            modifier = Modifier.clickable { clickable() },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ){

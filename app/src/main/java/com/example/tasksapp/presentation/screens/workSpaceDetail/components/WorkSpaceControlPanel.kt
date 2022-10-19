@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
-import java.util.*
 
 
 @Composable
@@ -80,8 +79,4 @@ fun WorkSpaceControlPanel(
             }
         }
     }
-}
-
-fun getC(){
-    val cur = Currency.getInstance(Locale.getDefault()).currencyCode
 }

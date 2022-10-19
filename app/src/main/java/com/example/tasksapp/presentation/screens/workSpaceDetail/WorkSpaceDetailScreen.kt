@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.screens.destinations.UsersListScreenDestination
 import com.example.tasksapp.presentation.screens.workSpaceDetail.components.*
 import com.example.tasksapp.util.TaskStatus
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -114,16 +115,15 @@ fun WorkSpaceDetailScreen(
 
                 UsersPanel(
                     isPlaceholderVisible = state.usersState.isLoading||state.usersState.error.isNotEmpty(),
-                    usersCount = state.usersState.users.size
+                    usersCount = state.usersState.users.size,
+                    clickable = {navigator.navigate(UsersListScreenDestination(id))}
                 )
-
 
                 WorkSpaceControlPanel(
                     isAdmin = state.myLogin == state.workspaceDetail.creator,
                     addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
                     addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) }
                 )
-
 
                 TasksInfoBlock(
                     completed = state.tasksState.tasks.filter { it.taskStatus == TaskStatus.COMPLITED_TYPE }.size,
