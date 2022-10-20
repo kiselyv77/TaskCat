@@ -1,5 +1,6 @@
 package com.example.tasksapp.presentation.screens.usersList
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,7 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
-import com.example.tasksapp.presentation.screens.destinations.AddWorkSpaceScreenDestination
 import com.example.tasksapp.presentation.screens.usersList.components.UserItem
+import com.example.tasksapp.util.UserStatus.getUserStatusName
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -36,6 +37,7 @@ fun UsersListScreen(
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = state.isLoading
     )
+    Log.d("userList", state.usersList.toString())
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -46,8 +48,8 @@ fun UsersListScreen(
         },
         floatingActionButton = {
             CustomFloatingActionButton(
-                imageVector = Icons.Default.Add,
-                onClick = { navigator.navigate(AddWorkSpaceScreenDestination) }
+                imageVector = Icons.Default.ArrowBack,
+                onClick = { navigator.popBackStack() }
             )
         }
     ) {
@@ -70,8 +72,10 @@ fun UsersListScreen(
                 items(state.usersList) { user ->
                     UserItem(
                         name = user.name,
-                        login = user.login
-                    ) {}
+                        login = user.login,
+                        status = getUserStatusName(user.status),
+                        clicable = {}
+                    )
                 }
             }
         }

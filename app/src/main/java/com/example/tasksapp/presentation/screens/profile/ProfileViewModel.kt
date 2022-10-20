@@ -71,6 +71,7 @@ class ProfileViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 name = userDto.name,
                                 login = userDto.login,
+                                status= userDto.status,
                                 error = result.message ?: "",
                                 isLoading = false)
                         }

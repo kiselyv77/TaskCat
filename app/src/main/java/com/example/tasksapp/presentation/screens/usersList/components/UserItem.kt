@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 fun UserItem(
     name: String,
     login: String,
+    status:String,
     clicable: () -> Unit
 ) {
     Card(
@@ -33,6 +34,10 @@ fun UserItem(
             )
             Text(
                 text = login,
+                fontSize = 25.sp
+            )
+            Text(
+                text = status,
                 fontSize = 25.sp
             )
         }

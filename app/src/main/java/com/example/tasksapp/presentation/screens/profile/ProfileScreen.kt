@@ -96,6 +96,15 @@ fun ProfileScreen(
                     fontSize = 30.sp,
                     isPlaceholderVisible = state.isLoading || state.error.isNotEmpty()
                 )
+                TextPlaceHolder(
+                    modifier = Modifier.padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    ),
+                    text = state.status,
+                    fontSize = 30.sp,
+                    isPlaceholderVisible = state.isLoading || state.error.isNotEmpty()
+                )
 
 
                 OutlinedButton(onClick = {
