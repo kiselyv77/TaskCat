@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +23,7 @@ fun WorkSpaceControlPanel(
     modifier: Modifier = Modifier,
     addTask: () -> Unit,
     addUser: () -> Unit,
+    messenger:()-> Unit,
     isAdmin: Boolean
 ) {
     Card(
@@ -72,6 +74,19 @@ fun WorkSpaceControlPanel(
                         .size(50.dp)
                         .padding(8.dp),
                     imageVector = Icons.Default.ExitToApp,
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+                )
+            }
+
+            IconButton(
+                onClick = { messenger() }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(8.dp),
+                    imageVector = Icons.Default.Message,
                     contentDescription = "",
                     colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
 

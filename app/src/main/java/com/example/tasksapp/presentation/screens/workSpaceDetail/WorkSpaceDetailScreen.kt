@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.screens.destinations.MessengerScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.UsersListScreenDestination
 import com.example.tasksapp.presentation.screens.workSpaceDetail.components.*
 import com.example.tasksapp.util.TaskStatus
@@ -122,7 +123,8 @@ fun WorkSpaceDetailScreen(
                 WorkSpaceControlPanel(
                     isAdmin = state.myLogin == state.workspaceDetail.creator,
                     addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
-                    addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) }
+                    addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) },
+                    messenger = {navigator.navigate(MessengerScreenDestination)}
                 )
 
                 TasksInfoBlock(

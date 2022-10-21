@@ -59,6 +59,8 @@ private fun getScreenTitle(route: String):String{
         RegistrationScreenDestination.route -> "Зарегистрироватся"
         AddWorkSpaceScreenDestination.route -> "Добавить рабочее пространство"
         WorkSpaceDetailScreenDestination.route -> "Рабочее пространство"
+        UsersListScreenDestination.route -> "Список пользователей"
+        MessengerScreenDestination.route -> "Чат"
         else -> ""
     }
 }
