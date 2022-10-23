@@ -124,7 +124,7 @@ fun WorkSpaceDetailScreen(
                     isAdmin = state.myLogin == state.workspaceDetail.creator,
                     addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
                     addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) },
-                    messenger = {navigator.navigate(MessengerScreenDestination)}
+                    messenger = {navigator.navigate(MessengerScreenDestination(id))}
                 )
 
                 TasksInfoBlock(

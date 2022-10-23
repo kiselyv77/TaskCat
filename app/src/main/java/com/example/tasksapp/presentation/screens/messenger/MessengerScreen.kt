@@ -10,22 +10,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.tasksapp.data.remote.dto.MessageDTO
+import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.CustomTextField
 import com.example.tasksapp.presentation.commonComponents.SendIcon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @Composable
 @Destination
 fun MessengerScreen(
     viewModel: MessengerViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    id: String
 ) {
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
@@ -40,7 +44,10 @@ fun MessengerScreen(
         }
 
     ) {
-        Column(Modifier.fillMaxSize().padding(it)) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(it)) {
             MessageList(
                 myLogin = state.myLogin,
                 modifier = Modifier.weight(1f),
@@ -64,7 +71,7 @@ fun MessengerScreen(
 @Composable
 fun MessageList(
     modifier: Modifier = Modifier,
-    messages: List<MessageDTO>,
+    messages: List<MessageModel>,
     myLogin: String
 ) {
     Box(
@@ -85,13 +92,15 @@ fun MessageList(
 }
 
 @Composable
-fun MessageCard(message: MessageDTO, myLogin: String) {
+fun MessageCard(message: MessageModel, myLogin: String) {
+    val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalAlignment = when {
-            message.userLogin == myLogin -> Alignment.End
+            message.sendingUser == myLogin -> Alignment.End
             else -> Alignment.Start
         },
     ) {
@@ -99,28 +108,42 @@ fun MessageCard(message: MessageDTO, myLogin: String) {
             modifier = Modifier.widthIn(max = 340.dp),
             shape = cardShapeFor(message, myLogin),
             backgroundColor = when {
-                message.userLogin == myLogin -> MaterialTheme.colors.primary
+                message.sendingUser == myLogin -> MaterialTheme.colors.primary
                 else -> MaterialTheme.colors.secondary
             },
         ) {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = message.text,
-                color = androidx.compose.ui.graphics.Color.White
-            )
+            Column(){
+                Text(
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
+                    text = message.userName,
+                    color = androidx.compose.ui.graphics.Color.White,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                    text = message.text,
+                    color = androidx.compose.ui.graphics.Color.White,
+                    fontSize = 15.sp,
+
+                )
+            }
+
         }
+        val hour = if(dateTime.hour.toString().length == 2) dateTime.hour else "0${dateTime.hour}"
+        val minute = if(dateTime.minute.toString().length == 2) dateTime.minute else "0${dateTime.minute}"
         Text(
-            text = message.userName,
+            text = "$hour:$minute",
             fontSize = 12.sp,
         )
     }
 }
 
 @Composable
-fun cardShapeFor(message: MessageDTO, myLogin: String): Shape {
+fun cardShapeFor(message: MessageModel, myLogin: String): Shape {
     val roundedCorners = RoundedCornerShape(16.dp)
     return when {
-        message.userLogin == myLogin -> roundedCorners.copy(bottomEnd = CornerSize(0))
+        message.sendingUser == myLogin -> roundedCorners.copy(bottomEnd = CornerSize(0))
         else -> roundedCorners.copy(bottomStart = CornerSize(0))
     }
 }
