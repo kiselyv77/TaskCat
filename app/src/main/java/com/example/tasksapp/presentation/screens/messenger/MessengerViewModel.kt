@@ -7,12 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.data.remote.Spec.BASE_URL
-import com.example.tasksapp.data.remote.dto.MessageReceiveDTO
-import com.example.tasksapp.data.remote.dto.MessageResponseDTO
+import com.example.tasksapp.data.remote.dto.MessageDTO
 import com.example.tasksapp.domain.model.toMessageModel
 import com.example.tasksapp.domain.use_cases.GetMessagesFromWorkSpace
 import com.example.tasksapp.domain.use_cases.GetUserByToken
 import com.example.tasksapp.util.Resource
+import com.example.tasksapp.util.generateRandomUUID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
@@ -20,6 +20,8 @@ import io.ktor.serialization.gson.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -47,26 +49,46 @@ class MessengerViewModel @Inject constructor(
             client.ws("ws://$BASE_URL/chat/${Token.token}/$workSpaceId") {
                 val messageOutputRoutine = launch {
                     while (true) {
-                        val message = receiveDeserialized<MessageResponseDTO>()
-                        val messageList = _state.value.messagesList.toMutableList()
-                        messageList.add(0, message.toMessageModel())
-                        _state.value = _state.value.copy(messagesList = messageList)
+                        val message = receiveDeserialized<MessageDTO>()
+                        if(!_state.value.messagesList.any { it.id == message.id }){
+                            //Пришло чужое сообщение
+                            val messageList = _state.value.messagesList.toMutableList()
+                            messageList.add(0, message.toMessageModel())
+                            _state.value = _state.value.copy(messagesList = messageList)
+                        }
+                        else{
+                            //Вернулось мое сообщение
+                            val messageList = _state.value.messagesList.toMutableList()
+                            val messageModel = message.toMessageModel()
+                            val index = messageList.indexOf(messageModel.copy(isArrived = false))
+                            messageList[index] = messageModel.copy(isArrived = true)
+                            _state.value = _state.value.copy(messagesList = messageList)
+                        }
+
                     }
                 }
                 val userInputRoutine = launch {
                     while (true) {
                         if (_state.value.send) {
                             _state.value = _state.value.copy(send = false)
-                            val message = _state.value.inputMessage
-                            if (message.isNotEmpty()) {
-                                sendSerialized(
-                                    MessageReceiveDTO(
-                                        sendingUser = _state.value.myLogin,
+                            val messageText = _state.value.inputMessage
+                            if (messageText.isNotEmpty()) {
+                                val messageDTO = MessageDTO(
+                                        id = generateRandomUUID(),
+                                        userName = _state.value.my.name,
+                                        dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
+                                        sendingUser = _state.value.my.login,
                                         workSpaceId = workSpaceId,
-                                        text = message
+                                        text = messageText
                                     )
-                                )
 
+                                val messageList = _state.value.messagesList.toMutableList()
+                                messageList.add(0, messageDTO.toMessageModel().copy(isArrived = false))
+                                _state.value = _state.value.copy(messagesList = messageList)
+
+                                sendSerialized(
+                                    messageDTO
+                                )
                             }
                             _state.value = _state.value.copy(inputMessage = "")
                         }
@@ -97,15 +119,13 @@ class MessengerViewModel @Inject constructor(
                     is Resource.Success -> {
                         result.data?.let { userDto ->
                             _state.value = _state.value.copy(
-                                myLogin = userDto.login,
+                                my = userDto,
                             )
                         }
                     }
                     is Resource.Error -> {
-
                     }
                     is Resource.Loading -> {
-
                     }
                 }
             }
@@ -124,7 +144,6 @@ class MessengerViewModel @Inject constructor(
                                 error = result.message ?: "",
                                 isLoading = false
                             )
-
                         }
                     }
                     is Resource.Error -> {
@@ -134,7 +153,6 @@ class MessengerViewModel @Inject constructor(
                             )
                     }
                     is Resource.Loading -> {
-
                         _state.value = _state.value.copy(
                             isLoading = result.isLoading,
                             error = result.message ?: ""
@@ -144,5 +162,4 @@ class MessengerViewModel @Inject constructor(
             }
         }
     }
-
 }

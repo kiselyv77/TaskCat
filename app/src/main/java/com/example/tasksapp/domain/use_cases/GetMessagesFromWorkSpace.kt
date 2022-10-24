@@ -22,6 +22,8 @@ class GetMessagesFromWorkSpace @Inject constructor(
             emit(Resource.Success<List<MessageModel>>(messages.map{it.toMessageModel()}))
         } catch (exception: HttpException){
             val debugMessage = exception.message
+            Log.d("debugMessage", debugMessage.toString())
+
             val massage = exception.response()?.errorBody()?.charStream()?.readText()?:"Не удалось распознать ошибку"
             emit(Resource.Error<List<MessageModel>>(massage))
         }catch (exception: IOException){

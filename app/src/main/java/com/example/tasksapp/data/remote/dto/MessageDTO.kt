@@ -1,13 +1,6 @@
 package com.example.tasksapp.data.remote.dto
 
-data class MessageReceiveDTO(
-    val sendingUser: String,
-    val workSpaceId: String,
-    val text: String,
-)
-
-
-data class MessageResponseDTO(
+data class MessageDTO(
     val id:String,
     val userName: String,
     val sendingUser: String,

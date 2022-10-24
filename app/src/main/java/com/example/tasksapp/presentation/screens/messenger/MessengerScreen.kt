@@ -6,6 +6,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +21,8 @@ import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.CustomTextField
 import com.example.tasksapp.presentation.commonComponents.SendIcon
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.time.LocalDateTime
@@ -33,6 +38,9 @@ fun MessengerScreen(
 ) {
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
+    val swipeRefreshState = rememberSwipeRefreshState(
+        isRefreshing = state.isLoading
+    )
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -44,26 +52,39 @@ fun MessengerScreen(
         }
 
     ) {
-        Column(
-            Modifier
+        SwipeRefresh(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(it)) {
-            MessageList(
-                myLogin = state.myLogin,
-                modifier = Modifier.weight(1f),
-                messages = state.messagesList
-            )
-            CustomTextField(
-                value = state.inputMessage,
-                label = "Введите сообщение",
-                isError = false,
-                trailingIcon = {
-                    SendIcon(
-                        send = { viewModel.onEvent(MessengerEvent.Send) },
-                        clear = { viewModel.onEvent(MessengerEvent.SetMessage("")) })
-                },
-                onValueChange = { viewModel.onEvent(MessengerEvent.SetMessage(it)) },
-                onAction = { viewModel.onEvent(MessengerEvent.Send) })
+                .padding(it),
+            state = swipeRefreshState,
+            onRefresh = { }
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+
+                ) {
+                MessageList(
+                    myLogin = state.my.login,
+                    modifier = Modifier.weight(1f),
+                    messages = state.messagesList
+                )
+
+
+                CustomTextField(
+                    value = state.inputMessage,
+                    label = "Введите сообщение",
+                    isError = false,
+                    trailingIcon = {
+                        SendIcon(
+                            send = { viewModel.onEvent(MessengerEvent.Send) },
+                            clear = { viewModel.onEvent(MessengerEvent.SetMessage("")) })
+                    },
+                    onValueChange = { viewModel.onEvent(MessengerEvent.SetMessage(it)) },
+                    onAction = { viewModel.onEvent(MessengerEvent.Send) })
+            }
+
         }
     }
 }
@@ -112,7 +133,7 @@ fun MessageCard(message: MessageModel, myLogin: String) {
                 else -> MaterialTheme.colors.secondary
             },
         ) {
-            Column(){
+            Column() {
                 Text(
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
                     text = message.userName,
@@ -125,17 +146,33 @@ fun MessageCard(message: MessageModel, myLogin: String) {
                     text = message.text,
                     color = androidx.compose.ui.graphics.Color.White,
                     fontSize = 15.sp,
+                )
 
+            }
+        }
+        val hour = if (dateTime.hour.toString().length == 2) dateTime.hour else "0${dateTime.hour}"
+        val minute =
+            if (dateTime.minute.toString().length == 2) dateTime.minute else "0${dateTime.minute}"
+
+        Row() {
+            Text(
+                text = "$hour:$minute",
+                fontSize = 12.sp,
+            )
+            if (message.isArrived) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    imageVector = Icons.Default.Check,
+                    contentDescription = ""
+                )
+            } else {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    imageVector = Icons.Default.AccessTime,
+                    contentDescription = ""
                 )
             }
-
         }
-        val hour = if(dateTime.hour.toString().length == 2) dateTime.hour else "0${dateTime.hour}"
-        val minute = if(dateTime.minute.toString().length == 2) dateTime.minute else "0${dateTime.minute}"
-        Text(
-            text = "$hour:$minute",
-            fontSize = 12.sp,
-        )
     }
 }
 

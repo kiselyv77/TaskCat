@@ -1,6 +1,6 @@
 package com.example.tasksapp.domain.model
 
-import com.example.tasksapp.data.remote.dto.MessageResponseDTO
+import com.example.tasksapp.data.remote.dto.MessageDTO
 
 data class MessageModel(
     val id:String,
@@ -8,17 +8,19 @@ data class MessageModel(
     val sendingUser: String,
     val workSpaceId: String,
     val dateTime:String,
-    val text: String
+    val text: String,
+    val isArrived: Boolean
 )
 
-fun MessageResponseDTO.toMessageModel():MessageModel{
+fun MessageDTO.toMessageModel():MessageModel{
     return MessageModel(
         id =  id,
         userName = userName,
         sendingUser= sendingUser,
         workSpaceId= workSpaceId,
         dateTime= dateTime,
-        text= text
+        text= text,
+        isArrived = true
     )
 }
 
