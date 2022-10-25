@@ -19,7 +19,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.screens.usersList.components.UserItem
-import com.example.tasksapp.util.UserStatus.getUserStatusName
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -73,8 +72,8 @@ fun UsersListScreen(
                     UserItem(
                         name = user.name,
                         login = user.login,
-                        status = getUserStatusName(user.status),
-                        clicable = {}
+                        status = user.status,
+                        clickable = {}
                     )
                 }
             }

@@ -1,8 +1,8 @@
 package com.example.tasksapp.domain.use_cases
 
 import android.util.Log
+import com.example.tasksapp.data.mappers.toMessageModel
 import com.example.tasksapp.domain.model.MessageModel
-import com.example.tasksapp.domain.model.toMessageModel
 import com.example.tasksapp.domain.repository.TasksRepository
 import com.example.tasksapp.util.Resource
 import kotlinx.coroutines.flow.Flow

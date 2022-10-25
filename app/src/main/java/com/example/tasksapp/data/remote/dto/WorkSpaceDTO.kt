@@ -5,6 +5,4 @@ data class WorkSpaceDTO(
     val name: String,
     val description: String,
     val creator: String,
-    val users: List<String>,
-    val tasks: List<String>
 )

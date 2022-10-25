@@ -70,15 +70,19 @@ class TasksRepositoryImpl(
         return api.getUsersFromWorkSpace(token, workSpaceId)
     }
 
-    override suspend fun setTaskStatus(token: String, taskId: String, newStatus: String): SucsefullResponseDTO {
+    override suspend fun setTaskStatus(token: String, taskId: String, newStatus: String): SuccessResponseDTO {
         return api.setTaskStatus(token, taskId, newStatus)
     }
 
-    override suspend fun setUserStatus(token: String, newStatus: String): SucsefullResponseDTO {
+    override suspend fun setUserStatus(token: String, newStatus: String): SuccessResponseDTO {
         return api.setUserStatus(token, newStatus)
     }
 
     override suspend fun getMessagesFromWorkSpace(token: String, workSpaceId: String): List<MessageDTO> {
         return api.getMessagesFromWorkSpace(token, workSpaceId)
+    }
+
+    override suspend fun getTaskById(token: String, id: String): TaskDTO {
+        return api.getTaskById(token, id)
     }
 }

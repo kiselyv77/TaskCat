@@ -1,10 +1,10 @@
 package com.example.tasksapp.presentation.screens.messenger
 
-import com.example.tasksapp.data.remote.dto.UserDTO
 import com.example.tasksapp.domain.model.MessageModel
+import com.example.tasksapp.domain.model.UserModel
 
 data class MessengerState(
-    val my: UserDTO = UserDTO("", "", ""),
+    val my: UserModel = UserModel("", "", ""),
     val messagesList: List<MessageModel> = listOf<MessageModel>(),
     val inputMessage: String = "",
     val send: Boolean = false,

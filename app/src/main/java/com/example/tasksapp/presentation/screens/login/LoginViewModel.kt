@@ -52,11 +52,11 @@ class LoginViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 isLoading = false
                             )
-                            saveTokenUseCase(token.token).collect {
+                            saveTokenUseCase(token).collect {
                                 _state.value = _state.value.copy(
                                     error = result.message ?: "",
                                     isLoading = false,
-                                    token = token.token
+                                    token = token
                                 )
                             }
                         }

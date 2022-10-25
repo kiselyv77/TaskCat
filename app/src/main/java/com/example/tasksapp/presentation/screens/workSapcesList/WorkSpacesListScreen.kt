@@ -27,7 +27,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination(start = true)
 @Composable
-fun WorkSpacesList(
+fun WorkSpacesListScreen(
     viewModel: WorkSpacesListViewModel = hiltViewModel(),
     navigator: DestinationsNavigator
 ) {

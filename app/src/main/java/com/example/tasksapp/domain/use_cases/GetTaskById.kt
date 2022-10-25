@@ -1,5 +1,8 @@
 package com.example.tasksapp.domain.use_cases
 
+import android.util.Log
+import com.example.tasksapp.data.mappers.toTaskModel
+import com.example.tasksapp.domain.model.TaskModel
 import com.example.tasksapp.domain.repository.TasksRepository
 import com.example.tasksapp.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -8,23 +11,24 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class LoginUser @Inject constructor(
+class GetTaskById @Inject constructor(
     private val repository: TasksRepository
-){
 
-    operator fun invoke(login:String ,password:String): Flow<Resource<String>> = flow{
+) {
+    operator fun invoke(token: String, id:String): Flow<Resource<TaskModel>> = flow{
         try{
-            emit(Resource.Loading<String>())
-            val token = repository.loginUser(login, password)
-            emit(Resource.Success<String>(token.token))
+            emit(Resource.Loading<TaskModel>())
+            val taskDTO = repository.getTaskById(token, id)
+            emit(Resource.Success<TaskModel>(taskDTO.toTaskModel()))
         } catch (exception: HttpException){
             val debugMessage = exception.message
             val massage = exception.response()?.errorBody()?.charStream()?.readText()?:"Не удалось распознать ошибку"
-            emit(Resource.Error<String>(massage))
+            emit(Resource.Error<TaskModel>(massage))
         }catch (exception: IOException){
             val debugMessage = exception.message
+            Log.d("debugMessage", debugMessage.toString())
             val message = "Ошибка подключения проверьте подключение к сети"
-            emit(Resource.Error<String>(message))
+            emit(Resource.Error<TaskModel>(message))
         }
     }
 }

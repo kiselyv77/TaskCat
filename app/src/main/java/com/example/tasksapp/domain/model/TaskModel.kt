@@ -1,8 +1,8 @@
 package com.example.tasksapp.domain.model
 
-data class WorkSpaceModel(
+data class TaskModel(
     val id: String,
     val name: String,
     val description: String,
-    val creator: String,
+    val taskStatus: String
 )

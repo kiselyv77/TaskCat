@@ -1,13 +1,13 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail
 
-import com.example.tasksapp.data.remote.dto.TaskDTO
-import com.example.tasksapp.data.remote.dto.UserDTO
-import com.example.tasksapp.data.remote.dto.WorkSpaceDTO
+import com.example.tasksapp.domain.model.TaskModel
+import com.example.tasksapp.domain.model.UserModel
+import com.example.tasksapp.domain.model.WorkSpaceModel
 import com.example.tasksapp.util.TaskStatus
 
 data class WorkSpaceDetailState(
     val myLogin:String = "",
-    val workspaceDetail: WorkSpaceDTO = WorkSpaceDTO("", "", "", "", emptyList(), emptyList()),
+    val workspaceDetail: WorkSpaceModel = WorkSpaceModel("", "", "", ""),
     val isSuccess:Boolean = false,
     val isLoading:Boolean = false,
     val error:String = "",
@@ -22,8 +22,8 @@ data class TasksState(
     val isSuccess:Boolean = false,
     val error:String = "",
     val isLoading:Boolean = false,
-    val tasks:List<TaskDTO> = emptyList(),
-    val filteredTasks:List<TaskDTO> = tasks,
+    val tasks:List<TaskModel> = emptyList(),
+    val filteredTasks:List<TaskModel> = tasks,
     val selectedTasksFilter: String = TaskStatus.ALL_TASKS,
 )
 
@@ -31,7 +31,7 @@ data class UsersState(
     val isSuccess:Boolean = false,
     val error:String = "",
     val isLoading:Boolean = false,
-    val users:List<UserDTO> = emptyList(),
+    val users:List<UserModel> = emptyList(),
 )
 
 data class AddTaskDialogState(

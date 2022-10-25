@@ -12,15 +12,5 @@ data class MessageModel(
     val isArrived: Boolean
 )
 
-fun MessageDTO.toMessageModel():MessageModel{
-    return MessageModel(
-        id =  id,
-        userName = userName,
-        sendingUser= sendingUser,
-        workSpaceId= workSpaceId,
-        dateTime= dateTime,
-        text= text,
-        isArrived = true
-    )
-}
+
 

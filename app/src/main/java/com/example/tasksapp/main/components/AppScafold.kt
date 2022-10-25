@@ -53,7 +53,7 @@ fun SampleScaffold(
 
 private fun getScreenTitle(route: String):String{
     return when (route){
-        WorkSpacesListDestination.route -> "Список рабочих пространств"
+        WorkSpacesListScreenDestination.route -> "Список рабочих пространств"
         ProfileScreenDestination.route -> "Профиль"
         LoginScreenDestination.route -> "Войти"
         RegistrationScreenDestination.route -> "Зарегистрироватся"
@@ -61,6 +61,7 @@ private fun getScreenTitle(route: String):String{
         WorkSpaceDetailScreenDestination.route -> "Рабочее пространство"
         UsersListScreenDestination.route -> "Список пользователей"
         MessengerScreenDestination.route -> "Чат"
+        TaskDetailScreenDestination.route -> "Задача"
         else -> ""
     }
 }

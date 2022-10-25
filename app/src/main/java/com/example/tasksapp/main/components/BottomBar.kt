@@ -10,7 +10,7 @@ import androidx.navigation.NavHostController
 import com.example.tasksapp.presentation.screens.NavGraphs
 import com.example.tasksapp.presentation.screens.destinations.DirectionDestination
 import com.example.tasksapp.presentation.screens.destinations.ProfileScreenDestination
-import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListDestination
+import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popBackStack
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -23,7 +23,7 @@ fun BottomBar(
     BottomNavigation() {
         BottomBarItem.values().forEach { destination ->
             val ifFirst = destination.direction.route ==
-                    WorkSpacesListDestination.route
+                    WorkSpacesListScreenDestination.route
                     && navController.currentDestination ==
                     null
             val isCurrentDestOnBackStack = navController.isRouteOnBackStack(destination.direction)
@@ -73,7 +73,7 @@ enum class BottomBarItem(
     val icon: ImageVector,
     val label: String
 ) {
-    WorkSpaceList(WorkSpacesListDestination, Icons.Default.List, "WorkSpaceList"),
+    WorkSpaceList(WorkSpacesListScreenDestination, Icons.Default.List, "WorkSpaceList"),
     //Notifications(NotificationsScreenDestination, Icons.Default.Notifications, "Notifications"),
     Profile(ProfileScreenDestination, Icons.Default.Person, "Profile"),
 }

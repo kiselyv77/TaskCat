@@ -29,9 +29,11 @@ interface TasksRepository {
 
     suspend fun getUsersFromWorkSpace(token: String, workSpaceId: String): List<UserDTO>
 
-    suspend fun setTaskStatus(token: String, taskId: String, newStatus:String): SucsefullResponseDTO
+    suspend fun setTaskStatus(token: String, taskId: String, newStatus:String): SuccessResponseDTO
 
-    suspend fun setUserStatus(token: String, newStatus:String): SucsefullResponseDTO
+    suspend fun setUserStatus(token: String, newStatus:String): SuccessResponseDTO
 
     suspend fun getMessagesFromWorkSpace(token: String, workSpaceId: String): List<MessageDTO>
+
+    suspend fun getTaskById(token:String, id:String): TaskDTO
 }

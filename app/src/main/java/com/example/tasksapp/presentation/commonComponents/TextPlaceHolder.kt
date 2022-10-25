@@ -21,10 +21,11 @@ fun TextPlaceHolder(
     isPlaceholderVisible: Boolean,
     textAlign: TextAlign? = null,
     textPlaceHolderLength: Int = 15,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    color: Color = Color.Unspecified
 ) {
     val valueText = if(isPlaceholderVisible) "A".repeat(textPlaceHolderLength) else text
-    val color = if(isPlaceholderVisible) Color.White.copy(alpha = 0.0f) else Color.Unspecified
+    val colorAlpha = if(isPlaceholderVisible) Color.White.copy(alpha = 0.0f) else color
     Text(
         modifier = modifier.placeholder(
             visible = isPlaceholderVisible,
@@ -34,7 +35,7 @@ fun TextPlaceHolder(
         text = valueText,
         fontSize = fontSize,
         textAlign = textAlign,
-        color = color,
+        color = colorAlpha,
         overflow = TextOverflow.Ellipsis,
         maxLines = maxLines
     )

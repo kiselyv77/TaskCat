@@ -1,7 +1,6 @@
 package com.example.tasksapp.domain.use_cases
 
 import android.util.Log
-import com.example.tasksapp.data.remote.dto.SucsefullResponseDTO
 import com.example.tasksapp.domain.repository.TasksRepository
 import com.example.tasksapp.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -14,20 +13,20 @@ class SetTaskStatus @Inject constructor(
     private val repository: TasksRepository
 
 ) {
-    operator fun invoke(token:String, taskId:String, newStatus:String): Flow<Resource<SucsefullResponseDTO>> = flow{
+    operator fun invoke(token:String, taskId:String, newStatus:String): Flow<Resource<String>> = flow{
         try{
-            emit(Resource.Loading<SucsefullResponseDTO>())
+            emit(Resource.Loading<String>())
             val response = repository.setTaskStatus(token, taskId, newStatus)
-            emit(Resource.Success<SucsefullResponseDTO>(response))
+            emit(Resource.Success<String>(response.message))
         } catch (exception: HttpException){
             val debugMessage = exception.message
             val massage = exception.response()?.errorBody()?.charStream()?.readText()?:"Не удалось распознать ошибку"
-            emit(Resource.Error<SucsefullResponseDTO>(massage))
+            emit(Resource.Error<String>(massage))
         }catch (exception: IOException){
             val debugMessage = exception.message
             val message = "Ошибка подключения проверьте подключение к сети"
             Log.d("debugMessage", debugMessage.toString())
-            emit(Resource.Error<SucsefullResponseDTO>(message.toString()))
+            emit(Resource.Error<String>(message.toString()))
         }
     }
 }

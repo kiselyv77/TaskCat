@@ -1,6 +1,6 @@
 package com.example.tasksapp.presentation.screens.addWorkSpace
 
-import com.example.tasksapp.data.remote.dto.WorkSpaceDTO
+import com.example.tasksapp.domain.model.WorkSpaceModel
 
 data class AddWorkSpaceState(
     val name: String = "",
@@ -8,5 +8,5 @@ data class AddWorkSpaceState(
     val error: String = "",
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val workSpace: WorkSpaceDTO = WorkSpaceDTO("", "", "", "", emptyList(), emptyList()),
+    val workSpace: WorkSpaceModel = WorkSpaceModel("", "", "", ""),
 )

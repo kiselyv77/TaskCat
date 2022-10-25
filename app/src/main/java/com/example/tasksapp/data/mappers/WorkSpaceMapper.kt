@@ -9,7 +9,5 @@ fun WorkSpaceDTO.toWorkspaceModel(): WorkSpaceModel {
         name = name,
         description = description,
         creator = creator,
-        users = users,
-        tasks = tasks
     )
 }

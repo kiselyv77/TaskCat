@@ -1,5 +1,5 @@
 package com.example.tasksapp.data.remote.dto
 
-data class SucsefullResponseDTO(
+data class SuccessResponseDTO(
     val message: String
 )

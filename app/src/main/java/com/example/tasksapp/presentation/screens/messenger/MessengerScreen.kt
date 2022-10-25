@@ -159,13 +159,13 @@ fun MessageCard(message: MessageModel, myLogin: String) {
                 text = "$hour:$minute",
                 fontSize = 12.sp,
             )
-            if (message.isArrived) {
+            if (message.isArrived && message.sendingUser == myLogin) {
                 Icon(
                     modifier = Modifier.size(16.dp),
                     imageVector = Icons.Default.Check,
                     contentDescription = ""
                 )
-            } else {
+            } else if (message.sendingUser == myLogin) {
                 Icon(
                     modifier = Modifier.size(16.dp),
                     imageVector = Icons.Default.AccessTime,

@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -27,7 +28,9 @@ import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.destinations.ProfileScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
-import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListDestination
+import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListScreenDestination
+import com.example.tasksapp.util.UserStatus
+import com.example.tasksapp.util.UserStatus.getUserStatusName
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -81,7 +84,7 @@ fun ProfileScreen(
                 TextPlaceHolder(
                     modifier = Modifier.padding(
                         horizontal = 16.dp,
-                        vertical = 8.dp
+                        vertical = 4.dp
                     ),
                     text = state.name,
                     fontSize = 30.sp,
@@ -90,22 +93,28 @@ fun ProfileScreen(
                 TextPlaceHolder(
                     modifier = Modifier.padding(
                         horizontal = 16.dp,
-                        vertical = 8.dp
+                        vertical = 4.dp
                     ),
                     text = state.login,
-                    fontSize = 30.sp,
+                    fontSize = 25.sp,
                     isPlaceholderVisible = state.isLoading || state.error.isNotEmpty()
                 )
                 TextPlaceHolder(
                     modifier = Modifier.padding(
                         horizontal = 16.dp,
-                        vertical = 8.dp
+                        vertical = 4.dp
                     ),
-                    text = state.status,
-                    fontSize = 30.sp,
-                    isPlaceholderVisible = state.isLoading || state.error.isNotEmpty()
+                    text = getUserStatusName(state.status) ,
+                    fontSize = 20.sp,
+                    isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
+                    color = if(state.status == UserStatus.ONLINE_STATUS) Color.Green else MaterialTheme.colors.onBackground
                 )
 
+                OutlinedButton(onClick = {
+
+                }) {
+                    Text("Редактировать профиль")
+                }
 
                 OutlinedButton(onClick = {
                     viewModel.onEvent(ProfileEvent.LogOut)
@@ -125,7 +134,7 @@ fun ProfileScreen(
         if (state.isLogOut) {
             navigator.navigate(RegistrationScreenDestination) {
                 //Удаление экранов прошлых экранов из стека
-                this.popUpTo(WorkSpacesListDestination.route) {
+                this.popUpTo(WorkSpacesListScreenDestination.route) {
                     inclusive = true
                 }
                 this.popUpTo(ProfileScreenDestination.route) {

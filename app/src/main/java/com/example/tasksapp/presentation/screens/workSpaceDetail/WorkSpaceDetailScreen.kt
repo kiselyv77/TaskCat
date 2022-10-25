@@ -27,6 +27,7 @@ import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionBu
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.destinations.MessengerScreenDestination
+import com.example.tasksapp.presentation.screens.destinations.TaskDetailScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.UsersListScreenDestination
 import com.example.tasksapp.presentation.screens.workSpaceDetail.components.*
 import com.example.tasksapp.util.TaskStatus
@@ -154,7 +155,7 @@ fun WorkSpaceDetailScreen(
                                 count = index+1,
                                 name = task.name,
                                 description = task.description,
-                                onClick = { },
+                                onClick = { navigator.navigate(TaskDetailScreenDestination(task.id)) },
                                 onLongClick = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog(task.id))},
                                 taskStatus = TaskStatus.getTaskStatusName(task.taskStatus)
                             )

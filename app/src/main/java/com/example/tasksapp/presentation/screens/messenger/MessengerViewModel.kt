@@ -6,9 +6,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
+import com.example.tasksapp.data.mappers.toMessageModel
 import com.example.tasksapp.data.remote.Spec.BASE_URL
 import com.example.tasksapp.data.remote.dto.MessageDTO
-import com.example.tasksapp.domain.model.toMessageModel
 import com.example.tasksapp.domain.use_cases.GetMessagesFromWorkSpace
 import com.example.tasksapp.domain.use_cases.GetUserByToken
 import com.example.tasksapp.util.Resource
