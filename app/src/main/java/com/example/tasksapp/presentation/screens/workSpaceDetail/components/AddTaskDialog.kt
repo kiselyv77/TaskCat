@@ -1,5 +1,6 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail.components
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,10 +8,12 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -66,6 +69,13 @@ fun AddTaskDialog(
             ) {
                 if(state.isLoading){
                     CircularProgressIndicator()
+                }
+                if(state.error.isNotEmpty()){
+                    val context = LocalContext.current
+                    LaunchedEffect(state.error){
+                        Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
+                    }
+
                 }
                 OutlinedButton(
                     modifier = Modifier.padding(end = 16.dp, start = 16.dp, bottom = 8.dp),

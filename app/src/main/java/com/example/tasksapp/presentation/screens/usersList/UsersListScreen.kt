@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
+import com.example.tasksapp.presentation.screens.usersList.components.SetUserStatusToWorkSpaceDialog
 import com.example.tasksapp.presentation.screens.usersList.components.UserItem
+import com.example.tasksapp.util.UserTypes
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -73,11 +75,23 @@ fun UsersListScreen(
                         name = user.name,
                         login = user.login,
                         status = user.status,
-                        clickable = {}
+                        userStatusToWorkSpace = user.userStatusToWorkSpace,
+                        clickable = if(user.userStatusToWorkSpace != UserTypes.CREATOR_TYPE) {{
+                            viewModel.onEvent(UserListEvent.CloseOpenDialog(user.login, user.userStatusToWorkSpace))
+                        }} else{{
+                            // Ничего не делаем
+                        }}
                     )
                 }
             }
         }
+    }
+    if(state.dialogState.isOpen){
+        SetUserStatusToWorkSpaceDialog(
+            state = state.dialogState,
+            dismiss = { viewModel.onEvent(UserListEvent.CloseOpenDialog()) },
+            setStatus = {viewModel.onEvent(UserListEvent.SetUserStatusToWorkSpace)}
+        )
     }
     if (state.error.isNotEmpty()) {
         LaunchedEffect(scaffoldState.snackbarHostState) {

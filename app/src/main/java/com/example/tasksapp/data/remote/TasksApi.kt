@@ -48,4 +48,7 @@ interface TasksApi {
 
     @GET("/getTaskById/{token}/{id}")
     suspend fun getTaskById(@Path("token") token: String, @Path("id") id: String): TaskDTO
+
+    @POST("/setUserStatusToWorkSpace/{token}/{userLogin}/{workSpaceId}/{newStatus}")
+    suspend fun setUserStatusToWorkSpace(@Path("token") token: String,@Path("userLogin") userLogin: String, @Path("workSpaceId") workSpaceId: String, @Path("newStatus") newStatus:String): SuccessResponseDTO
 }

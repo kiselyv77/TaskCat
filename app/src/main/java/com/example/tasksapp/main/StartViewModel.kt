@@ -77,6 +77,4 @@ class StartViewModel @Inject constructor(
             }
         }
     }
-
-
 }

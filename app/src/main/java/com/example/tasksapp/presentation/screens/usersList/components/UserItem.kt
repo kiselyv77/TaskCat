@@ -22,8 +22,9 @@ import com.example.tasksapp.util.UserStatus.getUserStatusName
 fun UserItem(
     name: String,
     login: String,
-    status:String,
-    clickable: () -> Unit
+    status: String,
+    clickable: () -> Unit,
+    userStatusToWorkSpace: String
 ) {
     Card(
         Modifier
@@ -39,6 +40,10 @@ fun UserItem(
             Text(
                 text = login,
                 fontSize = 20.sp
+            )
+            Text(
+                text = userStatusToWorkSpace,
+                fontSize = 15.sp
             )
             Text(
                 text = getUserStatusName(status),
