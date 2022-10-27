@@ -18,6 +18,7 @@ import com.example.tasksapp.main.components.BottomBar
 import com.example.tasksapp.presentation.screens.NavGraphs
 import com.example.tasksapp.presentation.screens.destinations.Destination
 import com.example.tasksapp.presentation.screens.destinations.LoginScreenDestination
+import com.example.tasksapp.presentation.screens.destinations.MessengerScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -76,4 +77,5 @@ fun App(viewModel: StartViewModel) {
 
 private val Destination.isShowBottomBar
     get() = this !is RegistrationScreenDestination &&
-            this !is LoginScreenDestination
+            this !is LoginScreenDestination &&
+            this !is MessengerScreenDestination

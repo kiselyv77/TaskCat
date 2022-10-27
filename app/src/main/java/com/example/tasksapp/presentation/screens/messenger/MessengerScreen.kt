@@ -45,7 +45,6 @@ fun MessengerScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
-
         },
         snackbarHost = { snackbarHostState ->
             CustomSnackbarHost(snackbarHostState)
@@ -60,17 +59,12 @@ fun MessengerScreen(
             onRefresh = { }
         ) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-
-                ) {
+            Column() {
                 MessageList(
                     myLogin = state.my.login,
                     modifier = Modifier.weight(1f),
                     messages = state.messagesList
                 )
-
 
                 CustomTextField(
                     value = state.inputMessage,
@@ -115,7 +109,6 @@ fun MessageList(
 @Composable
 fun MessageCard(message: MessageModel, myLogin: String) {
     val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
-
     Column(
         modifier = Modifier
             .fillMaxWidth()

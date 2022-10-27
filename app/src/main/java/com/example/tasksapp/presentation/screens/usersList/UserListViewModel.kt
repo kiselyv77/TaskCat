@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
+import com.example.tasksapp.domain.use_cases.GetUserByToken
 import com.example.tasksapp.domain.use_cases.GetUsersFromWorkSpace
 import com.example.tasksapp.domain.use_cases.SetUserStatusToWorkSpace
 import com.example.tasksapp.util.Resource
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class UserListViewModel @Inject constructor(
     private val getUsersFromWorkSpace: GetUsersFromWorkSpace,
     private val setUserStatusToWorkSpaceUseCase: SetUserStatusToWorkSpace,
+    private val getUserByToken: GetUserByToken,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -25,6 +27,7 @@ class UserListViewModel @Inject constructor(
     val state: State<UserListState> = _state
 
     init {
+        getMyLogin()
         getUsers()
     }
 
@@ -97,7 +100,7 @@ class UserListViewModel @Inject constructor(
                                     error = ""
                                 )
                             )
-                            //onEvent(WorkSpaceDetailEvent.OnTasksRefresh)
+                            onEvent(UserListEvent.OnRefresh)
                         }
                     }
                     is Resource.Error -> {
@@ -114,6 +117,34 @@ class UserListViewModel @Inject constructor(
                                 isLoading = result.isLoading,
                                 error = result.message ?: ""
                             )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getMyLogin() {
+        viewModelScope.launch {
+            getUserByToken(Token.token).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let { userDto ->
+                            _state.value = _state.value.copy(
+                                myLogin = userDto.login,
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value =
+                            _state.value.copy(error = result.message ?: "", isLoading = false)
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            isLoading = result.isLoading,
+                            error = result.message ?: ""
                         )
                     }
                 }

@@ -21,6 +21,7 @@ import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.screens.usersList.components.SetUserStatusToWorkSpaceDialog
 import com.example.tasksapp.presentation.screens.usersList.components.UserItem
 import com.example.tasksapp.util.UserTypes
+import com.example.tasksapp.util.UserTypes.getUserTypeName
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -70,13 +71,19 @@ fun UsersListScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+
+
+                // Будет true если мы создатель // только создатель может менять статус кого либо
+                val isCreator = state.usersList.firstOrNull { it.login == state.myLogin }?.userStatusToWorkSpace ==
+                        UserTypes.CREATOR_TYPE
+
                 items(state.usersList) { user ->
                     UserItem(
                         name = user.name,
                         login = user.login,
                         status = user.status,
-                        userStatusToWorkSpace = user.userStatusToWorkSpace,
-                        clickable = if(user.userStatusToWorkSpace != UserTypes.CREATOR_TYPE) {{
+                        userStatusToWorkSpace = getUserTypeName(user.userStatusToWorkSpace),
+                        clickable = if(user.userStatusToWorkSpace != UserTypes.CREATOR_TYPE && isCreator) {{
                             viewModel.onEvent(UserListEvent.CloseOpenDialog(user.login, user.userStatusToWorkSpace))
                         }} else{{
                             // Ничего не делаем

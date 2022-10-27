@@ -297,7 +297,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
             ).collect { result ->
                 when (result) {
                     is Resource.Success -> {
-                        result.data?.let {
+                        result.data?.let { it ->
                             Log.d("addWorkspace", it.toString())
                             _state.value = _state.value.copy(
                                 addUserDialogState = _state.value.addUserDialogState.copy(

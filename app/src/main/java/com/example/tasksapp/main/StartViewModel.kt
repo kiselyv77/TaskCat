@@ -9,6 +9,7 @@ import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.domain.use_cases.GetToken
 import com.example.tasksapp.domain.use_cases.SetUserStatus
 import com.example.tasksapp.util.Resource
+import com.example.tasksapp.util.UserStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,6 +53,7 @@ class StartViewModel @Inject constructor(
                         val isTokenValid = token?.isNotEmpty() ?: false
                         if (isTokenValid) {
                             Token.token = token!!
+                            setUserStatus(UserStatus.ONLINE_STATUS)
                         }
                         Log.d("GettokenFromRoom", isTokenValid.toString())
                         _state.value = _state.value.copy(

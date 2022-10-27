@@ -31,6 +31,7 @@ import com.example.tasksapp.presentation.screens.destinations.TaskDetailScreenDe
 import com.example.tasksapp.presentation.screens.destinations.UsersListScreenDestination
 import com.example.tasksapp.presentation.screens.workSpaceDetail.components.*
 import com.example.tasksapp.util.TaskStatus
+import com.example.tasksapp.util.UserTypes
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -121,8 +122,12 @@ fun WorkSpaceDetailScreen(
                     clickable = {navigator.navigate(UsersListScreenDestination(id))}
                 )
 
+                // Будет true если мы администратор или создатель
+                val isAdmin = state.usersState.users.firstOrNull { it.login == state.myLogin }?.userStatusToWorkSpace ==
+                        UserTypes.ADMIN_TYPE || state.myLogin == state.workspaceDetail.creator
+
                 WorkSpaceControlPanel(
-                    isAdmin = state.myLogin == state.workspaceDetail.creator,
+                    isAdmin = isAdmin,
                     addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
                     addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) },
                     messenger = {navigator.navigate(MessengerScreenDestination(id))}

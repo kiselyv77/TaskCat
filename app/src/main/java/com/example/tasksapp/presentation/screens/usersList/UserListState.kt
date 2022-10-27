@@ -6,6 +6,7 @@ data class UserListState (
     val usersList: List<UserModel> = emptyList(),
     val error:String = "",
     val isLoading:Boolean = false,
+    val myLogin:String = "",
     val dialogState: SetUserStatusToWorkSpaceDialogState = SetUserStatusToWorkSpaceDialogState()
 )
 
