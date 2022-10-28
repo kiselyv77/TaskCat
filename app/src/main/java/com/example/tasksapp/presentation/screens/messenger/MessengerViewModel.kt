@@ -37,6 +37,7 @@ class MessengerViewModel @Inject constructor(
             contentConverter = GsonWebsocketContentConverter()
         }
     }
+    private var offset = -10 // Этот офсет будет увеличиватся на 10 при каждом новом запросе или на 1 приприеме сообщения
 
     private val _state = mutableStateOf(MessengerState())
     val state: State<MessengerState> = _state
@@ -52,12 +53,14 @@ class MessengerViewModel @Inject constructor(
                         val message = receiveDeserialized<MessageDTO>()
                         if(!_state.value.messagesList.any { it.id == message.id }){
                             //Пришло чужое сообщение
+                            offset++
                             val messageList = _state.value.messagesList.toMutableList()
                             messageList.add(0, message.toMessageModel())
                             _state.value = _state.value.copy(messagesList = messageList)
                         }
                         else{
                             //Вернулось мое сообщение
+                            offset++
                             val messageList = _state.value.messagesList.toMutableList()
                             val messageModel = message.toMessageModel()
                             val index = messageList.indexOf(messageModel.copy(isArrived = false))
@@ -109,6 +112,9 @@ class MessengerViewModel @Inject constructor(
             is MessengerEvent.SetMessage -> {
                 _state.value = _state.value.copy(inputMessage = event.newMessage)
             }
+            MessengerEvent.Refresh -> {
+                getMessages()
+            }
         }
     }
 
@@ -133,14 +139,17 @@ class MessengerViewModel @Inject constructor(
     }
 
     private fun getMessages() {
+        offset+=10
         viewModelScope.launch {
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
-            getMessagesUseCase(Token.token, workSpaceId).collect { result ->
+            getMessagesUseCase(Token.token, workSpaceId, offset).collect { result ->
                 when (result) {
                     is Resource.Success -> {
+                        val messageList = _state.value.messagesList.toMutableList()
                         result.data?.let { messages ->
+                            messageList.addAll(messages)
                             _state.value = _state.value.copy(
-                                messagesList = messages,
+                                messagesList = messageList,
                                 error = result.message ?: "",
                                 isLoading = false
                             )

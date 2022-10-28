@@ -78,8 +78,8 @@ class TasksRepositoryImpl(
         return api.setUserStatus(token, newStatus)
     }
 
-    override suspend fun getMessagesFromWorkSpace(token: String, workSpaceId: String): List<MessageDTO> {
-        return api.getMessagesFromWorkSpace(token, workSpaceId)
+    override suspend fun getMessagesFromWorkSpace(token: String, workSpaceId: String, offset:String): List<MessageDTO> {
+        return api.getMessagesFromWorkSpace(token, workSpaceId, offset)
     }
 
     override suspend fun getTaskById(token: String, id: String): TaskDTO {

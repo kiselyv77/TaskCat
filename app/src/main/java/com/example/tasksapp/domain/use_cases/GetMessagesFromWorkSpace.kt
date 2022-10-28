@@ -14,11 +14,10 @@ import javax.inject.Inject
 class GetMessagesFromWorkSpace @Inject constructor(
     private val repository: TasksRepository
 ) {
-
-    operator fun invoke(token: String, workSpaceId:String): Flow<Resource<List<MessageModel>>> = flow{
+    operator fun invoke(token: String, workSpaceId:String, offset:Int): Flow<Resource<List<MessageModel>>> = flow{
         try{
             emit(Resource.Loading<List<MessageModel>>())
-            val messages = repository.getMessagesFromWorkSpace(token, workSpaceId)
+            val messages = repository.getMessagesFromWorkSpace(token, workSpaceId, offset.toString())
             emit(Resource.Success<List<MessageModel>>(messages.map{it.toMessageModel()}))
         } catch (exception: HttpException){
             val debugMessage = exception.message

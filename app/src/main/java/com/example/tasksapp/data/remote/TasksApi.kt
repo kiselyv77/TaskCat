@@ -43,8 +43,8 @@ interface TasksApi {
     @POST("/setUserStatus/{token}/{newStatus}")
     suspend fun setUserStatus(@Path("token") token: String, @Path("newStatus") newStatus:String): SuccessResponseDTO
 
-    @GET("/getMessagesFromWorkSpace/{token}/{workSpaceId}")
-    suspend fun getMessagesFromWorkSpace(@Path("token") token: String, @Path("workSpaceId") workSpaceId: String): List<MessageDTO>
+    @GET("/getMessagesFromWorkSpace/{token}/{workSpaceId}/{offset}")
+    suspend fun getMessagesFromWorkSpace(@Path("token") token: String, @Path("workSpaceId") workSpaceId: String, @Path("offset") offset:String): List<MessageDTO>
 
     @GET("/getTaskById/{token}/{id}")
     suspend fun getTaskById(@Path("token") token: String, @Path("id") id: String): TaskDTO

@@ -56,7 +56,7 @@ fun MessengerScreen(
                 .fillMaxSize()
                 .padding(it),
             state = swipeRefreshState,
-            onRefresh = { }
+            onRefresh = {viewModel.onEvent(MessengerEvent.Refresh) }
         ) {
 
             Column() {
