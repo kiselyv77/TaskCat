@@ -45,7 +45,8 @@ class ProfileViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 isLogOut = true,
                                 error = result.message ?: "",
-                                isLoading = false)
+                                isLoading = false
+                            )
                         }
                     }
                     is Resource.Error -> {

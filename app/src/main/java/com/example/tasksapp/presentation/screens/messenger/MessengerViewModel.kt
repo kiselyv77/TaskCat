@@ -1,5 +1,7 @@
 package com.example.tasksapp.presentation.screens.messenger
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -19,6 +21,7 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.gson.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -48,35 +51,36 @@ class MessengerViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
             client.ws("ws://$BASE_URL/chat/${Token.token}/$workSpaceId") {
-                val messageOutputRoutine = launch {
-                    while (true) {
-                        val message = receiveDeserialized<MessageDTO>()
-                        if(!_state.value.messagesList.any { it.id == message.id }){
-                            //Пришло чужое сообщение
-                            offset++
-                            val messageList = _state.value.messagesList.toMutableList()
-                            messageList.add(0, message.toMessageModel())
-                            _state.value = _state.value.copy(messagesList = messageList)
-                        }
-                        else{
-                            //Вернулось мое сообщение
-                            offset++
-                            val messageList = _state.value.messagesList.toMutableList()
-                            val messageModel = message.toMessageModel()
-                            val index = messageList.indexOf(messageModel.copy(isArrived = false))
-                            messageList[index] = messageModel.copy(isArrived = true)
-                            _state.value = _state.value.copy(messagesList = messageList)
-                        }
+                try {
+                    val messageOutputRoutine = launch {
+                        while (true) {
+                            val message = receiveDeserialized<MessageDTO>()
+                            if(!_state.value.messagesList.any { it.id == message.id }){
+                                //Пришло чужое сообщение
+                                offset++
+                                val messageList = _state.value.messagesList.toMutableList()
+                                messageList.add(0, message.toMessageModel())
+                                _state.value = _state.value.copy(messagesList = messageList)
+                            }
+                            else{
+                                //Вернулось мое сообщение
+                                offset++
+                                val messageList = _state.value.messagesList.toMutableList()
+                                val messageModel = message.toMessageModel()
+                                val index = messageList.indexOf(messageModel.copy(isArrived = false))
+                                messageList[index] = messageModel.copy(isArrived = true)
+                                _state.value = _state.value.copy(messagesList = messageList)
+                            }
 
+                        }
                     }
-                }
-                val userInputRoutine = launch {
-                    while (true) {
-                        if (_state.value.send) {
-                            _state.value = _state.value.copy(send = false)
-                            val messageText = _state.value.inputMessage
-                            if (messageText.isNotEmpty()) {
-                                val messageDTO = MessageDTO(
+                    val userInputRoutine = launch {
+                        while (true) {
+                            if (_state.value.send) {
+                                _state.value = _state.value.copy(send = false)
+                                val messageText = _state.value.inputMessage
+                                if (messageText.isNotEmpty()) {
+                                    val messageDTO = MessageDTO(
                                         id = generateRandomUUID(),
                                         userName = _state.value.my.name,
                                         dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
@@ -85,21 +89,26 @@ class MessengerViewModel @Inject constructor(
                                         text = messageText
                                     )
 
-                                val messageList = _state.value.messagesList.toMutableList()
-                                messageList.add(0, messageDTO.toMessageModel().copy(isArrived = false))
-                                _state.value = _state.value.copy(messagesList = messageList)
+                                    val messageList = _state.value.messagesList.toMutableList()
+                                    messageList.add(0, messageDTO.toMessageModel().copy(isArrived = false))
+                                    _state.value = _state.value.copy(messagesList = messageList)
 
-                                sendSerialized(
-                                    messageDTO
-                                )
+                                    sendSerialized(
+                                        messageDTO
+                                    )
+                                }
+                                _state.value = _state.value.copy(inputMessage = "")
                             }
-                            _state.value = _state.value.copy(inputMessage = "")
                         }
                     }
-                }
 
-                userInputRoutine.join() // Wait for completion; either "exit" or error
-                messageOutputRoutine.cancelAndJoin()
+                    userInputRoutine.join() // Wait for completion; either "exit" or error
+                    messageOutputRoutine.cancelAndJoin()
+                } catch (e: ClosedReceiveChannelException) {
+                    Log.w(TAG, "Failure: ${e.message}")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failure: ${e.message}")
+                }
             }
         }
     }
