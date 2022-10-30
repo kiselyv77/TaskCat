@@ -1,5 +1,6 @@
 package com.example.tasksapp.presentation.screens.workSapcesList
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +32,7 @@ fun WorkSpacesListScreen(
     viewModel: WorkSpacesListViewModel = hiltViewModel(),
     navigator: DestinationsNavigator
 ) {
+    Log.d("sdmvdlkdlkvmdlkvm", viewModel.hashCode().toString())
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
     val swipeRefreshState = rememberSwipeRefreshState(

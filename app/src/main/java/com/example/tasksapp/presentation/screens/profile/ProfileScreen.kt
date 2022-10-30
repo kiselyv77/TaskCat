@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.screens.NavGraphs
 import com.example.tasksapp.presentation.screens.destinations.ProfileScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListScreenDestination
@@ -35,6 +36,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Destination()
@@ -134,6 +136,10 @@ fun ProfileScreen(
         if (state.isLogOut) {
             navigator.navigate(RegistrationScreenDestination) {
                 //Удаление экранов прошлых экранов из стека
+                popUpTo(NavGraphs.root) {
+                    saveState = false
+                }
+
                 this.popUpTo(WorkSpacesListScreenDestination.route) {
                     inclusive = true
                 }

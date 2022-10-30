@@ -145,6 +145,8 @@ fun RegistrationScreen(
                 )
                 navigator.navigate(WorkSpacesListScreenDestination()) {
                     //Удаление экранов регистрации и входа из бэк стэка
+                    restoreState = true
+                    launchSingleTop = true
                     this.popUpTo(LoginScreenDestination.route) {
                         inclusive = true
                     }
