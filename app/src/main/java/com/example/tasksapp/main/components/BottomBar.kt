@@ -47,7 +47,6 @@ fun BottomBar(
                         popUpTo(NavGraphs.root) {
                             saveState = true
                         }
-
                         // Avoid multiple copies of the same destination when
                         // reselecting the same item
                         launchSingleTop = true

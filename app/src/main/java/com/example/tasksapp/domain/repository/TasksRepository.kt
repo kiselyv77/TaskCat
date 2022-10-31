@@ -1,5 +1,6 @@
 package com.example.tasksapp.domain.repository
 
+import android.net.Uri
 import com.example.tasksapp.data.remote.dto.*
 
 interface TasksRepository {
@@ -38,4 +39,7 @@ interface TasksRepository {
     suspend fun getTaskById(token:String, id:String): TaskDTO
 
     suspend fun setUserStatusToWorkSpace(token: String,userLogin:String, workSpaceId: String, newStatus:String):SuccessResponseDTO
+
+    suspend fun uploadNewAvatar(token:String, imageUri: Uri?):SuccessResponseDTO
+
 }

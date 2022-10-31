@@ -1,10 +1,17 @@
 package com.example.tasksapp.data.repository
 
+import android.net.Uri
+import android.util.Log
 import com.example.tasksapp.data.local.TasksDatabase
 import com.example.tasksapp.data.local.entity.TokenEntity
 import com.example.tasksapp.data.remote.TasksApi
 import com.example.tasksapp.data.remote.dto.*
 import com.example.tasksapp.domain.repository.TasksRepository
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+
 
 class TasksRepositoryImpl(
     private val api: TasksApi,
@@ -37,7 +44,11 @@ class TasksRepositoryImpl(
         return api.getUserByToken(token)
     }
 
-    override suspend fun addWorkSpace(token: String, name: String, description: String): WorkSpaceDTO {
+    override suspend fun addWorkSpace(
+        token: String,
+        name: String,
+        description: String
+    ): WorkSpaceDTO {
         return api.addWorkSpace(AddWorkSpaceReceiveDTO(token, name, description))
     }
 
@@ -45,7 +56,7 @@ class TasksRepositoryImpl(
         return api.getWorkSpaces(token)
     }
 
-    override suspend fun getWorkSpaceById(token:String, id: String): WorkSpaceDTO {
+    override suspend fun getWorkSpaceById(token: String, id: String): WorkSpaceDTO {
         return api.getWorkSpaceById(token, id)
     }
 
@@ -62,7 +73,11 @@ class TasksRepositoryImpl(
         return api.addTaskToWorkSpace(AddTaskReceiveDTO(token, name, description, workSpaceId))
     }
 
-    override suspend fun addUserToWorkSpace(token:String, userLogin: String, workSpaceId: String): UserDTO {
+    override suspend fun addUserToWorkSpace(
+        token: String,
+        userLogin: String,
+        workSpaceId: String
+    ): UserDTO {
         return api.addUserToWorkSpace(AddUserToWorkSpaceReceiveDTO(token, userLogin, workSpaceId))
     }
 
@@ -70,7 +85,11 @@ class TasksRepositoryImpl(
         return api.getUsersFromWorkSpace(token, workSpaceId)
     }
 
-    override suspend fun setTaskStatus(token: String, taskId: String, newStatus: String): SuccessResponseDTO {
+    override suspend fun setTaskStatus(
+        token: String,
+        taskId: String,
+        newStatus: String
+    ): SuccessResponseDTO {
         return api.setTaskStatus(token, taskId, newStatus)
     }
 
@@ -78,7 +97,11 @@ class TasksRepositoryImpl(
         return api.setUserStatus(token, newStatus)
     }
 
-    override suspend fun getMessagesFromWorkSpace(token: String, workSpaceId: String, offset:String): List<MessageDTO> {
+    override suspend fun getMessagesFromWorkSpace(
+        token: String,
+        workSpaceId: String,
+        offset: String
+    ): List<MessageDTO> {
         return api.getMessagesFromWorkSpace(token, workSpaceId, offset)
     }
 
@@ -86,7 +109,26 @@ class TasksRepositoryImpl(
         return api.getTaskById(token, id)
     }
 
-    override suspend fun setUserStatusToWorkSpace(token: String,userLogin:String, workSpaceId: String, newStatus: String): SuccessResponseDTO {
+    override suspend fun setUserStatusToWorkSpace(
+        token: String,
+        userLogin: String,
+        workSpaceId: String,
+        newStatus: String
+    ): SuccessResponseDTO {
         return api.setUserStatusToWorkSpace(token, userLogin, workSpaceId, newStatus)
+    }
+
+    override suspend fun uploadNewAvatar(token:String, imageUri: Uri?): SuccessResponseDTO {
+        Log.d("dsfsfsdfdsfsdfs", imageUri.toString())
+
+        val file = imageUri?.path?.let { File(it) }
+        val part = MultipartBody.Part.createFormData(
+            "pic", "myPic", RequestBody.create(
+                "image/*".toMediaTypeOrNull(),
+                file!!
+            )
+        )
+
+        return api.uploadNewAvatar(part)
     }
 }

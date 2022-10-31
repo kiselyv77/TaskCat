@@ -1,15 +1,15 @@
 package com.example.tasksapp.presentation.screens.profile
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -27,16 +27,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.NavGraphs
-import com.example.tasksapp.presentation.screens.destinations.ProfileScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
-import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListScreenDestination
 import com.example.tasksapp.util.UserStatus
 import com.example.tasksapp.util.UserStatus.getUserStatusName
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.popUpTo
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Destination()
@@ -51,6 +48,11 @@ fun ProfileScreen(
         isRefreshing = state.isLoading
     )
     val scaffoldState = rememberScaffoldState()
+
+    val launcher = rememberLauncherForActivityResult(contract =
+    ActivityResultContracts.GetContent()) { uri: Uri? ->
+        viewModel.onEvent(ProfileEvent.UploadNewAvatarEvent(uri))
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -81,6 +83,7 @@ fun ProfileScreen(
                         .size(150.dp)
                         .clip(CircleShape)
                         .border(2.dp, Gray, CircleShape)
+                        .clickable { launcher.launch("image/*") }
                 )
 
                 TextPlaceHolder(
@@ -134,19 +137,9 @@ fun ProfileScreen(
             }
         }
         if (state.isLogOut) {
-            navigator.navigate(RegistrationScreenDestination) {
-                //Удаление экранов прошлых экранов из стека
-                popUpTo(NavGraphs.root) {
-                    saveState = false
-                }
-
-                this.popUpTo(WorkSpacesListScreenDestination.route) {
-                    inclusive = true
-                }
-                this.popUpTo(ProfileScreenDestination.route) {
-                    inclusive = true
-                }
-            }
+            navigator.clearBackStack(NavGraphs.root)
+            navigator.navigate(RegistrationScreenDestination)
+            //Наконецто
         }
     }
 }

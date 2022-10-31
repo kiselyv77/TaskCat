@@ -1,10 +1,9 @@
 package com.example.tasksapp.data.remote
 
 import com.example.tasksapp.data.remote.dto.*
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import okhttp3.MultipartBody
+import retrofit2.http.*
+
 
 interface TasksApi {
     @POST("/register")
@@ -51,4 +50,8 @@ interface TasksApi {
 
     @POST("/setUserStatusToWorkSpace/{token}/{userLogin}/{workSpaceId}/{newStatus}")
     suspend fun setUserStatusToWorkSpace(@Path("token") token: String,@Path("userLogin") userLogin: String, @Path("workSpaceId") workSpaceId: String, @Path("newStatus") newStatus:String): SuccessResponseDTO
+
+    @Multipart
+    @POST("/uploadNewAvatar")
+    suspend fun uploadNewAvatar(@Part part: MultipartBody.Part): SuccessResponseDTO
 }

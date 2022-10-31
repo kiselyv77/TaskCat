@@ -1,5 +1,6 @@
 package com.example.tasksapp.presentation.screens.messenger
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,9 +11,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +44,13 @@ fun MessengerScreen(
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = state.isLoading
     )
+
+    if(state.error.isNotEmpty()){
+        val context = LocalContext.current
+        LaunchedEffect(state.error){
+            Toast.makeText(context, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
