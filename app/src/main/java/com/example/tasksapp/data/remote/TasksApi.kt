@@ -52,6 +52,6 @@ interface TasksApi {
     suspend fun setUserStatusToWorkSpace(@Path("token") token: String,@Path("userLogin") userLogin: String, @Path("workSpaceId") workSpaceId: String, @Path("newStatus") newStatus:String): SuccessResponseDTO
 
     @Multipart
-    @POST("/uploadNewAvatar")
-    suspend fun uploadNewAvatar(@Part part: MultipartBody.Part): SuccessResponseDTO
+    @POST("/uploadNewAvatar/{token}")
+    suspend fun uploadNewAvatar(@Path("token") token: String, @Part part: MultipartBody.Part): SuccessResponseDTO
 }

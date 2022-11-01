@@ -1,6 +1,5 @@
 package com.example.tasksapp.presentation.screens.profile
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +12,7 @@ import com.example.tasksapp.domain.use_cases.UploadNewAvatar
 import com.example.tasksapp.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,14 +38,14 @@ class ProfileViewModel @Inject constructor(
                 logOut()
             }
             is ProfileEvent.UploadNewAvatarEvent -> {
-                uploadNewAvatar(event.image)
+                uploadNewAvatar(event.stream)
             }
         }
     }
 
-    private fun uploadNewAvatar(image: Uri?) {
+    private fun uploadNewAvatar(stream: InputStream) {
         viewModelScope.launch {
-            uploadNewAvatarUseCase(Token.token, image).collect{
+            uploadNewAvatarUseCase(Token.token, stream).collect{
                 Log.d("dsfvsedfsrvsdfsv", it.data.toString())
             }
         }

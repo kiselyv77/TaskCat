@@ -1,16 +1,13 @@
 package com.example.tasksapp.data.repository
 
-import android.net.Uri
-import android.util.Log
 import com.example.tasksapp.data.local.TasksDatabase
 import com.example.tasksapp.data.local.entity.TokenEntity
 import com.example.tasksapp.data.remote.TasksApi
 import com.example.tasksapp.data.remote.dto.*
 import com.example.tasksapp.domain.repository.TasksRepository
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.InputStream
 
 
 class TasksRepositoryImpl(
@@ -118,17 +115,12 @@ class TasksRepositoryImpl(
         return api.setUserStatusToWorkSpace(token, userLogin, workSpaceId, newStatus)
     }
 
-    override suspend fun uploadNewAvatar(token:String, imageUri: Uri?): SuccessResponseDTO {
-        Log.d("dsfsfsdfdsfsdfs", imageUri.toString())
+    override suspend fun uploadNewAvatar(token:String, stream: InputStream): SuccessResponseDTO {
 
-        val file = imageUri?.path?.let { File(it) }
         val part = MultipartBody.Part.createFormData(
-            "pic", "myPic", RequestBody.create(
-                "image/*".toMediaTypeOrNull(),
-                file!!
-            )
+            "newAvatar", "newAvatar", stream.readBytes().toRequestBody()
         )
 
-        return api.uploadNewAvatar(part)
+        return api.uploadNewAvatar(token, part)
     }
 }
