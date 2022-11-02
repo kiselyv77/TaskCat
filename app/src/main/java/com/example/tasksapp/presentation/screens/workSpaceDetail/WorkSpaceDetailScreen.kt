@@ -116,7 +116,14 @@ fun WorkSpaceDetailScreen(
                     )
                 }
 
+                val firstUsers = listOf(
+                    state.usersState.users.getOrNull(0)?.login,
+                    state.usersState.users.getOrNull(1)?.login,
+                    state.usersState.users.getOrNull(2)?.login,
+                )
+
                 UsersPanel(
+                    firstUsers = firstUsers,
                     isPlaceholderVisible = state.usersState.isLoading||state.usersState.error.isNotEmpty(),
                     usersCount = state.usersState.users.size,
                     clickable = {navigator.navigate(UsersListScreenDestination(id))}

@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.data.remote.Spec.BASE_URL
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
@@ -88,7 +87,7 @@ fun ProfileScreen(
             ) {
 
                 AsyncImage(
-                    model = "https://$BASE_URL/getAvatar/${Token.token}?" + (0..1_000_000).random(),
+                    model = "https://$BASE_URL/getAvatar/${state.login}?" + (0..1_000_000).random(),
                     contentDescription = "avatar",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
