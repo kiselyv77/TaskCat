@@ -45,8 +45,21 @@ class ProfileViewModel @Inject constructor(
 
     private fun uploadNewAvatar(stream: InputStream) {
         viewModelScope.launch {
-            uploadNewAvatarUseCase(Token.token, stream).collect{
-                Log.d("dsfvsedfsrvsdfsv", it.data.toString())
+            uploadNewAvatarUseCase(Token.token, stream).collect{ result ->
+                Log.d("dsfvsedfsrvsdfsv", result.data.toString())
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                profileImgKey = (0..1_000_000).random()
+                            )
+                        }
+                    }
+                    is Resource.Error -> {
+                    }
+                    is Resource.Loading -> {
+                    }
+                }
             }
         }
     }

@@ -20,14 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
-import com.example.tasksapp.data.remote.Spec.BASE_URL
+import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.NavGraphs
@@ -39,6 +39,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@OptIn(ExperimentalCoilApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Destination()
 @Composable
@@ -86,16 +87,18 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                AsyncImage(
-                    model = "https://$BASE_URL/getAvatar/${state.login}?" + (0..1_000_000).random(),
-                    contentDescription = "avatar",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(150.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, Gray, CircleShape)
-                        .clickable { launcher.launch("image/*") }
-                )
+                    val imageUrl = "https://${Spec.BASE_URL}/getAvatar/${state.login}?" + state.profileImgKey
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = "avatar",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, Color.Gray, CircleShape)
+                            .clickable { launcher.launch("image/*") }
+                    )
+
 
                 TextPlaceHolder(
                     modifier = Modifier.padding(

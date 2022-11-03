@@ -43,13 +43,12 @@ fun UsersPanel(
                 modifier = Modifier
                     .widthIn(max = screenWidth / 2)
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                text = "$usersCount сотрудника",
+                text = "$usersCount сотрудников",
                 fontSize = 20.sp,
                 isPlaceholderVisible = isPlaceholderVisible,
                 textPlaceHolderLength = 12,
                 maxLines = 1
             )
-
             firstUsers.getOrNull(0)?.let{
                 AsyncImage(
                     model = "https://${Spec.BASE_URL}/getAvatar/${it}?",
@@ -59,7 +58,7 @@ fun UsersPanel(
                         .padding(end = 16.dp)
                         .size(avatarsSize)
                         .clip(CircleShape)
-                        .border(2.dp, Color.Gray, CircleShape)
+                        .border(1.dp, Color.Gray, CircleShape)
                 )
             }
             firstUsers.getOrNull(1)?.let{
@@ -71,7 +70,7 @@ fun UsersPanel(
                         .padding(end = 16.dp)
                         .size(avatarsSize)
                         .clip(CircleShape)
-                        .border(2.dp, Color.Gray, CircleShape)
+                        .border(1.dp, Color.Gray, CircleShape)
                 )
             }
             firstUsers.getOrNull(2)?.let{
@@ -83,10 +82,9 @@ fun UsersPanel(
                         .padding(end = 16.dp)
                         .size(avatarsSize)
                         .clip(CircleShape)
-                        .border(2.dp, Color.Gray, CircleShape)
+                        .border(1.dp, Color.Gray, CircleShape)
                 )
             }
-
         }
     }
 }
