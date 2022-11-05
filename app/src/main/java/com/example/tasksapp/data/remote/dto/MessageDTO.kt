@@ -5,6 +5,7 @@ data class MessageDTO(
     val userName: String,
     val sendingUser: String,
     val workSpaceId: String,
+    val type: String,
     val dateTime:String,
     val text: String
 )

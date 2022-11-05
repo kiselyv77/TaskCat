@@ -13,6 +13,7 @@ import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.data.remote.dto.MessageDTO
 import com.example.tasksapp.domain.use_cases.GetMessagesFromWorkSpace
 import com.example.tasksapp.domain.use_cases.GetUserByToken
+import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.generateRandomUUID
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -87,7 +88,8 @@ class MessengerViewModel @Inject constructor(
                                             .format(DateTimeFormatter.ISO_DATE_TIME),
                                         sendingUser = _state.value.my.login,
                                         workSpaceId = workSpaceId,
-                                        text = messageText
+                                        text = messageText,
+                                        type = MessageTypes.MESSAGE_TEXT
                                     )
 
                                     val messageList = _state.value.messagesList.toMutableList()

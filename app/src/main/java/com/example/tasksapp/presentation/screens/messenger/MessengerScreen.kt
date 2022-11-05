@@ -1,5 +1,6 @@
 package com.example.tasksapp.presentation.screens.messenger
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,9 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.domain.model.MessageModel
+import com.example.tasksapp.presentation.commonComponents.CustomMessageField
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
-import com.example.tasksapp.presentation.commonComponents.CustomTextField
-import com.example.tasksapp.presentation.commonComponents.SendIcon
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -45,9 +45,9 @@ fun MessengerScreen(
         isRefreshing = state.isLoading
     )
 
-    if(state.error.isNotEmpty()){
+    if (state.error.isNotEmpty()) {
         val context = LocalContext.current
-        LaunchedEffect(state.error){
+        LaunchedEffect(state.error) {
             Toast.makeText(context, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
         }
     }
@@ -66,7 +66,7 @@ fun MessengerScreen(
                 .fillMaxSize()
                 .padding(it),
             state = swipeRefreshState,
-            onRefresh = {viewModel.onEvent(MessengerEvent.Refresh) }
+            onRefresh = { viewModel.onEvent(MessengerEvent.Refresh) }
         ) {
 
             Column() {
@@ -76,19 +76,21 @@ fun MessengerScreen(
                     messages = state.messagesList
                 )
 
-                CustomTextField(
+                CustomMessageField(
                     value = state.inputMessage,
-                    label = "Введите сообщение",
+                    maxChar = 500,
                     isError = false,
-                    trailingIcon = {
-                        SendIcon(
-                            send = { viewModel.onEvent(MessengerEvent.Send) },
-                            clear = { viewModel.onEvent(MessengerEvent.SetMessage("")) })
-                    },
                     onValueChange = { viewModel.onEvent(MessengerEvent.SetMessage(it)) },
-                    onAction = { viewModel.onEvent(MessengerEvent.Send) })
+                    send = { viewModel.onEvent(MessengerEvent.Send) },
+                    clear = { viewModel.onEvent(MessengerEvent.SetMessage("")) },
+                    startVoiceRecord = {
+                        Log.d("sdsfsdvvbnhh", "startVoiceRecord")
+                    },
+                    stopVoiceRecord = {
+                        Log.d("sdsfsdvvbnhh", "stopVoiceRecord")
+                    }
+                )
             }
-
         }
     }
 }

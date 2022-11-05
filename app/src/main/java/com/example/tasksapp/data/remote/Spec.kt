@@ -1,5 +1,5 @@
 package com.example.tasksapp.data.remote
 
 object Spec {
-    const val BASE_URL = "46d4-176-112-246-118.eu.ngrok.io"
+    const val BASE_URL = "1e7f-176-112-250-138.eu.ngrok.io"
 }
