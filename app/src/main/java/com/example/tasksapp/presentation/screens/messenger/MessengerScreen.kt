@@ -15,13 +15,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.domain.model.MessageModel
+import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.commonComponents.CustomMessageField
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -110,8 +113,9 @@ fun MessageList(
             modifier = Modifier.fillMaxSize(),
             reverseLayout = true,
         ) {
-            items(messages) {
-                MessageCard(message = it, myLogin = myLogin)
+            items(messages) { message ->
+                val isMyMessage = message.sendingUser == myLogin
+                MessageCard(message = message, isMyMessage = isMyMessage)
             }
         }
 
@@ -119,39 +123,54 @@ fun MessageList(
 }
 
 @Composable
-fun MessageCard(message: MessageModel, myLogin: String) {
+fun MessageCard(message: MessageModel, isMyMessage: Boolean) {
     val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalAlignment = when {
-            message.sendingUser == myLogin -> Alignment.End
+            isMyMessage -> Alignment.End
             else -> Alignment.Start
         },
+        verticalArrangement = Arrangement.Bottom
     ) {
-        Card(
-            modifier = Modifier.widthIn(max = 340.dp),
-            shape = cardShapeFor(message, myLogin),
-            backgroundColor = when {
-                message.sendingUser == myLogin -> MaterialTheme.colors.primary
-                else -> MaterialTheme.colors.secondary
-            },
+        Row(
+            verticalAlignment = Alignment.Bottom
         ) {
-            Column() {
-                Text(
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
-                    text = message.userName,
-                    color = androidx.compose.ui.graphics.Color.White,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold
+            if (!isMyMessage) {
+                AvatarImage(
+                    imageUrl = "https://${Spec.BASE_URL}/getAvatar/${message.sendingUser}",
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(45.dp)
                 )
-                Text(
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                    text = message.text,
-                    color = androidx.compose.ui.graphics.Color.White,
-                    fontSize = 15.sp,
-                )
+            }
+            Card(
+                modifier = Modifier.widthIn(max = 340.dp),
+                shape = cardShapeFor(message, isMyMessage),
+                backgroundColor = when {
+                    isMyMessage -> MaterialTheme.colors.primary
+                    else -> MaterialTheme.colors.secondary
+                },
+            ) {
+                Column() {
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
+                        text = message.userName,
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                        text = message.text,
+                        color = Color.White,
+                        fontSize = 15.sp,
+                    )
+
+
+                }
 
             }
         }
@@ -162,15 +181,15 @@ fun MessageCard(message: MessageModel, myLogin: String) {
         Row() {
             Text(
                 text = "$hour:$minute",
-                fontSize = 12.sp,
+                fontSize = 10.sp,
             )
-            if (message.isArrived && message.sendingUser == myLogin) {
+            if (message.isArrived && isMyMessage) {
                 Icon(
                     modifier = Modifier.size(16.dp),
                     imageVector = Icons.Default.Check,
                     contentDescription = ""
                 )
-            } else if (message.sendingUser == myLogin) {
+            } else if (isMyMessage) {
                 Icon(
                     modifier = Modifier.size(16.dp),
                     imageVector = Icons.Default.AccessTime,
@@ -178,14 +197,16 @@ fun MessageCard(message: MessageModel, myLogin: String) {
                 )
             }
         }
+
+
     }
 }
 
 @Composable
-fun cardShapeFor(message: MessageModel, myLogin: String): Shape {
+fun cardShapeFor(message: MessageModel, isMyMessage: Boolean): Shape {
     val roundedCorners = RoundedCornerShape(16.dp)
     return when {
-        message.sendingUser == myLogin -> roundedCorners.copy(bottomEnd = CornerSize(0))
+        isMyMessage -> roundedCorners.copy(bottomEnd = CornerSize(0))
         else -> roundedCorners.copy(bottomStart = CornerSize(0))
     }
 }

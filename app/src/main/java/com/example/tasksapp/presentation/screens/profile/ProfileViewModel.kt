@@ -8,8 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.domain.use_cases.GetUserByToken
 import com.example.tasksapp.domain.use_cases.LogOut
+import com.example.tasksapp.domain.use_cases.SetUserStatus
 import com.example.tasksapp.domain.use_cases.UploadNewAvatar
 import com.example.tasksapp.util.Resource
+import com.example.tasksapp.util.UserStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.InputStream
@@ -19,6 +21,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val uploadNewAvatarUseCase: UploadNewAvatar,
     private val getUserByToken: GetUserByToken,
+    private val setUserStatusUseCase: SetUserStatus,
     private val logOutUseCase: LogOut,
     ) : ViewModel() {
 
@@ -35,6 +38,7 @@ class ProfileViewModel @Inject constructor(
                 loadData(Token.token)
             }
             is ProfileEvent.LogOut ->{
+                setUserStatus()
                 logOut()
             }
             is ProfileEvent.UploadNewAvatarEvent -> {
@@ -113,6 +117,24 @@ class ProfileViewModel @Inject constructor(
                             isLoading = result.isLoading,
                             error = result.message ?: ""
                         )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setUserStatus() {
+        viewModelScope.launch {
+            setUserStatusUseCase(Token.token, UserStatus.OFFLINE_STATUS).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        Log.d("StartViewModel", result.data.toString())
+                    }
+                    is Resource.Error -> {
+                        Log.d("StartViewModel", result.data.toString())
+                    }
+                    is Resource.Loading -> {
+                        Log.d("StartViewModel", result.data.toString())
                     }
                 }
             }

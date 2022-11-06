@@ -42,8 +42,7 @@ class MessengerViewModel @Inject constructor(
             contentConverter = GsonWebsocketContentConverter()
         }
     }
-    private var offset =
-        -10 // Этот офсет будет увеличиватся на 10 при каждом новом запросе или на 1 приприеме сообщения
+    private var offset = -10 // Этот офсет будет увеличиватся на 10 при каждом новом запросе или на 1 приприеме сообщения
 
     private val _state = mutableStateOf(MessengerState())
     val state: State<MessengerState> = _state

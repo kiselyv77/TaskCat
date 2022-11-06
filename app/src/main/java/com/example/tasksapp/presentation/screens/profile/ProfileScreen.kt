@@ -4,30 +4,26 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.AsyncImage
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.NavGraphs
@@ -55,11 +51,13 @@ fun ProfileScreen(
     val scaffoldState = rememberScaffoldState()
     val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(contract =
-    ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let{
+    val launcher = rememberLauncherForActivityResult(
+        contract =
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
             val stream = context.contentResolver.openInputStream(it)
-            stream?.let{
+            stream?.let {
                 viewModel.onEvent(ProfileEvent.UploadNewAvatarEvent(stream))
             }
         }
@@ -67,7 +65,7 @@ fun ProfileScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        snackbarHost = { snackbarHostState->
+        snackbarHost = { snackbarHostState ->
             CustomSnackbarHost(
                 snackbarHostState = snackbarHostState
             )
@@ -86,19 +84,13 @@ fun ProfileScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                    val imageUrl = "https://${Spec.BASE_URL}/getAvatar/${state.login}?" + state.profileImgKey
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = "avatar",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(2.dp, Color.Gray, CircleShape)
-                            .clickable { launcher.launch("image/*") }
-                    )
-
+                val imageUrl = "https://${Spec.BASE_URL}/getAvatar/${state.login}?" + state.profileImgKey
+                AvatarImage(
+                    imageUrl = imageUrl,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clickable { launcher.launch("image/*") }
+                )
 
                 TextPlaceHolder(
                     modifier = Modifier.padding(
@@ -123,10 +115,10 @@ fun ProfileScreen(
                         horizontal = 16.dp,
                         vertical = 4.dp
                     ),
-                    text = getUserStatusName(state.status) ,
+                    text = getUserStatusName(state.status),
                     fontSize = 20.sp,
                     isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
-                    color = if(state.status == UserStatus.ONLINE_STATUS) Color.Green else MaterialTheme.colors.onBackground
+                    color = if (state.status == UserStatus.ONLINE_STATUS) Color.Green else MaterialTheme.colors.onBackground
                 )
 
                 OutlinedButton(onClick = {

@@ -24,7 +24,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CloseIconTextField
 import com.example.tasksapp.presentation.commonComponents.CustomTextField
 import com.example.tasksapp.presentation.screens.NavGraphs
-import com.example.tasksapp.presentation.screens.destinations.LoginScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.WorkSpacesListScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
@@ -128,15 +127,8 @@ fun LoginScreen(
                 color = Color.Green,
                 text = "Вы успешно вошли в свой аккаунт"
             )
-            navigator.navigate(WorkSpacesListScreenDestination()) {
-                //Удаление экранов регистрации и входа из бэк стэка
-                this.popUpTo(LoginScreenDestination.route) {
-                    inclusive = true
-                }
-                this.popUpTo(RegistrationScreenDestination.route) {
-                    inclusive = true
-                }
-            }
+            navigator.clearBackStack(NavGraphs.root)
+            navigator.navigate(WorkSpacesListScreenDestination())
         }
         if (state.isLoading) {
             CircularProgressIndicator()
