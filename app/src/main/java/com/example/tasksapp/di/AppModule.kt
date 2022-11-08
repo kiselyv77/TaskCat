@@ -7,6 +7,8 @@ import com.example.tasksapp.data.remote.Spec.BASE_URL
 import com.example.tasksapp.data.remote.TasksApi
 import com.example.tasksapp.data.repository.TasksRepositoryImpl
 import com.example.tasksapp.domain.repository.TasksRepository
+import com.example.tasksapp.util.VoiceRecorder
+import com.example.tasksapp.util.VoiceRecorderImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,6 +45,12 @@ object AppModule {
     @Singleton
     fun provideCoinRepository(api:TasksApi, tasksDatabase: TasksDatabase): TasksRepository {
         return TasksRepositoryImpl(api, tasksDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideVoiceRecorder(app: Application): VoiceRecorder {
+        return VoiceRecorderImpl(app)
     }
 
 }

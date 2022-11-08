@@ -48,6 +48,7 @@ fun MessengerScreen(
         isRefreshing = state.isLoading
     )
 
+
     if (state.error.isNotEmpty()) {
         val context = LocalContext.current
         LaunchedEffect(state.error) {

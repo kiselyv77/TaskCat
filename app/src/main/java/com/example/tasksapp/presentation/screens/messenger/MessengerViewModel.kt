@@ -15,6 +15,7 @@ import com.example.tasksapp.domain.use_cases.GetMessagesFromWorkSpace
 import com.example.tasksapp.domain.use_cases.GetUserByToken
 import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.Resource
+import com.example.tasksapp.util.VoiceRecorder
 import com.example.tasksapp.util.generateRandomUUID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.*
@@ -34,7 +35,8 @@ import javax.inject.Inject
 class MessengerViewModel @Inject constructor(
     private val getUserByToken: GetUserByToken,
     private val getMessagesUseCase: GetMessagesFromWorkSpace,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val voiceRecorder: VoiceRecorder
 ) : ViewModel() {
 
     private var client: HttpClient = HttpClient {
@@ -48,8 +50,11 @@ class MessengerViewModel @Inject constructor(
     val state: State<MessengerState> = _state
 
     init {
+
         getMyLogin()
         viewModelScope.launch(Dispatchers.IO) {
+            //Для голосовух
+            voiceRecorder.prepareMediaRecorder()
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
             try {
                 client.ws("ws://${Spec.BASE_URL}/chat/${Token.token}/$workSpaceId") {
@@ -189,6 +194,18 @@ class MessengerViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun startRecord(messageId: String){
+        viewModelScope.launch{
+            voiceRecorder.startRecord(messageId)
+        }
+    }
+
+    private fun stopRecord(){
+        viewModelScope.launch{
+            val file = voiceRecorder.stopRecord()
         }
     }
 }
