@@ -1,6 +1,7 @@
 package com.example.tasksapp.presentation.screens.messenger
 
-import android.util.Log
+import android.Manifest
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +28,7 @@ import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.commonComponents.CustomMessageField
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
+import com.example.tasksapp.util.checkPermission
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -47,10 +49,10 @@ fun MessengerScreen(
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = state.isLoading
     )
+    val context = LocalContext.current
 
 
     if (state.error.isNotEmpty()) {
-        val context = LocalContext.current
         LaunchedEffect(state.error) {
             Toast.makeText(context, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
         }
@@ -88,10 +90,14 @@ fun MessengerScreen(
                     send = { viewModel.onEvent(MessengerEvent.Send) },
                     clear = { viewModel.onEvent(MessengerEvent.SetMessage("")) },
                     startVoiceRecord = {
-                        Log.d("sdsfsdvvbnhh", "startVoiceRecord")
+                        if(checkPermission(Manifest.permission.RECORD_AUDIO, context as Activity)){
+                            viewModel.onEvent(MessengerEvent.StartVoiceRecord)
+                        }
                     },
                     stopVoiceRecord = {
-                        Log.d("sdsfsdvvbnhh", "stopVoiceRecord")
+                        if(checkPermission(Manifest.permission.RECORD_AUDIO, context as Activity)){
+                            viewModel.onEvent(MessengerEvent.StopVoiceRecord)
+                        }
                     }
                 )
             }

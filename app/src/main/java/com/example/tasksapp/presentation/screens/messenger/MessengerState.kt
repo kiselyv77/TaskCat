@@ -9,5 +9,6 @@ data class MessengerState(
     val inputMessage: String = "",
     val send: Boolean = false,
     val isLoading: Boolean = true,
+    val voiceRecording: Boolean = false,
     val error: String = "",
 )

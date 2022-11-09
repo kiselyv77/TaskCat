@@ -53,8 +53,6 @@ class MessengerViewModel @Inject constructor(
 
         getMyLogin()
         viewModelScope.launch(Dispatchers.IO) {
-            //Для голосовух
-            voiceRecorder.prepareMediaRecorder()
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
             try {
                 client.ws("ws://${Spec.BASE_URL}/chat/${Token.token}/$workSpaceId") {
@@ -139,6 +137,19 @@ class MessengerViewModel @Inject constructor(
             MessengerEvent.Refresh -> {
                 getMessages()
             }
+            MessengerEvent.StartVoiceRecord -> {
+                Log.w("voicemesseging", "start")
+                _state.value = _state.value.copy(voiceRecording = true)
+                val messageId = generateRandomUUID()
+                startRecord(messageId)
+            }
+            MessengerEvent.StopVoiceRecord -> {
+                if(_state.value.voiceRecording){
+                    Log.w("voicemesseging", "stop")
+                    _state.value = _state.value.copy(voiceRecording = false)
+                    stopRecord()
+                }
+            }
         }
     }
 
@@ -198,14 +209,15 @@ class MessengerViewModel @Inject constructor(
     }
 
     private fun startRecord(messageId: String){
-        viewModelScope.launch{
+        viewModelScope.launch(Dispatchers.IO){
             voiceRecorder.startRecord(messageId)
         }
     }
 
     private fun stopRecord(){
-        viewModelScope.launch{
+        viewModelScope.launch(Dispatchers.IO){
             val file = voiceRecorder.stopRecord()
+            Log.d("file23131312", "$file")
         }
     }
 }
