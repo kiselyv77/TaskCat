@@ -11,6 +11,8 @@ fun MessageDTO.toMessageModel(): MessageModel {
         workSpaceId= workSpaceId,
         dateTime= dateTime,
         text= text,
-        isArrived = true
+        isArrived = true,
+        type = type,
+        fileName = fileName
     )
 }

@@ -116,11 +116,18 @@ class TasksRepositoryImpl(
     }
 
     override suspend fun uploadNewAvatar(token:String, stream: InputStream): SuccessResponseDTO {
-
         val part = MultipartBody.Part.createFormData(
             "newAvatar", "newAvatar", stream.readBytes().toRequestBody()
         )
 
         return api.uploadNewAvatar(token, part)
+    }
+
+    override suspend fun uploadFileVoiceMessage(token: String, stream: InputStream, fileName:String): SuccessResponseDTO {
+        val part = MultipartBody.Part.createFormData(
+            "newAvatar", fileName, stream.readBytes().toRequestBody()
+        )
+
+        return api.uploadFileVoiceMessage(token, part)
     }
 }

@@ -42,4 +42,5 @@ interface TasksRepository {
 
     suspend fun uploadNewAvatar(token:String, stream: InputStream):SuccessResponseDTO
 
+    suspend fun uploadFileVoiceMessage(token:String, stream: InputStream, fileName:String):SuccessResponseDTO
 }

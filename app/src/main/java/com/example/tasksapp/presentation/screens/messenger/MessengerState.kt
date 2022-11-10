@@ -8,7 +8,9 @@ data class MessengerState(
     val messagesList: List<MessageModel> = listOf<MessageModel>(),
     val inputMessage: String = "",
     val send: Boolean = false,
+    val sendVoice: Boolean = false,
+    val voiceFile: String = "",
     val isLoading: Boolean = true,
-    val voiceRecording: Boolean = false,
+    val isVoiceRecording: Boolean = false,
     val error: String = "",
 )

@@ -3,6 +3,7 @@ package com.example.tasksapp.presentation.screens.messenger
 import android.Manifest
 import android.app.Activity
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -28,6 +30,7 @@ import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.commonComponents.CustomMessageField
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
+import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.checkPermission
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -98,7 +101,8 @@ fun MessengerScreen(
                         if(checkPermission(Manifest.permission.RECORD_AUDIO, context as Activity)){
                             viewModel.onEvent(MessengerEvent.StopVoiceRecord)
                         }
-                    }
+                    },
+                    isVoiceRecorder = state.isVoiceRecording
                 )
             }
         }
@@ -155,7 +159,7 @@ fun MessageCard(message: MessageModel, isMyMessage: Boolean) {
             }
             Card(
                 modifier = Modifier.widthIn(max = 340.dp),
-                shape = cardShapeFor(message, isMyMessage),
+                shape = cardShapeFor(isMyMessage),
                 backgroundColor = when {
                     isMyMessage -> MaterialTheme.colors.primary
                     else -> MaterialTheme.colors.secondary
@@ -169,16 +173,33 @@ fun MessageCard(message: MessageModel, isMyMessage: Boolean) {
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                        text = message.text,
-                        color = Color.White,
-                        fontSize = 15.sp,
-                    )
-
-
+                    when(message.type){
+                        MessageTypes.MESSAGE_TEXT -> {
+                            Text(
+                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                                text = message.text,
+                                color = Color.White,
+                                fontSize = 15.sp,
+                            )
+                        }
+                        MessageTypes.MESSAGE_VOICE -> {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                IconButton(
+                                    onClick = {  },
+                                ) {
+                                    Image(
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .padding(8.dp),
+                                        imageVector = Icons.Default.PlayCircle,
+                                        contentDescription = "",
+                                    )
+                                }
+                                LinearProgressIndicator(progress = 0.5f, color = Color.White)
+                            }
+                        }
+                    }
                 }
-
             }
         }
         val hour = if (dateTime.hour.toString().length == 2) dateTime.hour else "0${dateTime.hour}"
@@ -204,13 +225,12 @@ fun MessageCard(message: MessageModel, isMyMessage: Boolean) {
                 )
             }
         }
-
-
     }
 }
 
+
 @Composable
-fun cardShapeFor(message: MessageModel, isMyMessage: Boolean): Shape {
+fun cardShapeFor(isMyMessage: Boolean): Shape {
     val roundedCorners = RoundedCornerShape(16.dp)
     return when {
         isMyMessage -> roundedCorners.copy(bottomEnd = CornerSize(0))

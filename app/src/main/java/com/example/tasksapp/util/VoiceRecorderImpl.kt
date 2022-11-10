@@ -10,6 +10,9 @@ class VoiceRecorderImpl(private val application: Application) : VoiceRecorder {
     private val mediaRecorder = MediaRecorder()
     private lateinit var file: File
 
+
+    private var isRecording = false
+
     override suspend fun startRecord(messageId: String) {
         file = File(application.filesDir, messageId)
         withContext(Dispatchers.IO) {
@@ -22,10 +25,14 @@ class VoiceRecorderImpl(private val application: Application) : VoiceRecorder {
         mediaRecorder.setOutputFile(file.absolutePath)
         mediaRecorder.prepare()
         mediaRecorder.start()
+        isRecording = true
     }
 
     override suspend fun stopRecord(): File {
-        mediaRecorder.stop()
+        if(isRecording){
+            mediaRecorder.stop()
+            isRecording = false
+        }
         return file
     }
 }

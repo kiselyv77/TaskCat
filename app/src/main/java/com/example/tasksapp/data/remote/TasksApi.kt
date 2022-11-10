@@ -54,4 +54,8 @@ interface TasksApi {
     @Multipart
     @POST("/uploadNewAvatar/{token}")
     suspend fun uploadNewAvatar(@Path("token") token: String, @Part part: MultipartBody.Part): SuccessResponseDTO
+
+    @Multipart
+    @POST("/uploadFileVoiceMessage/{token}")
+    suspend fun uploadFileVoiceMessage(@Path("token") token: String, @Part part: MultipartBody.Part): SuccessResponseDTO
 }
