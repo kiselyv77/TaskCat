@@ -16,8 +16,9 @@ import com.example.tasksapp.domain.use_cases.GetUserByToken
 import com.example.tasksapp.domain.use_cases.UploadFileVoiceMessage
 import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.Resource
-import com.example.tasksapp.util.VoiceRecorder
 import com.example.tasksapp.util.generateRandomUUID
+import com.example.tasksapp.util.media.VoicePlayer
+import com.example.tasksapp.util.media.VoiceRecorder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -41,7 +42,8 @@ class MessengerViewModel @Inject constructor(
     private val getMessagesUseCase: GetMessagesFromWorkSpace,
     private val uploadFileVoiceMessage: UploadFileVoiceMessage,
     private val savedStateHandle: SavedStateHandle,
-    private val voiceRecorder: VoiceRecorder
+    private val voiceRecorder: VoiceRecorder,
+    private val voicePlayer: VoicePlayer
 ) : ViewModel() {
 
     private var client: HttpClient = HttpClient {
@@ -49,13 +51,13 @@ class MessengerViewModel @Inject constructor(
             contentConverter = GsonWebsocketContentConverter()
         }
     }
-    private var offset = -10 // Этот офсет будет увеличиватся на 10 при каждом новом запросе или на 1 приприеме сообщения
+    private var offset =
+        -10 // Этот офсет будет увеличиватся на 10 при каждом новом запросе или на 1 приприеме сообщения
 
     private val _state = mutableStateOf(MessengerState())
     val state: State<MessengerState> = _state
 
     init {
-
         getMyLogin()
         viewModelScope.launch(Dispatchers.IO) {
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
@@ -114,11 +116,12 @@ class MessengerViewModel @Inject constructor(
                                 }
                                 _state.value = _state.value.copy(inputMessage = "")
                             }
-                            if(_state.value.sendVoice){
+                            if (_state.value.sendVoice) {
                                 _state.value = _state.value.copy(sendVoice = false)
                                 val messageId = _state.value.voiceFile
+                                _state.value = _state.value.copy(voiceFile = "")
                                 val messageDTO = MessageDTO(
-                                    id = generateRandomUUID(),
+                                    id = messageId,
                                     userName = _state.value.my.name,
                                     dateTime = LocalDateTime.now()
                                         .format(DateTimeFormatter.ISO_DATE_TIME),
@@ -126,7 +129,7 @@ class MessengerViewModel @Inject constructor(
                                     workSpaceId = workSpaceId,
                                     text = "",
                                     type = MessageTypes.MESSAGE_VOICE,
-                                    fileName = messageId
+                                    fileName = "$messageId.mp3"
                                 )
                                 val messageList = _state.value.messagesList.toMutableList()
                                 messageList.add(
@@ -138,7 +141,6 @@ class MessengerViewModel @Inject constructor(
                                 sendSerialized(
                                     messageDTO
                                 )
-                                _state.value = _state.value.copy(voiceFile = "")
                             }
                         }
                     }
@@ -178,6 +180,14 @@ class MessengerViewModel @Inject constructor(
                 Log.w("voicemesseging", "stop")
                 _state.value = _state.value.copy(isVoiceRecording = false)
                 stopRecord()
+            }
+            is MessengerEvent.PlayPauseVoiceMessage -> {
+                if(event.messageId == _state.value.playingVoiceMessageId){
+                    pauseVoiceMessage()
+                }
+                else{
+                    playVoiceMessage(event.messageId)
+                }
             }
         }
     }
@@ -247,15 +257,32 @@ class MessengerViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val file = voiceRecorder.stopRecord()
             sendVoiceMessageFile(file)
-            _state.value = _state.value.copy(sendVoice = true)
-            _state.value = _state.value.copy(voiceFile = file.name)
+            _state.value = _state.value.copy(sendVoice = true, voiceFile = file.name)
         }
     }
 
-    private fun sendVoiceMessageFile(file: File){
+    private fun playVoiceMessage(messageId: String){
+        val fileName = _state.value.messagesList.last { it.id==messageId }.fileName
+        _state.value = _state.value.copy(playingVoiceMessageId = messageId)
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = "https://${Spec.BASE_URL}/getVoiceMessage/$fileName"
+            voicePlayer.play(url){
+                _state.value = _state.value.copy(playingVoiceMessageProgress = it)
+            }
+        }
+    }
+
+    private fun pauseVoiceMessage(){
+        _state.value = _state.value.copy(playingVoiceMessageId = "")
+        viewModelScope.launch(Dispatchers.IO){
+            voicePlayer.pause()
+        }
+    }
+
+    private fun sendVoiceMessageFile(file: File) {
         viewModelScope.launch(Dispatchers.IO) {
             val stream: InputStream = FileInputStream(file)
-            uploadFileVoiceMessage(Token.token, stream, "${file.name}.mp3").collect{ result ->
+            uploadFileVoiceMessage(Token.token, stream, "${file.name}.mp3").collect { result ->
                 Log.d("dsfvsedfsrvsdfsv", result.data.toString())
                 when (result) {
                     is Resource.Success -> {

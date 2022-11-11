@@ -1,4 +1,4 @@
-package com.example.tasksapp.util
+package com.example.tasksapp.util.media
 
 import android.app.Application
 import android.media.MediaRecorder
@@ -10,7 +10,6 @@ class VoiceRecorderImpl(private val application: Application) : VoiceRecorder {
     private val mediaRecorder = MediaRecorder()
     private lateinit var file: File
 
-
     private var isRecording = false
 
     override suspend fun startRecord(messageId: String) {
@@ -18,18 +17,23 @@ class VoiceRecorderImpl(private val application: Application) : VoiceRecorder {
         withContext(Dispatchers.IO) {
             file.createNewFile()
         }
-        mediaRecorder.reset()
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT)
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
-        mediaRecorder.setOutputFile(file.absolutePath)
-        mediaRecorder.prepare()
-        mediaRecorder.start()
+        mediaRecorder.apply {
+            reset()
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            setAudioEncodingBitRate(16)
+            setAudioSamplingRate(44100)
+            setAudioEncodingBitRate(44100*16)
+            setOutputFile(file.absolutePath)
+            prepare()
+            start()
+        }
         isRecording = true
     }
 
     override suspend fun stopRecord(): File {
-        if(isRecording){
+        if (isRecording) {
             mediaRecorder.stop()
             isRecording = false
         }

@@ -7,8 +7,10 @@ import com.example.tasksapp.data.remote.Spec.BASE_URL
 import com.example.tasksapp.data.remote.TasksApi
 import com.example.tasksapp.data.repository.TasksRepositoryImpl
 import com.example.tasksapp.domain.repository.TasksRepository
-import com.example.tasksapp.util.VoiceRecorder
-import com.example.tasksapp.util.VoiceRecorderImpl
+import com.example.tasksapp.util.media.VoicePlayer
+import com.example.tasksapp.util.media.VoicePlayerImpl
+import com.example.tasksapp.util.media.VoiceRecorder
+import com.example.tasksapp.util.media.VoiceRecorderImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,6 +53,12 @@ object AppModule {
     @Singleton
     fun provideVoiceRecorder(app: Application): VoiceRecorder {
         return VoiceRecorderImpl(app)
+    }
+
+    @Provides
+    @Singleton
+    fun provideVoicePlayer(app: Application): VoicePlayer {
+        return VoicePlayerImpl(app)
     }
 
 }

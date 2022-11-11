@@ -2,6 +2,7 @@ package com.example.tasksapp.presentation.screens.messenger
 
 import android.Manifest
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,11 +81,24 @@ fun MessengerScreen(
         ) {
 
             Column() {
-                MessageList(
-                    myLogin = state.my.login,
-                    modifier = Modifier.weight(1f),
-                    messages = state.messagesList
-                )
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        reverseLayout = true,
+                    ) {
+                        items(state.messagesList) { message ->
+                            MessageCard(
+                                message = message,
+                                state = state,
+                                voiceMessagePlayPause = { messageId ->
+                                    viewModel.onEvent(MessengerEvent.PlayPauseVoiceMessage(messageId))
+                                })
+                        }
+                    }
+
+                }
 
                 CustomMessageField(
                     value = state.inputMessage,
@@ -93,12 +108,20 @@ fun MessengerScreen(
                     send = { viewModel.onEvent(MessengerEvent.Send) },
                     clear = { viewModel.onEvent(MessengerEvent.SetMessage("")) },
                     startVoiceRecord = {
-                        if(checkPermission(Manifest.permission.RECORD_AUDIO, context as Activity)){
+                        if (checkPermission(
+                                Manifest.permission.RECORD_AUDIO,
+                                context as Activity
+                            )
+                        ) {
                             viewModel.onEvent(MessengerEvent.StartVoiceRecord)
                         }
                     },
                     stopVoiceRecord = {
-                        if(checkPermission(Manifest.permission.RECORD_AUDIO, context as Activity)){
+                        if (checkPermission(
+                                Manifest.permission.RECORD_AUDIO,
+                                context as Activity
+                            )
+                        ) {
                             viewModel.onEvent(MessengerEvent.StopVoiceRecord)
                         }
                     },
@@ -109,33 +132,16 @@ fun MessengerScreen(
     }
 }
 
+
 @Composable
-fun MessageList(
-    modifier: Modifier = Modifier,
-    messages: List<MessageModel>,
-    myLogin: String
+fun MessageCard(
+    message: MessageModel,
+    state: MessengerState,
+    voiceMessagePlayPause: (messageId: String) -> Unit,
 ) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            reverseLayout = true,
-        ) {
-            items(messages) { message ->
-                val isMyMessage = message.sendingUser == myLogin
-                MessageCard(message = message, isMyMessage = isMyMessage)
-            }
-        }
-
-    }
-}
-
-@Composable
-fun MessageCard(message: MessageModel, isMyMessage: Boolean) {
     val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
+    val isMyMessage = message.sendingUser == state.my.login
+    val playingVoiceMessageId = state.playingVoiceMessageId
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,29 +179,38 @@ fun MessageCard(message: MessageModel, isMyMessage: Boolean) {
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    when(message.type){
+                    when (message.type) {
                         MessageTypes.MESSAGE_TEXT -> {
                             Text(
-                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                                modifier = Modifier.padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 8.dp
+                                ),
                                 text = message.text,
                                 color = Color.White,
                                 fontSize = 15.sp,
                             )
                         }
                         MessageTypes.MESSAGE_VOICE -> {
+                            val isPlaying = message.id == playingVoiceMessageId
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(
-                                    onClick = {  },
+                                    onClick = { voiceMessagePlayPause(message.id) },
                                 ) {
                                     Image(
                                         modifier = Modifier
                                             .size(50.dp)
                                             .padding(8.dp),
-                                        imageVector = Icons.Default.PlayCircle,
+                                        imageVector = if (isPlaying) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
                                         contentDescription = "",
                                     )
                                 }
-                                LinearProgressIndicator(progress = 0.5f, color = Color.White)
+                                Log.d("awfsdacddvsvsvfssbsv", state.playingVoiceMessageProgress.toString())
+                                LinearProgressIndicator(
+                                    progress = if(isPlaying)state.playingVoiceMessageProgress else 0F,
+                                    color = Color.White
+                                )
                             }
                         }
                     }

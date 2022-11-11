@@ -12,5 +12,7 @@ data class MessengerState(
     val voiceFile: String = "",
     val isLoading: Boolean = true,
     val isVoiceRecording: Boolean = false,
+    val playingVoiceMessageId: String = "",
+    val playingVoiceMessageProgress: Float = 0F,
     val error: String = "",
 )

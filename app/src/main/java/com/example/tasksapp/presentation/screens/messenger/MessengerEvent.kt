@@ -7,5 +7,7 @@ sealed class MessengerEvent{
     object StartVoiceRecord:MessengerEvent()
     object StopVoiceRecord:MessengerEvent()
 
-    data class SetMessage(val newMessage:String):MessengerEvent()
+    data class PlayPauseVoiceMessage(val messageId: String) :MessengerEvent()
+
+    data class SetMessage(val newMessage:String): MessengerEvent()
 }
