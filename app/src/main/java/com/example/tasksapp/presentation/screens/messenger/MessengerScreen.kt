@@ -30,8 +30,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
-import com.example.tasksapp.presentation.commonComponents.CustomMessageField
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
+import com.example.tasksapp.presentation.screens.messenger.components.CustomMessageField
 import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.checkPermission
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -82,6 +82,7 @@ fun MessengerScreen(
 
             Column() {
                 Box(
+                    modifier = Modifier.weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     LazyColumn(
@@ -94,7 +95,8 @@ fun MessengerScreen(
                                 state = state,
                                 voiceMessagePlayPause = { messageId ->
                                     viewModel.onEvent(MessengerEvent.PlayPauseVoiceMessage(messageId))
-                                })
+                                }
+                            )
                         }
                     }
 
@@ -125,8 +127,10 @@ fun MessengerScreen(
                             viewModel.onEvent(MessengerEvent.StopVoiceRecord)
                         }
                     },
-                    isVoiceRecorder = state.isVoiceRecording
+                    isVoiceRecording = state.isVoiceRecording
                 )
+
+
             }
         }
     }
@@ -208,7 +212,8 @@ fun MessageCard(
                                 }
                                 Log.d("awfsdacddvsvsvfssbsv", state.playingVoiceMessageProgress.toString())
                                 LinearProgressIndicator(
-                                    progress = if(isPlaying)state.playingVoiceMessageProgress else 0F,
+                                    modifier = Modifier.padding(end = 16.dp),
+                                    progress = if(isPlaying) state.playingVoiceMessageProgress else 0F,
                                     color = Color.White
                                 )
                             }

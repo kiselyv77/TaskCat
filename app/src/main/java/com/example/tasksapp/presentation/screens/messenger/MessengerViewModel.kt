@@ -17,6 +17,7 @@ import com.example.tasksapp.domain.use_cases.UploadFileVoiceMessage
 import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.generateRandomUUID
+import com.example.tasksapp.util.media.MediaRecordResult
 import com.example.tasksapp.util.media.VoicePlayer
 import com.example.tasksapp.util.media.VoiceRecorder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,11 +26,10 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.gson.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileInputStream
 import java.io.InputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -46,6 +46,7 @@ class MessengerViewModel @Inject constructor(
     private val voicePlayer: VoicePlayer
 ) : ViewModel() {
 
+
     private var client: HttpClient = HttpClient {
         install(WebSockets) {
             contentConverter = GsonWebsocketContentConverter()
@@ -53,6 +54,7 @@ class MessengerViewModel @Inject constructor(
     }
     private var offset =
         -10 // Этот офсет будет увеличиватся на 10 при каждом новом запросе или на 1 приприеме сообщения
+    private lateinit var jobStartRecord: Job
 
     private val _state = mutableStateOf(MessengerState())
     val state: State<MessengerState> = _state
@@ -182,10 +184,9 @@ class MessengerViewModel @Inject constructor(
                 stopRecord()
             }
             is MessengerEvent.PlayPauseVoiceMessage -> {
-                if(event.messageId == _state.value.playingVoiceMessageId){
+                if (event.messageId == _state.value.playingVoiceMessageId) {
                     pauseVoiceMessage()
-                }
-                else{
+                } else {
                     playVoiceMessage(event.messageId)
                 }
             }
@@ -247,42 +248,55 @@ class MessengerViewModel @Inject constructor(
         }
     }
 
-    private fun startRecord(messageId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            voiceRecorder.startRecord(messageId)
-        }
-    }
-
-    private fun stopRecord() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val file = voiceRecorder.stopRecord()
-            sendVoiceMessageFile(file)
-            _state.value = _state.value.copy(sendVoice = true, voiceFile = file.name)
-        }
-    }
-
-    private fun playVoiceMessage(messageId: String){
-        val fileName = _state.value.messagesList.last { it.id==messageId }.fileName
+    private fun playVoiceMessage(messageId: String) {
+        val fileName = _state.value.messagesList.last { it.id == messageId }.fileName
         _state.value = _state.value.copy(playingVoiceMessageId = messageId)
         viewModelScope.launch(Dispatchers.IO) {
             val url = "https://${Spec.BASE_URL}/getVoiceMessage/$fileName"
-            voicePlayer.play(url){
+            voicePlayer.play(url) {
                 _state.value = _state.value.copy(playingVoiceMessageProgress = it)
             }
         }
     }
 
-    private fun pauseVoiceMessage(){
+    private fun pauseVoiceMessage() {
         _state.value = _state.value.copy(playingVoiceMessageId = "")
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             voicePlayer.pause()
         }
     }
 
-    private fun sendVoiceMessageFile(file: File) {
+    private fun startRecord(messageId: String) {
+        jobStartRecord = viewModelScope.launch(Dispatchers.IO) {
+            voiceRecorder.startRecord(messageId).collect { mediaRecorderParam ->
+                Log.d("mediaRecorderParam", mediaRecorderParam.toString())
+                _state.value = _state.value.copy(
+                    voiceRecordAmplitude = mediaRecorderParam.amplitude,
+                    voiceRecordTime = mediaRecorderParam.time
+                )
+            }
+        }
+    }
+
+    private fun stopRecord() {
         viewModelScope.launch(Dispatchers.IO) {
-            val stream: InputStream = FileInputStream(file)
-            uploadFileVoiceMessage(Token.token, stream, "${file.name}.mp3").collect { result ->
+            jobStartRecord.cancelAndJoin()
+            val recordResult = voiceRecorder.stopRecord()
+            when (recordResult) {
+                is MediaRecordResult.RecordSuccess -> {
+                    _state.value = _state.value.copy(sendVoice = true, voiceFile = recordResult.fileName!!)
+                    sendVoiceMessageFile(recordResult.stream!!, recordResult.fileName!!)
+                }
+                is MediaRecordResult.RecordError -> {
+                    Log.d("stopRecord", "Ошибка записи удерживайте кнопку записи")
+                }
+            }
+        }
+    }
+
+    private fun sendVoiceMessageFile(stream: InputStream, fileName:String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            uploadFileVoiceMessage(Token.token, stream, "${fileName}.mp3").collect { result ->
                 Log.d("dsfvsedfsrvsdfsv", result.data.toString())
                 when (result) {
                     is Resource.Success -> {

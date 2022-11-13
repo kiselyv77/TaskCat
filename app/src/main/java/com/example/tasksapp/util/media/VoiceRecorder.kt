@@ -1,11 +1,11 @@
 package com.example.tasksapp.util.media
 
-import java.io.File
+import kotlinx.coroutines.flow.Flow
+import java.io.InputStream
 
 interface VoiceRecorder {
 
-    suspend fun startRecord(messageId: String)
+    suspend fun startRecord(messageId: String): Flow<MediaRecordParam>
 
-    suspend fun stopRecord(): File
-
+    suspend fun stopRecord(): MediaRecordResult<InputStream>
 }
