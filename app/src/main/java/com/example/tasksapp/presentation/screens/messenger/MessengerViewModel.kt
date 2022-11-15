@@ -29,6 +29,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.time.LocalDateTime
@@ -59,6 +61,8 @@ class MessengerViewModel @Inject constructor(
     private val _state = mutableStateOf(MessengerState())
     val state: State<MessengerState> = _state
 
+    private val _messagesFlow = MutableSharedFlow<SendMessage>()
+
     init {
         getMyLogin()
         viewModelScope.launch(Dispatchers.IO) {
@@ -84,27 +88,51 @@ class MessengerViewModel @Inject constructor(
                                 messageList[index] = messageModel.copy(isArrived = true)
                                 _state.value = _state.value.copy(messagesList = messageList)
                             }
-
                         }
                     }
                     val userInputRoutine = launch {
-                        while (true) {
-                            if (_state.value.send) {
-                                _state.value = _state.value.copy(send = false)
-                                val messageText = _state.value.inputMessage
-                                if (messageText.isNotEmpty()) {
+                        _messagesFlow.collectLatest { sendMessage ->
+                            when (sendMessage){
+                                is SendMessage.SendText -> {
+                                    val messageText = sendMessage.text
+                                    if (messageText.isNotEmpty()) {
+                                        val messageDTO = MessageDTO(
+                                            id = generateRandomUUID(),
+                                            userName = _state.value.my.name,
+                                            dateTime = LocalDateTime.now()
+                                                .format(DateTimeFormatter.ISO_DATE_TIME),
+                                            sendingUser = _state.value.my.login,
+                                            workSpaceId = workSpaceId,
+                                            text = messageText,
+                                            type = MessageTypes.MESSAGE_TEXT,
+                                            fileName = ""
+                                        )
+
+                                        val messageList = _state.value.messagesList.toMutableList()
+                                        messageList.add(
+                                            0,
+                                            messageDTO.toMessageModel().copy(isArrived = false)
+                                        )
+                                        _state.value = _state.value.copy(messagesList = messageList)
+
+                                        sendSerialized(
+                                            messageDTO
+                                        )
+                                    }
+                                }
+                                is SendMessage.SendVoice -> {
+                                    val messageId = sendMessage.fileName
                                     val messageDTO = MessageDTO(
-                                        id = generateRandomUUID(),
+                                        id = messageId,
                                         userName = _state.value.my.name,
                                         dateTime = LocalDateTime.now()
                                             .format(DateTimeFormatter.ISO_DATE_TIME),
                                         sendingUser = _state.value.my.login,
                                         workSpaceId = workSpaceId,
-                                        text = messageText,
-                                        type = MessageTypes.MESSAGE_TEXT,
-                                        fileName = ""
+                                        text = "",
+                                        type = MessageTypes.MESSAGE_VOICE,
+                                        fileName = "$messageId.mp3"
                                     )
-
                                     val messageList = _state.value.messagesList.toMutableList()
                                     messageList.add(
                                         0,
@@ -116,33 +144,6 @@ class MessengerViewModel @Inject constructor(
                                         messageDTO
                                     )
                                 }
-                                _state.value = _state.value.copy(inputMessage = "")
-                            }
-                            if (_state.value.sendVoice) {
-                                _state.value = _state.value.copy(sendVoice = false)
-                                val messageId = _state.value.voiceFile
-                                _state.value = _state.value.copy(voiceFile = "")
-                                val messageDTO = MessageDTO(
-                                    id = messageId,
-                                    userName = _state.value.my.name,
-                                    dateTime = LocalDateTime.now()
-                                        .format(DateTimeFormatter.ISO_DATE_TIME),
-                                    sendingUser = _state.value.my.login,
-                                    workSpaceId = workSpaceId,
-                                    text = "",
-                                    type = MessageTypes.MESSAGE_VOICE,
-                                    fileName = "$messageId.mp3"
-                                )
-                                val messageList = _state.value.messagesList.toMutableList()
-                                messageList.add(
-                                    0,
-                                    messageDTO.toMessageModel().copy(isArrived = false)
-                                )
-                                _state.value = _state.value.copy(messagesList = messageList)
-
-                                sendSerialized(
-                                    messageDTO
-                                )
                             }
                         }
                     }
@@ -164,7 +165,10 @@ class MessengerViewModel @Inject constructor(
     fun onEvent(event: MessengerEvent) {
         when (event) {
             MessengerEvent.Send -> {
-                _state.value = _state.value.copy(send = true)
+                viewModelScope.launch(Dispatchers.IO){
+                    _messagesFlow.emit(SendMessage.SendText(_state.value.inputMessage))
+                    _state.value = _state.value.copy(inputMessage = "")
+                }
             }
             is MessengerEvent.SetMessage -> {
                 _state.value = _state.value.copy(inputMessage = event.newMessage)
@@ -271,7 +275,7 @@ class MessengerViewModel @Inject constructor(
             voiceRecorder.startRecord(messageId).collect { mediaRecorderParam ->
                 Log.d("mediaRecorderParam", mediaRecorderParam.toString())
                 _state.value = _state.value.copy(
-                    voiceRecordAmplitude = mediaRecorderParam.amplitude,
+                    voiceRecordAmplitude = mediaRecorderParam.amplitude/100,
                     voiceRecordTime = mediaRecorderParam.time
                 )
             }
@@ -284,8 +288,12 @@ class MessengerViewModel @Inject constructor(
             val recordResult = voiceRecorder.stopRecord()
             when (recordResult) {
                 is MediaRecordResult.RecordSuccess -> {
-                    _state.value = _state.value.copy(sendVoice = true, voiceFile = recordResult.fileName!!)
-                    sendVoiceMessageFile(recordResult.stream!!, recordResult.fileName!!)
+                    recordResult.fileName?.let{
+                        recordResult.stream?.let{
+                            _messagesFlow.emit(SendMessage.SendVoice(recordResult.fileName))
+                            sendVoiceMessageFile(recordResult.stream, recordResult.fileName)
+                        }
+                    }
                 }
                 is MediaRecordResult.RecordError -> {
                     Log.d("stopRecord", "Ошибка записи удерживайте кнопку записи")

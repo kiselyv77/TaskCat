@@ -47,7 +47,8 @@ class VoiceRecorderImpl(private val application: Application) : VoiceRecorder {
             while (isRecording) {
                 delay(100)
                 time += 100
-                Log.d(LOG_TAG, MediaRecordParam(time = time, amplitude = mediaRecorder.maxAmplitude).toString())
+                //Log.d(LOG_TAG, MediaRecordParam(time = time, amplitude = mediaRecorder.maxAmplitude).toString())
+                // Два раза подряд и без задержки вызывать maxAmplitude нельзя
                 emit(MediaRecordParam(time = time, amplitude = mediaRecorder.maxAmplitude))
             }
         } catch (e: Exception) {

@@ -32,6 +32,7 @@ import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.screens.messenger.components.CustomMessageField
+import com.example.tasksapp.presentation.screens.messenger.components.VoiceRecorderIndicator
 import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.checkPermission
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -79,7 +80,6 @@ fun MessengerScreen(
             state = swipeRefreshState,
             onRefresh = { viewModel.onEvent(MessengerEvent.Refresh) }
         ) {
-
             Column() {
                 Box(
                     modifier = Modifier.weight(1f),
@@ -129,9 +129,8 @@ fun MessengerScreen(
                     },
                     isVoiceRecording = state.isVoiceRecording
                 )
-
-
             }
+            VoiceRecorderIndicator(isRecord = state.isVoiceRecording, voiceRecordAmplitude = state.voiceRecordAmplitude)
         }
     }
 }

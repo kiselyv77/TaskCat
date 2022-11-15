@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomMessageField(
+    modifier: Modifier = Modifier,
     value: String,
     isError: Boolean = false,
     maxChar: Int = 25,
@@ -44,6 +45,7 @@ fun CustomMessageField(
     )
 ) {
     Surface(
+        modifier = modifier,
         elevation = 2.dp,
     ) {
         Row(
@@ -120,5 +122,6 @@ fun CustomMessageField(
                 )
             }
         }
+
     }
 }
