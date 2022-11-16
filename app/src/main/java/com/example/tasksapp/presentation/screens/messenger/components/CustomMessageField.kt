@@ -122,6 +122,5 @@ fun CustomMessageField(
                 )
             }
         }
-
     }
 }

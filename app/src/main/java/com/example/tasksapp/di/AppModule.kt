@@ -11,6 +11,8 @@ import com.example.tasksapp.util.media.VoicePlayer
 import com.example.tasksapp.util.media.VoicePlayerImpl
 import com.example.tasksapp.util.media.VoiceRecorder
 import com.example.tasksapp.util.media.VoiceRecorderImpl
+import com.example.tasksapp.util.vibration.VibrationFeedBack
+import com.example.tasksapp.util.vibration.VibrationFeedBackImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,6 +61,10 @@ object AppModule {
     @Singleton
     fun provideVoicePlayer(app: Application): VoicePlayer {
         return VoicePlayerImpl(app)
+    }
+    @Provides
+    fun provideVibrator(app: Application): VibrationFeedBack {
+        return VibrationFeedBackImpl(app)
     }
 
 }

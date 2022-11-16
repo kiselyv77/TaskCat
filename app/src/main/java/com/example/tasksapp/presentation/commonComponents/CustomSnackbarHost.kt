@@ -6,15 +6,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun CustomSnackbarHost(
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    padding: Dp = 16.dp
 ) {
-
     SnackbarHost(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = padding),
         hostState = snackbarHostState
     ) { data ->
         Snackbar(

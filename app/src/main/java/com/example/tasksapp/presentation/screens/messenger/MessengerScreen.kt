@@ -3,11 +3,11 @@ package com.example.tasksapp.presentation.screens.messenger
 import android.Manifest
 import android.app.Activity
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -20,7 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -30,7 +32,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
-import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.screens.messenger.components.CustomMessageField
 import com.example.tasksapp.presentation.screens.messenger.components.VoiceRecorderIndicator
 import com.example.tasksapp.util.MessageTypes
@@ -57,19 +58,12 @@ fun MessengerScreen(
     )
     val context = LocalContext.current
 
-
-    if (state.error.isNotEmpty()) {
-        LaunchedEffect(state.error) {
-            Toast.makeText(context, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
         },
         snackbarHost = { snackbarHostState ->
-            CustomSnackbarHost(snackbarHostState)
+            SnackbarHost(modifier = Modifier.padding(bottom = 80.dp), hostState = snackbarHostState)
         }
 
     ) {
@@ -130,7 +124,24 @@ fun MessengerScreen(
                     isVoiceRecording = state.isVoiceRecording
                 )
             }
-            VoiceRecorderIndicator(isRecord = state.isVoiceRecording, voiceRecordAmplitude = state.voiceRecordAmplitude)
+            VoiceRecorderIndicator(
+                isRecord = state.isVoiceRecording,
+                voiceRecordAmplitude = state.voiceRecordAmplitude,
+                voiceRecordTime = state.voiceRecordTime
+            )
+        }
+    }
+    if (state.error.isNotEmpty()) {
+        LaunchedEffect(scaffoldState.snackbarHostState) {
+            val result = scaffoldState.snackbarHostState.showSnackbar(state.error)
+            if (result == SnackbarResult.ActionPerformed) {
+                viewModel.onEvent(MessengerEvent.Refresh)
+            }
+        }
+    }
+    if (state.recordError.isNotEmpty()) {
+        LaunchedEffect(scaffoldState.snackbarHostState) {
+            scaffoldState.snackbarHostState.showSnackbar("Удерживайте кнопку записи!")
         }
     }
 }
@@ -207,12 +218,16 @@ fun MessageCard(
                                             .padding(8.dp),
                                         imageVector = if (isPlaying) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
                                         contentDescription = "",
+                                        colorFilter = ColorFilter.tint(color = MaterialTheme.colors.secondary)
                                     )
                                 }
-                                Log.d("awfsdacddvsvsvfssbsv", state.playingVoiceMessageProgress.toString())
+                                Log.d(
+                                    "awfsdacddvsvsvfssbsv",
+                                    state.playingVoiceMessageProgress.toString()
+                                )
                                 LinearProgressIndicator(
-                                    modifier = Modifier.padding(end = 16.dp),
-                                    progress = if(isPlaying) state.playingVoiceMessageProgress else 0F,
+                                    modifier = Modifier.padding(end = 16.dp).clip(CircleShape),
+                                    progress = if (isPlaying) state.playingVoiceMessageProgress else 0F,
                                     color = Color.White
                                 )
                             }
@@ -244,7 +259,10 @@ fun MessageCard(
                 )
             }
         }
+
+
     }
+
 }
 
 

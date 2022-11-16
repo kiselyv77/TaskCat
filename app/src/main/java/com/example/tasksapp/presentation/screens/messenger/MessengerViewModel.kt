@@ -1,6 +1,5 @@
 package com.example.tasksapp.presentation.screens.messenger
 
-import android.content.ContentValues
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -20,18 +19,16 @@ import com.example.tasksapp.util.generateRandomUUID
 import com.example.tasksapp.util.media.MediaRecordResult
 import com.example.tasksapp.util.media.VoicePlayer
 import com.example.tasksapp.util.media.VoiceRecorder
+import com.example.tasksapp.util.vibration.VibrationFeedBack
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.gson.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -45,7 +42,8 @@ class MessengerViewModel @Inject constructor(
     private val uploadFileVoiceMessage: UploadFileVoiceMessage,
     private val savedStateHandle: SavedStateHandle,
     private val voiceRecorder: VoiceRecorder,
-    private val voicePlayer: VoicePlayer
+    private val voicePlayer: VoicePlayer,
+    private val vibrationFeedBack: VibrationFeedBack
 ) : ViewModel() {
 
 
@@ -151,13 +149,13 @@ class MessengerViewModel @Inject constructor(
                     messageOutputRoutine.cancelAndJoin()
                 }
             } catch (e: ClosedReceiveChannelException) {
-                Log.w(ContentValues.TAG, "Failure: ${e.message}")
+                Log.w("WebSocketSession", "Failure: ${e.message}")
             } catch (e: NoTransformationFoundException) {
                 //Возникает если слишком часто открывать и закрывать чат
                 // причина 429 Too Many Requests
-                Log.w(ContentValues.TAG, "Failure: ${e.message}")
+                Log.w("WebSocketSession", "Failure: ${e.message}")
             } catch (e: Exception) {
-                Log.w(ContentValues.TAG, "Failure: ${e.message}")
+                Log.w("WebSocketSession", "Failure: ${e.message}")
             }
         }
     }
@@ -202,6 +200,7 @@ class MessengerViewModel @Inject constructor(
             getUserByToken(Token.token).collect { result ->
                 when (result) {
                     is Resource.Success -> {
+                        _state.value = _state.value.copy(error = "", isLoading = false)
                         result.data?.let { userDto ->
                             _state.value = _state.value.copy(
                                 my = userDto,
@@ -210,8 +209,10 @@ class MessengerViewModel @Inject constructor(
                         }
                     }
                     is Resource.Error -> {
+                        _state.value = _state.value.copy(error = result.message.toString(), isLoading = false)
                     }
                     is Resource.Loading -> {
+                        _state.value = _state.value.copy(error = "", isLoading = true)
                     }
                 }
             }
@@ -272,10 +273,11 @@ class MessengerViewModel @Inject constructor(
 
     private fun startRecord(messageId: String) {
         jobStartRecord = viewModelScope.launch(Dispatchers.IO) {
+            vibrationFeedBack.startVibration(100L)
             voiceRecorder.startRecord(messageId).collect { mediaRecorderParam ->
                 Log.d("mediaRecorderParam", mediaRecorderParam.toString())
                 _state.value = _state.value.copy(
-                    voiceRecordAmplitude = mediaRecorderParam.amplitude/100,
+                    voiceRecordAmplitude = mediaRecorderParam.amplitude.toFloat()/200,
                     voiceRecordTime = mediaRecorderParam.time
                 )
             }
@@ -288,6 +290,7 @@ class MessengerViewModel @Inject constructor(
             val recordResult = voiceRecorder.stopRecord()
             when (recordResult) {
                 is MediaRecordResult.RecordSuccess -> {
+                    _state.value = _state.value.copy(recordError = "")
                     recordResult.fileName?.let{
                         recordResult.stream?.let{
                             _messagesFlow.emit(SendMessage.SendVoice(recordResult.fileName))
@@ -296,6 +299,9 @@ class MessengerViewModel @Inject constructor(
                     }
                 }
                 is MediaRecordResult.RecordError -> {
+                    _state.value = _state.value.copy(recordError = "Ошибка записи удерживайте кнопку записи")
+                    delay(1000)
+                    _state.value = _state.value.copy(recordError = "")
                     Log.d("stopRecord", "Ошибка записи удерживайте кнопку записи")
                 }
             }
@@ -308,11 +314,14 @@ class MessengerViewModel @Inject constructor(
                 Log.d("dsfvsedfsrvsdfsv", result.data.toString())
                 when (result) {
                     is Resource.Success -> {
+                        _state.value = _state.value.copy(error = "", isLoading = false)
                         result.data?.let {}
                     }
                     is Resource.Error -> {
+                        _state.value = _state.value.copy(error = result.message.toString(), isLoading = false)
                     }
                     is Resource.Loading -> {
+                        _state.value = _state.value.copy(error = "", isLoading = true)
                     }
                 }
             }
