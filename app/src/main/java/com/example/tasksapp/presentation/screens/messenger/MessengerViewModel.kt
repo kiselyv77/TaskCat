@@ -258,8 +258,8 @@ class MessengerViewModel @Inject constructor(
         _state.value = _state.value.copy(playingVoiceMessageId = messageId)
         viewModelScope.launch(Dispatchers.IO) {
             val url = "https://${Spec.BASE_URL}/getVoiceMessage/$fileName"
-            voicePlayer.play(url) {
-                _state.value = _state.value.copy(playingVoiceMessageProgress = it)
+            voicePlayer.play(url).collect { progress ->
+                _state.value = _state.value.copy(playingVoiceMessageProgress = progress)
             }
         }
     }
@@ -321,7 +321,7 @@ class MessengerViewModel @Inject constructor(
                         _state.value = _state.value.copy(error = result.message.toString(), isLoading = false)
                     }
                     is Resource.Loading -> {
-                        _state.value = _state.value.copy(error = "", isLoading = true)
+                        _state.value = _state.value.copy(error = "")
                     }
                 }
             }

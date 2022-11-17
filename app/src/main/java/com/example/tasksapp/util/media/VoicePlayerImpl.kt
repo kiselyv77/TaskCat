@@ -4,6 +4,7 @@ import android.app.Application
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flow
 
 class VoicePlayerImpl(application: Application) : VoicePlayer {
     private lateinit var job: Job
@@ -16,7 +17,7 @@ class VoicePlayerImpl(application: Application) : VoicePlayer {
         )
     }
 
-    override suspend fun play(url: String, setProgress: (progress: Float) -> Unit) {
+    override suspend fun play(url: String) = flow<Float> {
         mediaPlayer.apply {
             reset()
             setDataSource(url)
@@ -24,13 +25,13 @@ class VoicePlayerImpl(application: Application) : VoicePlayer {
             start()
             setOnCompletionListener {
                 job.cancel()
-                setProgress(0f)
+                //setProgress(0f)
             }
         }
         job = CoroutineScope(Dispatchers.Main).launch{
             while(mediaPlayer.isPlaying){
                 val progress = mediaPlayer.currentPosition.toFloat()/mediaPlayer.duration.toFloat()
-                setProgress(progress)
+                emit(progress)
                 delay(10)
             }
         }
