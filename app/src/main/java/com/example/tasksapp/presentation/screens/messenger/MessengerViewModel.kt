@@ -192,11 +192,20 @@ class MessengerViewModel @Inject constructor(
                     playVoiceMessage(event.messageId)
                 }
             }
+            is MessengerEvent.SeekTo -> {
+                seekTo(event.progress)
+            }
+        }
+    }
+
+    private fun seekTo(progress:Float){
+        viewModelScope.launch {
+            voicePlayer.seekTo(progress)
         }
     }
 
     private fun getMyLogin() {
-        viewModelScope.launch {
+        viewModelScope.launch() {
             getUserByToken(Token.token).collect { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -260,13 +269,22 @@ class MessengerViewModel @Inject constructor(
             val url = "https://${Spec.BASE_URL}/getVoiceMessage/$fileName"
             voicePlayer.play(url).collect { progress ->
                 _state.value = _state.value.copy(playingVoiceMessageProgress = progress)
+                if (progress == 1f ){
+                    _state.value = _state.value.copy(
+                        playingVoiceMessageProgress = 0f,
+                        playingVoiceMessageId = ""
+                    )
+                }
             }
         }
     }
 
     private fun pauseVoiceMessage() {
-        _state.value = _state.value.copy(playingVoiceMessageId = "")
         viewModelScope.launch(Dispatchers.IO) {
+            _state.value = _state.value.copy(
+                playingVoiceMessageProgress = 0f,
+                playingVoiceMessageId = ""
+            )
             voicePlayer.pause()
         }
     }

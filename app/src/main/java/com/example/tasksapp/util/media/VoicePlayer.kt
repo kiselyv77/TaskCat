@@ -9,4 +9,6 @@ interface VoicePlayer {
     suspend fun pause()
 
     suspend fun stop()
+
+    suspend fun seekTo(progress: Float)
 }

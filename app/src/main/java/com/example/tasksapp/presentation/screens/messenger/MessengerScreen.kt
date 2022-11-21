@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -20,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
@@ -89,7 +87,8 @@ fun MessengerScreen(
                                 state = state,
                                 voiceMessagePlayPause = { messageId ->
                                     viewModel.onEvent(MessengerEvent.PlayPauseVoiceMessage(messageId))
-                                }
+                                },
+                                seekTo = {viewModel.onEvent(MessengerEvent.SeekTo(it))}
                             )
                         }
                     }
@@ -152,6 +151,7 @@ fun MessageCard(
     message: MessageModel,
     state: MessengerState,
     voiceMessagePlayPause: (messageId: String) -> Unit,
+    seekTo: (progress: Float) -> Unit
 ) {
     val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
     val isMyMessage = message.sendingUser == state.my.login
@@ -218,17 +218,32 @@ fun MessageCard(
                                             .padding(8.dp),
                                         imageVector = if (isPlaying) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
                                         contentDescription = "",
-                                        colorFilter = ColorFilter.tint(color = MaterialTheme.colors.secondary)
+                                        colorFilter = ColorFilter.tint(color = when {
+                                            isMyMessage -> MaterialTheme.colors.secondary
+                                            else -> MaterialTheme.colors.primary
+                                        })
                                     )
                                 }
                                 Log.d(
                                     "awfsdacddvsvsvfssbsv",
                                     state.playingVoiceMessageProgress.toString()
                                 )
-                                LinearProgressIndicator(
-                                    modifier = Modifier.padding(end = 16.dp).clip(CircleShape),
-                                    progress = if (isPlaying) state.playingVoiceMessageProgress else 0F,
-                                    color = Color.White
+//                                LinearProgressIndicator(
+//                                    modifier = Modifier.padding(end = 16.dp).clip(CircleShape),
+//                                    progress = if (isPlaying) state.playingVoiceMessageProgress else 0F,
+//                                    color = Color.White
+//                                )
+
+                                Slider(
+                                    value = if (isPlaying) state.playingVoiceMessageProgress else 0F,
+                                    onValueChange = { seekTo(it) },
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = Color(0xFFB71C1C),
+                                        activeTrackColor = Color(0xFFEF9A9A),
+                                        inactiveTrackColor = Color(0xFFFFEBEE),
+                                        inactiveTickColor = Color(0xFFEF9A9A),
+                                        activeTickColor = Color(0xFFB71C1C)
+                                    )
                                 )
                             }
                         }
@@ -259,10 +274,7 @@ fun MessageCard(
                 )
             }
         }
-
-
     }
-
 }
 
 

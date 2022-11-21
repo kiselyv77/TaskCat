@@ -1,13 +1,15 @@
 package com.example.tasksapp.presentation.screens.messenger
 
-sealed class MessengerEvent{
-    object Send: MessengerEvent()
+sealed class MessengerEvent {
+    object Send : MessengerEvent()
     object Refresh : MessengerEvent()
 
-    object StartVoiceRecord:MessengerEvent()
-    object StopVoiceRecord:MessengerEvent()
+    object StartVoiceRecord : MessengerEvent()
+    object StopVoiceRecord : MessengerEvent()
 
-    data class PlayPauseVoiceMessage(val messageId: String) :MessengerEvent()
+    data class SeekTo(val progress: Float) : MessengerEvent()
 
-    data class SetMessage(val newMessage:String): MessengerEvent()
+    data class PlayPauseVoiceMessage(val messageId: String) : MessengerEvent()
+
+    data class SetMessage(val newMessage: String) : MessengerEvent()
 }

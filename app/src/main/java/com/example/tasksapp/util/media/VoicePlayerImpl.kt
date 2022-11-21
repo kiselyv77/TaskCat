@@ -3,7 +3,8 @@ package com.example.tasksapp.util.media
 import android.app.Application
 import android.media.AudioAttributes
 import android.media.MediaPlayer
-import kotlinx.coroutines.*
+import android.util.Log
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.flow
 
 class VoicePlayerImpl(application: Application) : VoicePlayer {
@@ -18,22 +19,21 @@ class VoicePlayerImpl(application: Application) : VoicePlayer {
     }
 
     override suspend fun play(url: String) = flow<Float> {
-        mediaPlayer.apply {
-            reset()
-            setDataSource(url)
-            prepare() // might take long! (for buffering, etc)
-            start()
-            setOnCompletionListener {
-                job.cancel()
-                //setProgress(0f)
+        try {
+            mediaPlayer.apply {
+                reset()
+                setDataSource(url)
+                prepare() // might take long! (for buffering, etc)
+                start()
+                setOnCompletionListener {
+                }
             }
-        }
-        job = CoroutineScope(Dispatchers.Main).launch{
-            while(mediaPlayer.isPlaying){
-                val progress = mediaPlayer.currentPosition.toFloat()/mediaPlayer.duration.toFloat()
+            while (mediaPlayer.isPlaying) {
+                val progress = mediaPlayer.currentPosition.toFloat() / mediaPlayer.duration.toFloat()
                 emit(progress)
-                delay(10)
             }
+        } catch (e: Exception) {
+            Log.e("VoicePlayerImpl", e.message.toString())
         }
     }
 
@@ -46,5 +46,12 @@ class VoicePlayerImpl(application: Application) : VoicePlayer {
     override suspend fun stop() {
         mediaPlayer.stop()
         mediaPlayer.release()
+    }
+
+    override suspend fun seekTo(progress: Float) {
+        val procent = (progress*100).toInt()
+        if (procent == 0) return
+        val msec = mediaPlayer.duration*procent/100
+        mediaPlayer.seekTo(msec)
     }
 }
