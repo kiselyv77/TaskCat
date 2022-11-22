@@ -155,7 +155,7 @@ fun MessageCard(
 ) {
     val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
     val isMyMessage = message.sendingUser == state.my.login
-    val playingVoiceMessageId = state.playingVoiceMessageId
+    val voiceMessagesState = state.voiceMessagesState
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,7 +207,8 @@ fun MessageCard(
                             )
                         }
                         MessageTypes.MESSAGE_VOICE -> {
-                            val isPlaying = message.id == playingVoiceMessageId
+                            val isCurrent = message.id == voiceMessagesState.currentMessageId
+                            val isPlaying = message.id == voiceMessagesState.currentMessageId && voiceMessagesState.playing
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(
                                     onClick = { voiceMessagePlayPause(message.id) },
@@ -228,15 +229,10 @@ fun MessageCard(
                                     "awfsdacddvsvsvfssbsv",
                                     state.playingVoiceMessageProgress.toString()
                                 )
-//                                LinearProgressIndicator(
-//                                    modifier = Modifier.padding(end = 16.dp).clip(CircleShape),
-//                                    progress = if (isPlaying) state.playingVoiceMessageProgress else 0F,
-//                                    color = Color.White
-//                                )
 
                                 Slider(
-                                    value = if (isPlaying) state.playingVoiceMessageProgress else 0F,
-                                    onValueChange = { seekTo(it) },
+                                    value = if (isCurrent) state.playingVoiceMessageProgress else 0F,
+                                    onValueChange = { if(isCurrent) seekTo(it) },
                                     colors = SliderDefaults.colors(
                                         thumbColor = Color(0xFFB71C1C),
                                         activeTrackColor = Color(0xFFEF9A9A),

@@ -90,7 +90,7 @@ class MessengerViewModel @Inject constructor(
                     }
                     val userInputRoutine = launch {
                         _messagesFlow.collectLatest { sendMessage ->
-                            when (sendMessage){
+                            when (sendMessage) {
                                 is SendMessage.SendText -> {
                                     val messageText = sendMessage.text
                                     if (messageText.isNotEmpty()) {
@@ -163,7 +163,7 @@ class MessengerViewModel @Inject constructor(
     fun onEvent(event: MessengerEvent) {
         when (event) {
             MessengerEvent.Send -> {
-                viewModelScope.launch(Dispatchers.IO){
+                viewModelScope.launch(Dispatchers.IO) {
                     _messagesFlow.emit(SendMessage.SendText(_state.value.inputMessage))
                     _state.value = _state.value.copy(inputMessage = "")
                 }
@@ -186,9 +186,17 @@ class MessengerViewModel @Inject constructor(
                 stopRecord()
             }
             is MessengerEvent.PlayPauseVoiceMessage -> {
-                if (event.messageId == _state.value.playingVoiceMessageId) {
+                if (event.messageId == _state.value.voiceMessagesState.currentMessageId && _state.value.voiceMessagesState.playing) {
+                    _state.value = _state.value.copy(
+                        voiceMessagesState = _state.value.voiceMessagesState.copy(playing = false)
+                    )
                     pauseVoiceMessage()
                 } else {
+                    Log.d("ssadfsdfsf", "play")
+                    _state.value = _state.value.copy(
+                        voiceMessagesState = state.value.voiceMessagesState.copy(currentMessageId = event.messageId, playing = true),
+                        playingVoiceMessageProgress = 0f
+                    )
                     playVoiceMessage(event.messageId)
                 }
             }
@@ -198,7 +206,7 @@ class MessengerViewModel @Inject constructor(
         }
     }
 
-    private fun seekTo(progress:Float){
+    private fun seekTo(progress: Float) {
         viewModelScope.launch {
             voicePlayer.seekTo(progress)
         }
@@ -218,7 +226,8 @@ class MessengerViewModel @Inject constructor(
                         }
                     }
                     is Resource.Error -> {
-                        _state.value = _state.value.copy(error = result.message.toString(), isLoading = false)
+                        _state.value =
+                            _state.value.copy(error = result.message.toString(), isLoading = false)
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(error = "", isLoading = true)
@@ -264,15 +273,14 @@ class MessengerViewModel @Inject constructor(
 
     private fun playVoiceMessage(messageId: String) {
         val fileName = _state.value.messagesList.last { it.id == messageId }.fileName
-        _state.value = _state.value.copy(playingVoiceMessageId = messageId)
         viewModelScope.launch(Dispatchers.IO) {
             val url = "https://${Spec.BASE_URL}/getVoiceMessage/$fileName"
             voicePlayer.play(url).collect { progress ->
                 _state.value = _state.value.copy(playingVoiceMessageProgress = progress)
-                if (progress == 1f ){
+                if (progress == 1f) {
                     _state.value = _state.value.copy(
                         playingVoiceMessageProgress = 0f,
-                        playingVoiceMessageId = ""
+                        voiceMessagesState = _state.value.voiceMessagesState.copy(playing = false)
                     )
                 }
             }
@@ -281,10 +289,6 @@ class MessengerViewModel @Inject constructor(
 
     private fun pauseVoiceMessage() {
         viewModelScope.launch(Dispatchers.IO) {
-            _state.value = _state.value.copy(
-                playingVoiceMessageProgress = 0f,
-                playingVoiceMessageId = ""
-            )
             voicePlayer.pause()
         }
     }
@@ -295,7 +299,7 @@ class MessengerViewModel @Inject constructor(
             voiceRecorder.startRecord(messageId).collect { mediaRecorderParam ->
                 Log.d("mediaRecorderParam", mediaRecorderParam.toString())
                 _state.value = _state.value.copy(
-                    voiceRecordAmplitude = mediaRecorderParam.amplitude.toFloat()/200,
+                    voiceRecordAmplitude = mediaRecorderParam.amplitude.toFloat() / 200,
                     voiceRecordTime = mediaRecorderParam.time
                 )
             }
@@ -309,15 +313,16 @@ class MessengerViewModel @Inject constructor(
             when (recordResult) {
                 is MediaRecordResult.RecordSuccess -> {
                     _state.value = _state.value.copy(recordError = "")
-                    recordResult.fileName?.let{
-                        recordResult.stream?.let{
+                    recordResult.fileName?.let {
+                        recordResult.stream?.let {
                             _messagesFlow.emit(SendMessage.SendVoice(recordResult.fileName))
                             sendVoiceMessageFile(recordResult.stream, recordResult.fileName)
                         }
                     }
                 }
                 is MediaRecordResult.RecordError -> {
-                    _state.value = _state.value.copy(recordError = "Ошибка записи удерживайте кнопку записи")
+                    _state.value =
+                        _state.value.copy(recordError = "Ошибка записи удерживайте кнопку записи")
                     delay(1000)
                     _state.value = _state.value.copy(recordError = "")
                     Log.d("stopRecord", "Ошибка записи удерживайте кнопку записи")
@@ -326,7 +331,7 @@ class MessengerViewModel @Inject constructor(
         }
     }
 
-    private fun sendVoiceMessageFile(stream: InputStream, fileName:String) {
+    private fun sendVoiceMessageFile(stream: InputStream, fileName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             uploadFileVoiceMessage(Token.token, stream, "${fileName}.mp3").collect { result ->
                 Log.d("dsfvsedfsrvsdfsv", result.data.toString())
@@ -336,7 +341,8 @@ class MessengerViewModel @Inject constructor(
                         result.data?.let {}
                     }
                     is Resource.Error -> {
-                        _state.value = _state.value.copy(error = result.message.toString(), isLoading = false)
+                        _state.value =
+                            _state.value.copy(error = result.message.toString(), isLoading = false)
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(error = "")

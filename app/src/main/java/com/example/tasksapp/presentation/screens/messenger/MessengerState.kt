@@ -9,10 +9,15 @@ data class MessengerState(
     val inputMessage: String = "",
     val isLoading: Boolean = true,
     val isVoiceRecording: Boolean = false,
-    val playingVoiceMessageId: String = "",
+    val voiceMessagesState:VoiceMessagesState = VoiceMessagesState(),
     val playingVoiceMessageProgress: Float = 0F,
     val voiceRecordAmplitude: Float = 0F,
     val voiceRecordTime: Long = 0,
     val recordError: String = "",
     val error: String = ""
+)
+
+data class VoiceMessagesState(
+    val currentMessageId: String = "",
+    val playing: Boolean = false
 )

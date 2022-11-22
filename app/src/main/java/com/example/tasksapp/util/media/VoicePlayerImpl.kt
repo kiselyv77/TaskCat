@@ -4,11 +4,9 @@ import android.app.Application
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.util.Log
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.flow
 
 class VoicePlayerImpl(application: Application) : VoicePlayer {
-    private lateinit var job: Job
     private val mediaPlayer = MediaPlayer().apply {
         setAudioAttributes(
             AudioAttributes.Builder()
@@ -17,16 +15,18 @@ class VoicePlayerImpl(application: Application) : VoicePlayer {
                 .build()
         )
     }
+    private var currentUrl = ""
 
     override suspend fun play(url: String) = flow<Float> {
         try {
             mediaPlayer.apply {
-                reset()
-                setDataSource(url)
-                prepare() // might take long! (for buffering, etc)
-                start()
-                setOnCompletionListener {
+                if(currentUrl != url){
+                    reset()
+                    setDataSource(url)
+                    currentUrl = url
+                    prepare() // might take long! (for buffering, etc)
                 }
+                start()
             }
             while (mediaPlayer.isPlaying) {
                 val progress = mediaPlayer.currentPosition.toFloat() / mediaPlayer.duration.toFloat()
