@@ -9,7 +9,8 @@ data class MessageModel(
     val text: String,
     val isArrived: Boolean,
     val type: String,
-    val fileName:String
+    val fileName:String,
+    val progress: Float = 0f
 )
 
 

@@ -7,7 +7,7 @@ sealed class MessengerEvent {
     object StartVoiceRecord : MessengerEvent()
     object StopVoiceRecord : MessengerEvent()
 
-    data class SeekTo(val progress: Float) : MessengerEvent()
+    data class SeekTo(val progress: Float, val messageId: String) : MessengerEvent()
 
     data class PlayPauseVoiceMessage(val messageId: String) : MessengerEvent()
 

@@ -17,7 +17,7 @@ class VoicePlayerImpl(application: Application) : VoicePlayer {
     }
     private var currentUrl = ""
 
-    override suspend fun play(url: String) = flow<Float> {
+    override suspend fun play(url: String, startTo: Float) = flow<Float> {
         try {
             mediaPlayer.apply {
                 if(currentUrl != url){
@@ -26,11 +26,12 @@ class VoicePlayerImpl(application: Application) : VoicePlayer {
                     currentUrl = url
                     prepare() // might take long! (for buffering, etc)
                 }
+                seekTo(startTo)
                 start()
             }
             while (mediaPlayer.isPlaying) {
                 val progress = mediaPlayer.currentPosition.toFloat() / mediaPlayer.duration.toFloat()
-                emit(progress)
+                if(!isNaN(progress)) emit(progress)
             }
         } catch (e: Exception) {
             Log.e("VoicePlayerImpl", e.message.toString())
@@ -53,5 +54,9 @@ class VoicePlayerImpl(application: Application) : VoicePlayer {
         if (procent == 0) return
         val msec = mediaPlayer.duration*procent/100
         mediaPlayer.seekTo(msec)
+    }
+
+    private fun isNaN(x:Float): Boolean{
+        return x != x;
     }
 }

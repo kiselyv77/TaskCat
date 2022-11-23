@@ -186,22 +186,23 @@ class MessengerViewModel @Inject constructor(
                 stopRecord()
             }
             is MessengerEvent.PlayPauseVoiceMessage -> {
-                if (event.messageId == _state.value.voiceMessagesState.currentMessageId && _state.value.voiceMessagesState.playing) {
+                if (event.messageId == _state.value.playingMessageId) {
                     _state.value = _state.value.copy(
-                        voiceMessagesState = _state.value.voiceMessagesState.copy(playing = false)
+                        playingMessageId = ""
                     )
                     pauseVoiceMessage()
                 } else {
-                    Log.d("ssadfsdfsf", "play")
                     _state.value = _state.value.copy(
-                        voiceMessagesState = state.value.voiceMessagesState.copy(currentMessageId = event.messageId, playing = true),
-                        playingVoiceMessageProgress = 0f
+                        playingMessageId = event.messageId
                     )
                     playVoiceMessage(event.messageId)
                 }
             }
             is MessengerEvent.SeekTo -> {
-                seekTo(event.progress)
+                if(event.messageId == state.value.playingMessageId) {
+                    seekTo(event.progress)
+                }
+                setMessageProgress(event.messageId, event.progress)
             }
         }
     }
@@ -272,15 +273,16 @@ class MessengerViewModel @Inject constructor(
     }
 
     private fun playVoiceMessage(messageId: String) {
-        val fileName = _state.value.messagesList.last { it.id == messageId }.fileName
+        val message = _state.value.messagesList.last { it.id == messageId }
+        val fileName = message.fileName
         viewModelScope.launch(Dispatchers.IO) {
             val url = "https://${Spec.BASE_URL}/getVoiceMessage/$fileName"
-            voicePlayer.play(url).collect { progress ->
-                _state.value = _state.value.copy(playingVoiceMessageProgress = progress)
+            voicePlayer.play(url, message.progress).collect { progress ->
+                setMessageProgress(messageId, progress)
                 if (progress == 1f) {
+                    setMessageProgress(messageId, 0f)
                     _state.value = _state.value.copy(
-                        playingVoiceMessageProgress = 0f,
-                        voiceMessagesState = _state.value.voiceMessagesState.copy(playing = false)
+                        playingMessageId = ""
                     )
                 }
             }
@@ -350,5 +352,13 @@ class MessengerViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun setMessageProgress(messageId: String, progress: Float){
+        val messageList = _state.value.messagesList.toMutableList()
+        val message = messageList.last { it.id == messageId }
+        val index = messageList.indexOf(message)
+        messageList[index] = message.copy(progress = progress)
+        _state.value = _state.value.copy(messagesList = messageList)
     }
 }

@@ -2,7 +2,6 @@ package com.example.tasksapp.presentation.screens.messenger
 
 import android.Manifest
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,6 +56,7 @@ fun MessengerScreen(
     )
     val context = LocalContext.current
 
+
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
@@ -88,7 +89,7 @@ fun MessengerScreen(
                                 voiceMessagePlayPause = { messageId ->
                                     viewModel.onEvent(MessengerEvent.PlayPauseVoiceMessage(messageId))
                                 },
-                                seekTo = {viewModel.onEvent(MessengerEvent.SeekTo(it))}
+                                seekTo = {viewModel.onEvent(MessengerEvent.SeekTo(messageId = message.id , progress = it))}
                             )
                         }
                     }
@@ -155,7 +156,9 @@ fun MessageCard(
 ) {
     val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
     val isMyMessage = message.sendingUser == state.my.login
-    val voiceMessagesState = state.voiceMessagesState
+    val playingMessageId = state.playingMessageId
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,8 +210,7 @@ fun MessageCard(
                             )
                         }
                         MessageTypes.MESSAGE_VOICE -> {
-                            val isCurrent = message.id == voiceMessagesState.currentMessageId
-                            val isPlaying = message.id == voiceMessagesState.currentMessageId && voiceMessagesState.playing
+                            val isPlaying = message.id == playingMessageId
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(
                                     onClick = { voiceMessagePlayPause(message.id) },
@@ -225,14 +227,10 @@ fun MessageCard(
                                         })
                                     )
                                 }
-                                Log.d(
-                                    "awfsdacddvsvsvfssbsv",
-                                    state.playingVoiceMessageProgress.toString()
-                                )
-
                                 Slider(
-                                    value = if (isCurrent) state.playingVoiceMessageProgress else 0F,
-                                    onValueChange = { if(isCurrent) seekTo(it) },
+                                    modifier = Modifier.width(screenWidth/2),
+                                    value = message.progress,
+                                    onValueChange = { seekTo(it) },
                                     colors = SliderDefaults.colors(
                                         thumbColor = Color(0xFFB71C1C),
                                         activeTrackColor = Color(0xFFEF9A9A),
@@ -272,8 +270,6 @@ fun MessageCard(
         }
     }
 }
-
-
 @Composable
 fun cardShapeFor(isMyMessage: Boolean): Shape {
     val roundedCorners = RoundedCornerShape(16.dp)

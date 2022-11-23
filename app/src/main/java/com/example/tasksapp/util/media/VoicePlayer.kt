@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface VoicePlayer {
 
-    suspend fun play(url: String): Flow<Float>
+    suspend fun play(url: String, startTo: Float): Flow<Float>
 
     suspend fun pause()
 

@@ -2,6 +2,7 @@ package com.example.tasksapp.presentation.screens.workSpaceDetail.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,8 +37,8 @@ fun ItemTask(
                 onLongClick = { onLongClick() }
             ),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-
             Text(
                 modifier = Modifier.padding(top = 16.dp, bottom = 4.dp, start = 16.dp, end = 16.dp),
                 text = "$count) $name",
@@ -48,8 +49,8 @@ fun ItemTask(
 
             Text(
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
-                text = description.repeat(100),
-                fontSize = 15.sp,
+                text = description,
+                fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 maxLines = 6,
                 overflow = TextOverflow.Ellipsis

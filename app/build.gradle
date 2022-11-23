@@ -143,9 +143,5 @@ dependencies {
 
     //Jetpack compose accompanist utils
     implementation "com.google.accompanist:accompanist-placeholder:0.12.0"
-
-
-
-
-
+    
 }
