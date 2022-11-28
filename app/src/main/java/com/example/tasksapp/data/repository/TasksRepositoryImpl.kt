@@ -130,4 +130,8 @@ class TasksRepositoryImpl(
 
         return api.uploadFileVoiceMessage(token, part)
     }
+
+    override suspend fun getNotesFromTask(token: String, taskId: String): List<NoteDTO> {
+        return api.getNotesFromTask(token, taskId)
+    }
 }

@@ -16,6 +16,7 @@ import com.example.tasksapp.domain.use_cases.UploadFileVoiceMessage
 import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.generateRandomUUID
+import com.example.tasksapp.util.getIsoDateTime
 import com.example.tasksapp.util.media.MediaRecordResult
 import com.example.tasksapp.util.media.VoicePlayer
 import com.example.tasksapp.util.media.VoiceRecorder
@@ -97,8 +98,7 @@ class MessengerViewModel @Inject constructor(
                                         val messageDTO = MessageDTO(
                                             id = generateRandomUUID(),
                                             userName = _state.value.my.name,
-                                            dateTime = LocalDateTime.now()
-                                                .format(DateTimeFormatter.ISO_DATE_TIME),
+                                            dateTime = getIsoDateTime(),
                                             sendingUser = _state.value.my.login,
                                             workSpaceId = workSpaceId,
                                             text = messageText,
@@ -354,7 +354,7 @@ class MessengerViewModel @Inject constructor(
         }
     }
 
-    private fun setMessageProgress(messageId: String, progress: Float){
+    private fun setMessageProgress(messageId: String, progress: Float) {
         val messageList = _state.value.messagesList.toMutableList()
         val message = messageList.last { it.id == messageId }
         val index = messageList.indexOf(message)
