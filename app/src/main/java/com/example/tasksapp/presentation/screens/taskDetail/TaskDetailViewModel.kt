@@ -14,6 +14,7 @@ import com.example.tasksapp.domain.use_cases.GetNotesFromTask
 import com.example.tasksapp.domain.use_cases.GetTaskById
 import com.example.tasksapp.domain.use_cases.GetUserByToken
 import com.example.tasksapp.util.Resource
+import com.example.tasksapp.util.generateRandomUUID
 import com.example.tasksapp.util.getIsoDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.*
@@ -80,7 +81,7 @@ class TaskDetailViewModel @Inject constructor(
                             val noteId = sendNote.attachmentFile
                             val noteDTO = NoteDTO(
                                 id = noteId,
-                                info = "",
+                                info = sendNote.info,
                                 loginUser = _state.value.my.login,
                                 taskId = taskId,
                                 attachmentFile = "",
@@ -115,17 +116,17 @@ class TaskDetailViewModel @Inject constructor(
 
     fun onEvent(event:TaskDetailEvent){
         when(event){
+            is TaskDetailEvent.SendNote -> {
+                viewModelScope.launch(Dispatchers.IO){
+                    _notesFlow.emit(SendNote(info = _state.value.inputText ,attachmentFile = generateRandomUUID()))
+                    _state.value = _state.value.copy(inputText = "")
+                }
+            }
             is TaskDetailEvent.OnAllRefresh -> {
 
             }
             is TaskDetailEvent.SetInputText -> {
                 _state.value = _state.value.copy(inputText = event.newText)
-            }
-            is TaskDetailEvent.SendNote -> {
-                viewModelScope.launch{
-                    _notesFlow.emit(SendNote(attachmentFile = ""))
-                    _state.value = _state.value.copy(inputText = "")
-                }
             }
         }
     }

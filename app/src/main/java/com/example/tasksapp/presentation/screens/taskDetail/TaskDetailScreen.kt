@@ -2,10 +2,9 @@ package com.example.tasksapp.presentation.screens.taskDetail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
@@ -24,7 +23,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
+import com.example.tasksapp.presentation.commonComponents.CustomTextField
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.screens.taskDetail.components.ItemNote
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -35,7 +36,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination
 fun TaskDetailScreen(
     navigator: DestinationsNavigator,
-    viewModel:TaskDetailViewModel = hiltViewModel(),
+    viewModel: TaskDetailViewModel = hiltViewModel(),
     id: String
 ) {
     val state = viewModel.state.value
@@ -95,7 +96,6 @@ fun TaskDetailScreen(
                         isPlaceholderVisible = state.isLoading || state.error.isNotEmpty()
                     )
                 }
-
                 Card(modifier = Modifier.padding(vertical = 8.dp)) {
                     TextPlaceHolder(
                         modifier = Modifier
@@ -108,6 +108,32 @@ fun TaskDetailScreen(
                         textPlaceHolderLength = 120
                     )
                 }
+
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        reverseLayout = true,
+                    ) {
+                        items(state.notesList) { note ->
+                            ItemNote(
+                                loginUser = note.loginUser,
+                                info = note.info,
+                                clicable = {}
+                            )
+                        }
+                    }
+                }
+                CustomTextField(
+                    value = state.inputText,
+                    label = "Введите подробности обновлений связаных с задачей",
+                    isError = state.error.isNotEmpty(),
+                    trailingIcon = { /*TODO*/ },
+                    onValueChange = { viewModel.onEvent(TaskDetailEvent.SetInputText(it)) },
+                    onAction = { viewModel.onEvent(TaskDetailEvent.SendNote) }
+                )
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.tasksapp.presentation.screens.workSapcesList.components
+package com.example.tasksapp.presentation.screens.taskDetail.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -13,9 +13,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
 @Composable
-fun WorkSpaceItem(name: String, description: String, clicable: () -> Unit) {
+fun ItemNote(loginUser: String, info: String, clicable: () -> Unit) {
     Card(
         Modifier
             .fillMaxWidth()
@@ -24,11 +23,11 @@ fun WorkSpaceItem(name: String, description: String, clicable: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(16.dp),) {
             Text(
-                text = name,
+                text = loginUser,
                 fontSize = 30.sp
             )
             Text(
-                text = description,
+                text = info,
                 fontSize = 20.sp
             )
         }
