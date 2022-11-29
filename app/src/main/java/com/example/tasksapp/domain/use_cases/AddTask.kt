@@ -14,10 +14,10 @@ import javax.inject.Inject
 class AddTask @Inject constructor(
     private val repository: TasksRepository
 ) {
-    operator fun invoke(token:String, name:String ,description:String, workSpaceId: String): Flow<Resource<TaskModel>> = flow{
+    operator fun invoke(token:String, name:String ,description:String, workSpaceId: String, deadLine: String): Flow<Resource<TaskModel>> = flow{
         try{
             emit(Resource.Loading<TaskModel>())
-            val taskDTO = repository.addTaskToWorkSpace(token, name, description, workSpaceId)
+            val taskDTO = repository.addTaskToWorkSpace(token, name, description, workSpaceId, deadLine)
             emit(Resource.Success<TaskModel>(taskDTO.toTaskModel()))
         } catch (exception: HttpException){
             val debugMessage = exception.message

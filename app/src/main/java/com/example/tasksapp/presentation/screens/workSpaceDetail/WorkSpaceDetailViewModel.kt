@@ -124,6 +124,11 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     ),
                 )
             }
+            is WorkSpaceDetailEvent.SetTaskDeadLineDialog -> {
+                _state.value = _state.value.copy(
+                    addTaskDialogState = _state.value.addTaskDialogState.copy(deadLine = event.deadLine)
+                )
+            }
         }
     }
 
@@ -209,7 +214,8 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 token = Token.token,
                 name = _state.value.addTaskDialogState.name,
                 description = _state.value.addTaskDialogState.description,
-                workSpaceId = workSpaceId
+                workSpaceId = workSpaceId,
+                deadLine = _state.value.addTaskDialogState.deadLine
             ).collect { result ->
                 when (result) {
                     is Resource.Success -> {

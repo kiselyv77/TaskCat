@@ -8,6 +8,7 @@ fun NoteDTO.toNoteModel(): NoteModel{
         id = id,
         info = info,
         loginUser = loginUser,
+        userName = userName,
         taskId = taskId,
         attachmentFile = attachmentFile,
         dateTime = dateTime,

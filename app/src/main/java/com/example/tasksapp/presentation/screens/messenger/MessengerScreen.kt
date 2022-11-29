@@ -34,6 +34,7 @@ import com.example.tasksapp.presentation.screens.messenger.components.CustomMess
 import com.example.tasksapp.presentation.screens.messenger.components.VoiceRecorderIndicator
 import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.checkPermission
+import com.example.tasksapp.util.getTime
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -245,13 +246,10 @@ fun MessageCard(
                 }
             }
         }
-        val hour = if (dateTime.hour.toString().length == 2) dateTime.hour else "0${dateTime.hour}"
-        val minute =
-            if (dateTime.minute.toString().length == 2) dateTime.minute else "0${dateTime.minute}"
 
         Row() {
             Text(
-                text = "$hour:$minute",
+                text = getTime(dateTime),
                 fontSize = 10.sp,
             )
             if (message.isArrived && isMyMessage) {

@@ -41,7 +41,9 @@ data class AddTaskDialogState(
     val error:String = "",
     val isSuccess:Boolean = false,
     val isLoading:Boolean = false,
+    val deadLine: String = ""
 )
+
 
 data class AddUserDialogState(
     val isOpen:Boolean = false,

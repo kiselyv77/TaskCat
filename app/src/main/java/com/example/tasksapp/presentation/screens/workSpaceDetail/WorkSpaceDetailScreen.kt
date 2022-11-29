@@ -199,6 +199,7 @@ fun WorkSpaceDetailScreen(
                 dismiss = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
                 onNameChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskNameInDialog(it)) },
                 onDescriptionChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskDescriptionInDialog(it)) },
+                onDeadLineChanged = {viewModel.onEvent(WorkSpaceDetailEvent.SetTaskDeadLineDialog(it))},
                 addTask = { viewModel.onEvent(WorkSpaceDetailEvent.AddTask) },
             )
         }

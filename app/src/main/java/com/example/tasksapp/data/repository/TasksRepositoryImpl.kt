@@ -65,9 +65,10 @@ class TasksRepositoryImpl(
         token: String,
         name: String,
         description: String,
-        workSpaceId: String
+        workSpaceId: String,
+        deadLine: String
     ): TaskDTO {
-        return api.addTaskToWorkSpace(AddTaskReceiveDTO(token, name, description, workSpaceId))
+        return api.addTaskToWorkSpace(AddTaskReceiveDTO(token, name, description, workSpaceId, deadLine))
     }
 
     override suspend fun addUserToWorkSpace(

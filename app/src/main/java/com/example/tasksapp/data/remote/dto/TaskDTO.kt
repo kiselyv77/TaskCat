@@ -4,5 +4,8 @@ data class TaskDTO(
     val id: String,
     val name:String,
     val description:String,
-    val taskStatus:String
+    val taskStatus:String,
+    val deadLine: String,
+    val creationDate: String
+
 )

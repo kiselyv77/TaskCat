@@ -53,10 +53,12 @@ fun TaskDetailScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            CustomFloatingActionButton(
-                imageVector = Icons.Default.ArrowBack,
-                onClick = { navigator.popBackStack() }
-            )
+            Box(modifier = Modifier.padding(bottom = 50.dp)){
+                CustomFloatingActionButton(
+                    imageVector = Icons.Default.ArrowBack,
+                    onClick = { navigator.popBackStack() }
+                )
+            }
         },
         snackbarHost = { snackbarHostState ->
             CustomSnackbarHost(snackbarHostState)
@@ -86,41 +88,43 @@ fun TaskDetailScreen(
                     },
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Card(modifier = Modifier.padding(vertical = 8.dp)) {
-                    TextPlaceHolder(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        text = state.task.name,
-                        fontSize = 30.sp,
-                        isPlaceholderVisible = state.isLoading || state.error.isNotEmpty()
-                    )
-                }
-                Card(modifier = Modifier.padding(vertical = 8.dp)) {
-                    TextPlaceHolder(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .heightIn(max = screenHeight / 3),
-                        text = state.task.description,
-                        fontSize = 20.sp,
-                        isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
-                        textPlaceHolderLength = 120
-                    )
-                }
-
                 Box(
                     modifier = Modifier.weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        reverseLayout = true,
+                        modifier = Modifier.fillMaxSize()
                     ) {
+                        item {
+                            Card(modifier = Modifier.padding(vertical = 8.dp)) {
+                                TextPlaceHolder(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    text = state.task.name,
+                                    fontSize = 30.sp,
+                                    isPlaceholderVisible = state.isLoading || state.error.isNotEmpty()
+                                )
+                            }
+                            Card(modifier = Modifier.padding(vertical = 8.dp)) {
+                                TextPlaceHolder(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        .heightIn(max = screenHeight / 3),
+                                    text = state.task.description,
+                                    fontSize = 20.sp,
+                                    isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
+                                    textPlaceHolderLength = 120
+                                )
+                            }
+                        }
                         items(state.notesList) { note ->
                             ItemNote(
                                 loginUser = note.loginUser,
+                                userName = note.userName,
                                 info = note.info,
+                                dateTime = note.dateTime,
                                 clicable = {}
                             )
                         }
