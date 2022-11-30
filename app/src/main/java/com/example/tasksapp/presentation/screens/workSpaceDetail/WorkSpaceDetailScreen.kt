@@ -169,7 +169,8 @@ fun WorkSpaceDetailScreen(
                                 description = task.description,
                                 onClick = { navigator.navigate(TaskDetailScreenDestination(task.id)) },
                                 onLongClick = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog(task.id))},
-                                taskStatus = TaskStatus.getTaskStatusName(task.taskStatus)
+                                taskStatus = TaskStatus.getTaskStatusName(task.taskStatus),
+                                deadLine = task.deadLine
                             )
                         }
                     }

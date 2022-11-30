@@ -15,6 +15,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tasksapp.util.getTime
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -26,7 +29,8 @@ fun ItemTask(
     description: String,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
-    taskStatus: String
+    taskStatus: String,
+    deadLine: String
     ) {
     Card(
         modifier = modifier,
@@ -55,14 +59,27 @@ fun ItemTask(
                 maxLines = 6,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
-                text = taskStatus,
-                fontSize = 15.sp,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column(){
+                Text(
+                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
+                    text = taskStatus,
+                    fontSize = 15.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                val deadLineParsed = LocalDateTime.parse(deadLine, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                val dateStr = deadLineParsed.toLocalDate()
+                val time = getTime(deadLineParsed)
+                Text(
+                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
+                    text = "до $dateStr $time",
+                    fontSize = 15.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

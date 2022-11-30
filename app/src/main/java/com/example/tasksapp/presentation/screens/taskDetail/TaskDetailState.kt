@@ -5,7 +5,7 @@ import com.example.tasksapp.domain.model.TaskModel
 import com.example.tasksapp.domain.model.UserModel
 
 data class TaskDetailState(
-    val task: TaskModel = TaskModel("", "", "", ""),
+    val task: TaskModel = TaskModel("", "", "", "", ""),
     val my: UserModel = UserModel("", "", "", ""),
     val notesList: List<NoteModel> = listOf<NoteModel>(),
     val usersState: UsersState = UsersState(),

@@ -1,5 +1,7 @@
 package com.example.tasksapp.presentation.screens.workSpaceDetail
 
+import java.time.LocalDateTime
+
 sealed class WorkSpaceDetailEvent {
 
     object OnAllRefresh: WorkSpaceDetailEvent()
@@ -12,7 +14,7 @@ sealed class WorkSpaceDetailEvent {
 
     data class SetTaskNameInDialog(val newName: String): WorkSpaceDetailEvent()
     data class SetTaskDescriptionInDialog(val newDescription:String): WorkSpaceDetailEvent()
-    data class SetTaskDeadLineDialog(val deadLine: String): WorkSpaceDetailEvent()
+    data class SetTaskDeadLineDialog(val deadLine: LocalDateTime): WorkSpaceDetailEvent()
     data class SetUserLoginInDialog(val newUserLogin:String): WorkSpaceDetailEvent()
     data class SetTaskStatusDialog(val newStatus: String): WorkSpaceDetailEvent()
 

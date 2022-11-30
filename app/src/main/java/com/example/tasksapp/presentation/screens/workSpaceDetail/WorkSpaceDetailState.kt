@@ -4,6 +4,7 @@ import com.example.tasksapp.domain.model.TaskModel
 import com.example.tasksapp.domain.model.UserModel
 import com.example.tasksapp.domain.model.WorkSpaceModel
 import com.example.tasksapp.util.TaskStatus
+import java.time.LocalDateTime
 
 data class WorkSpaceDetailState(
     val myLogin:String = "",
@@ -41,7 +42,7 @@ data class AddTaskDialogState(
     val error:String = "",
     val isSuccess:Boolean = false,
     val isLoading:Boolean = false,
-    val deadLine: String = ""
+    val deadLine: LocalDateTime = LocalDateTime.MIN
 )
 
 

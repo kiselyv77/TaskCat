@@ -22,13 +22,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.tasksapp.presentation.commonComponents.CustomTextField
 import com.example.tasksapp.presentation.screens.workSpaceDetail.AddTaskDialogState
+import com.example.tasksapp.util.getTime
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -36,7 +36,7 @@ fun AddTaskDialog(
     dismiss: () -> Unit,
     onNameChanged: (newName: String) -> Unit,
     onDescriptionChanged: (newDescription: String) -> Unit,
-    onDeadLineChanged: (deadLine: String) -> Unit,
+    onDeadLineChanged: (deadLine: LocalDateTime) -> Unit,
     addTask: () -> Unit,
     state: AddTaskDialogState
 ) {
@@ -84,7 +84,12 @@ fun AddTaskDialog(
             OutlinedButton(
                 modifier = Modifier.padding(16.dp),
                 onClick = { dialogDateState.show() }) {
-                Text(text = "Назначить сроки выполнения")
+                val dateStr = state.deadLine.toLocalDate()
+                val time = getTime(state.deadLine)
+                Text(
+                    text = if(state.deadLine != LocalDateTime.MIN) "до $dateStr $time" else "Назначте сроки выполнения",
+                    color = if (state.error.isEmpty()) Color.Unspecified else Color.Red
+                )
             }
 
             // Buttons
@@ -147,7 +152,7 @@ fun AddTaskDialog(
                 val dateTime = LocalDateTime.of(
                     dateState.value,
                     time
-                ).format(DateTimeFormatter.ISO_DATE_TIME)
+                )
                 onDeadLineChanged(dateTime)
             }
         }

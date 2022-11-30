@@ -7,5 +7,4 @@ data class TaskDTO(
     val taskStatus:String,
     val deadLine: String,
     val creationDate: String
-
 )

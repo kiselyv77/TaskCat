@@ -12,6 +12,8 @@ import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.TaskStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -82,7 +84,11 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 if (_state.value.addTaskDialogState.name.isNotEmpty()
                     && _state.value.addTaskDialogState.description.isNotEmpty()
                 ) {
-                    addTask()
+                    if(_state.value.addTaskDialogState.deadLine != LocalDateTime.MIN) addTask()
+                    else _state.value = _state.value.copy(
+                        addTaskDialogState = _state.value.addTaskDialogState.copy(error = "Назначте сроки выполнения")
+                    )
+
                 } else {
                     _state.value = _state.value.copy(
                         addTaskDialogState = _state.value.addTaskDialogState.copy(error = "Заполните все поля")
@@ -215,7 +221,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 name = _state.value.addTaskDialogState.name,
                 description = _state.value.addTaskDialogState.description,
                 workSpaceId = workSpaceId,
-                deadLine = _state.value.addTaskDialogState.deadLine
+                deadLine = _state.value.addTaskDialogState.deadLine.format(DateTimeFormatter.ISO_DATE_TIME)
             ).collect { result ->
                 when (result) {
                     is Resource.Success -> {

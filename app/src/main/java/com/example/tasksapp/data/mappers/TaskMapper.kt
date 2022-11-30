@@ -8,6 +8,7 @@ fun TaskDTO.toTaskModel(): TaskModel {
         id = id,
         name = name,
         description = description,
-        taskStatus = taskStatus
+        taskStatus = taskStatus,
+        deadLine = deadLine
     )
 }
