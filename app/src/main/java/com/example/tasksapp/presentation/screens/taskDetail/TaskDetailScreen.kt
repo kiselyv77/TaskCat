@@ -7,11 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,8 +21,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
-import com.example.tasksapp.presentation.commonComponents.CustomTextField
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.screens.taskDetail.components.AddInfoTextField
 import com.example.tasksapp.presentation.screens.taskDetail.components.ItemNote
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -69,8 +67,6 @@ fun TaskDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    start = 16.dp,
-                    end = 16.dp,
                     bottom = it.calculateBottomPadding()
                 ),
             state = swipeRefreshState,
@@ -121,22 +117,29 @@ fun TaskDetailScreen(
                         }
                         items(state.notesList) { note ->
                             ItemNote(
-                                loginUser = note.loginUser,
                                 userName = note.userName,
                                 info = note.info,
                                 dateTime = note.dateTime,
                                 clicable = {}
                             )
                         }
+                        item{
+                            OutlinedButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {viewModel.onEvent(TaskDetailEvent.ShowMore)}
+                            ) {
+                                Text("Показать больше")
+                            }
+                        }
                     }
                 }
-                CustomTextField(
+                AddInfoTextField(
                     value = state.inputText,
                     label = "Введите подробности обновлений связаных с задачей",
                     isError = state.error.isNotEmpty(),
-                    trailingIcon = { /*TODO*/ },
                     onValueChange = { viewModel.onEvent(TaskDetailEvent.SetInputText(it)) },
-                    onAction = { viewModel.onEvent(TaskDetailEvent.SendNote) }
+                    onClear = {viewModel.onEvent(TaskDetailEvent.SetInputText(""))},
+                    onSend = {viewModel.onEvent(TaskDetailEvent.SendNote)}
                 )
             }
         }

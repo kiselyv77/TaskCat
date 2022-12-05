@@ -83,6 +83,7 @@ class TaskDetailViewModel @Inject constructor(
                                 id = noteId,
                                 info = sendNote.info,
                                 loginUser = _state.value.my.login,
+                                userName = _state.value.my.name,
                                 taskId = taskId,
                                 attachmentFile = "",
                                 dateTime = getIsoDateTime()
@@ -123,10 +124,13 @@ class TaskDetailViewModel @Inject constructor(
                 }
             }
             is TaskDetailEvent.OnAllRefresh -> {
-
+                getTask()
             }
             is TaskDetailEvent.SetInputText -> {
                 _state.value = _state.value.copy(inputText = event.newText)
+            }
+            TaskDetailEvent.ShowMore -> {
+                getMyLogin()
             }
         }
     }
@@ -190,7 +194,7 @@ class TaskDetailViewModel @Inject constructor(
         offset += 10
         viewModelScope.launch {
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
-            getNotesFromTask(Token.token, workSpaceId).collect { result ->
+            getNotesFromTask(Token.token, workSpaceId, offset).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         val notesList = _state.value.notesList.toMutableList()

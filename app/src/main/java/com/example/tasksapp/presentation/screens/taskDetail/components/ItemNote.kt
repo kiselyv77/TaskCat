@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ItemNote(loginUser: String, userName:String, info: String,dateTime: String, clicable: () -> Unit) {
+fun ItemNote(userName:String, info: String,dateTime: String, clicable: () -> Unit) {
     val parsedDataTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME)
     val date = parsedDataTime.toLocalDate()
     val time = getTime(parsedDataTime)
@@ -29,16 +29,12 @@ fun ItemNote(loginUser: String, userName:String, info: String,dateTime: String, 
     ) {
         Column(modifier = Modifier.padding(16.dp),) {
             Text(
-                text = userName,
-                fontSize = 30.sp
-            )
-            Text(
-                text = loginUser,
+                text = "$userName добавил обновление:",
                 fontSize = 20.sp
             )
             Text(
                 text = info,
-                fontSize = 20.sp
+                fontSize = 23.sp
             )
             Text(
                 text = "$date в $time",

@@ -14,10 +14,10 @@ import javax.inject.Inject
 class GetNotesFromTask @Inject constructor(
     private val repository: TasksRepository
 ) {
-    operator fun invoke(token: String, taskId: String): Flow<Resource<List<NoteModel>>> = flow{
+    operator fun invoke(token: String, taskId: String, offset: Int): Flow<Resource<List<NoteModel>>> = flow{
         try{
             emit(Resource.Loading<List<NoteModel>>())
-            val notes = repository.getNotesFromTask(token, taskId)
+            val notes = repository.getNotesFromTask(token, taskId, offset.toString())
             emit(Resource.Success<List<NoteModel>>(notes.map { it.toNoteModel()}))
         } catch (exception: HttpException){
             val debugMessage = exception.message

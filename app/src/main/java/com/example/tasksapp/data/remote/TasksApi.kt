@@ -59,6 +59,6 @@ interface TasksApi {
     @POST("/uploadFileVoiceMessage/{token}")
     suspend fun uploadFileVoiceMessage(@Path("token") token: String, @Part part: MultipartBody.Part): SuccessResponseDTO
 
-    @GET("/getNotesFromTask/{token}/{taskId}")
-    suspend fun getNotesFromTask(@Path("token") token: String, @Path("taskId") taskId: String): List<NoteDTO>
+    @GET("/getNotesFromTask/{token}/{taskId}/{offset}")
+    suspend fun getNotesFromTask(@Path("token") token: String, @Path("taskId") taskId: String, @Path("offset") offset: String): List<NoteDTO>
 }
