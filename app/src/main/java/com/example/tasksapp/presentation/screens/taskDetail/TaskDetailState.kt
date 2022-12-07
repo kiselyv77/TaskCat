@@ -3,6 +3,8 @@ package com.example.tasksapp.presentation.screens.taskDetail
 import com.example.tasksapp.domain.model.NoteModel
 import com.example.tasksapp.domain.model.TaskModel
 import com.example.tasksapp.domain.model.UserModel
+import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
+import java.time.LocalDateTime
 
 data class TaskDetailState(
     val task: TaskModel = TaskModel("", "", "", "", ""),
@@ -11,7 +13,7 @@ data class TaskDetailState(
     val usersState: UsersState = UsersState(),
     val error: String = "",
     val isLoading: Boolean = false,
-
+    val setTaskStatusDialogState: SetTaskStatusDialogState = SetTaskStatusDialogState(),
     val inputText: String = ""
 )
 
@@ -20,4 +22,9 @@ data class UsersState(
     val error: String = "",
     val isLoading: Boolean = false
 )
+
+data class SetDeadLineDialogState(
+    val deadLine: LocalDateTime = LocalDateTime.MIN
+)
+
 

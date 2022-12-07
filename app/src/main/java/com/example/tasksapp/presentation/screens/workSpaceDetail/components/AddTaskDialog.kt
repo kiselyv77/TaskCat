@@ -21,11 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.tasksapp.presentation.commonComponents.CustomTextField
+import com.example.tasksapp.presentation.commonComponents.DataTimePickerDialog
 import com.example.tasksapp.presentation.screens.workSpaceDetail.AddTaskDialogState
 import com.example.tasksapp.util.getTime
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
-import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -121,40 +119,19 @@ fun AddTaskDialog(
             }
         }
 
-        MaterialDialog(
-            dialogState = dialogDateState,
-            buttons = {
-                positiveButton("Ok", disableDismiss = true){
-                    dialogTimeState.show()
-                }
-                negativeButton("Cancel"){
-
-                }
-            }
-        ) {
-            datepicker { date ->
+        DataTimePickerDialog(
+            dialogDateState = dialogDateState,
+            dialogTimeState = dialogTimeState,
+            onDateChange = { date ->
                 dateState.value = date
-            }
-
-        }
-
-        MaterialDialog(
-            dialogState = dialogTimeState,
-            buttons = {
-                positiveButton("Ok"){
-                    dialogDateState.hide()
-                    dialogTimeState.hide()
-                }
-                negativeButton("Cancel")
-            }
-        ) {
-            timepicker { time ->
+            },
+            onTimeChange = { time ->
                 val dateTime = LocalDateTime.of(
                     dateState.value,
                     time
                 )
                 onDeadLineChanged(dateTime)
             }
-        }
+        )
     }
 }

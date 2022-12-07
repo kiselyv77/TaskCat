@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.domain.use_cases.*
+import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.TaskStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -65,6 +66,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
             is WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog -> {
                 _state.value = _state.value.copy(
                     setTaskStatusDialogState = SetTaskStatusDialogState().copy(
+                        selectedStatus = _state.value.tasksState.tasks.lastOrNull{it.id == event.taskId}?.taskStatus ?: "",
                         taskId = event.taskId,
                         isOpen = !_state.value.setTaskStatusDialogState.isOpen
                     )

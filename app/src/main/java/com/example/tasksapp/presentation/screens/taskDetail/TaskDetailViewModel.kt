@@ -10,9 +10,8 @@ import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.data.mappers.toNoteModel
 import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.data.remote.dto.NoteDTO
-import com.example.tasksapp.domain.use_cases.GetNotesFromTask
-import com.example.tasksapp.domain.use_cases.GetTaskById
-import com.example.tasksapp.domain.use_cases.GetUserByToken
+import com.example.tasksapp.domain.use_cases.*
+import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.generateRandomUUID
 import com.example.tasksapp.util.getIsoDateTime
@@ -27,6 +26,7 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -35,8 +35,10 @@ class TaskDetailViewModel @Inject constructor(
     private val getUserByToken: GetUserByToken,
     private val getTaskByIdUseCase: GetTaskById,
     private val getNotesFromTask: GetNotesFromTask,
+    private val setTaskStatusUseCase: SetTaskStatus,
+    private val setTaskDeadLineUseCase: SetTaskDeadLine,
     private val savedStateHandle: SavedStateHandle
-): ViewModel() {
+) : ViewModel() {
     private val _state = mutableStateOf(TaskDetailState())
     val state: State<TaskDetailState> = _state
 
@@ -46,7 +48,8 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
     private val _notesFlow = MutableSharedFlow<SendNote>()
-    private var offset = -10 // Этот офсет будет увеличиватся на 10 при каждом новом запросе или на 1 приприеме сообщения
+    private var offset =
+        -10 // Этот офсет будет увеличиватся на 10 при каждом новом запросе или на 1 приприеме сообщения
 
     init {
         getMyLogin()
@@ -115,11 +118,16 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event:TaskDetailEvent){
-        when(event){
+    fun onEvent(event: TaskDetailEvent) {
+        when (event) {
             is TaskDetailEvent.SendNote -> {
-                viewModelScope.launch(Dispatchers.IO){
-                    _notesFlow.emit(SendNote(info = _state.value.inputText ,attachmentFile = generateRandomUUID()))
+                viewModelScope.launch(Dispatchers.IO) {
+                    _notesFlow.emit(
+                        SendNote(
+                            info = _state.value.inputText,
+                            attachmentFile = generateRandomUUID()
+                        )
+                    )
                     _state.value = _state.value.copy(inputText = "")
                 }
             }
@@ -131,6 +139,28 @@ class TaskDetailViewModel @Inject constructor(
             }
             TaskDetailEvent.ShowMore -> {
                 getMyLogin()
+            }
+            is TaskDetailEvent.OpenCloseSetTaskStatusDialog -> {
+                _state.value = _state.value.copy(
+                    setTaskStatusDialogState = SetTaskStatusDialogState().copy(
+                        selectedStatus = _state.value.task.taskStatus,
+                        taskId = _state.value.task.id,
+                        isOpen = !_state.value.setTaskStatusDialogState.isOpen
+                    )
+                )
+            }
+            TaskDetailEvent.SetTaskStatus -> {
+                setTaskStatus()
+            }
+            is TaskDetailEvent.SetTaskStatusDialog -> {
+                _state.value = _state.value.copy(
+                    setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                        selectedStatus = event.newStatus
+                    )
+                )
+            }
+            is TaskDetailEvent.SetTaskDeadLine -> {
+                setTaskDeadLine(event.newDeadLine.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             }
         }
     }
@@ -217,6 +247,83 @@ class TaskDetailViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             isLoading = result.isLoading,
                             error = result.message ?: ""
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setTaskStatus() {
+        viewModelScope.launch {
+            val taskId = _state.value.setTaskStatusDialogState.taskId
+            val newStatus = _state.value.setTaskStatusDialogState.selectedStatus
+            setTaskStatusUseCase(Token.token, taskId, newStatus).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                            onEvent(TaskDetailEvent.OnAllRefresh)
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setTaskDeadLine(newDeadLine: String) {
+        viewModelScope.launch {
+            val taskId = _state.value.setTaskStatusDialogState.taskId
+            setTaskDeadLineUseCase(Token.token, taskId, newDeadLine).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                            onEvent(TaskDetailEvent.OnAllRefresh)
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
                         )
                     }
                 }

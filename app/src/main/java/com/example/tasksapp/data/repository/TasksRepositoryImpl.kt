@@ -135,4 +135,8 @@ class TasksRepositoryImpl(
     override suspend fun getNotesFromTask(token: String, taskId: String, offset: String): List<NoteDTO> {
         return api.getNotesFromTask(token, taskId, offset)
     }
+
+    override suspend fun setDeadLine(token: String, taskId: String, newDeadLine: String): SuccessResponseDTO {
+        return api.setTaskDeadLine(token, taskId, newDeadLine)
+    }
 }

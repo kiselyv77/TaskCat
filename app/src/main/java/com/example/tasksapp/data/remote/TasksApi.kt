@@ -61,4 +61,7 @@ interface TasksApi {
 
     @GET("/getNotesFromTask/{token}/{taskId}/{offset}")
     suspend fun getNotesFromTask(@Path("token") token: String, @Path("taskId") taskId: String, @Path("offset") offset: String): List<NoteDTO>
+
+    @POST("/setTaskDeadLine/{token}/{taskId}/{newDeadLine}")
+    suspend fun setTaskDeadLine(@Path("token") token: String, @Path("taskId") taskId: String, @Path("newDeadLine") newDeadLine:String): SuccessResponseDTO
 }

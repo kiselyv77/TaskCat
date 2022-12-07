@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,15 +20,18 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
-import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
-import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.commonComponents.*
 import com.example.tasksapp.presentation.screens.taskDetail.components.AddInfoTextField
 import com.example.tasksapp.presentation.screens.taskDetail.components.ItemNote
+import com.example.tasksapp.presentation.screens.taskDetail.components.TaskControlPanel
+import com.example.tasksapp.util.TaskStatus
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 @Composable
@@ -45,13 +49,18 @@ fun TaskDetailScreen(
         isRefreshing = state.isLoading
     )
     val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
+
+    val dialogDateState = rememberMaterialDialogState()
+    val dialogTimeState = rememberMaterialDialogState()
+    val dateState = remember {
+        mutableStateOf<LocalDate>(LocalDate.now())
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            Box(modifier = Modifier.padding(bottom = 50.dp)){
+            Box(modifier = Modifier.padding(bottom = 50.dp)) {
                 CustomFloatingActionButton(
                     imageVector = Icons.Default.ArrowBack,
                     onClick = { navigator.popBackStack() }
@@ -85,7 +94,9 @@ fun TaskDetailScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 16.dp, end = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     LazyColumn(
@@ -114,6 +125,30 @@ fun TaskDetailScreen(
                                     textPlaceHolderLength = 120
                                 )
                             }
+
+                            Card(modifier = Modifier.padding(vertical = 8.dp)) {
+                                Column() {
+                                    TextPlaceHolder(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                                            .heightIn(max = screenHeight / 3),
+                                        text = "${TaskStatus.getTaskStatusName(state.task.taskStatus)} \nдо ${state.task.deadLine}",
+                                        fontSize = 20.sp,
+                                        isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
+                                        textPlaceHolderLength = 10
+                                    )
+                                }
+                            }
+
+                            TaskControlPanel(
+                                openDialogSetTaskStatus = {
+                                    viewModel.onEvent(TaskDetailEvent.OpenCloseSetTaskStatusDialog)
+                                },
+                                openDialogSetTaskDeadLine = {
+                                    dialogDateState.show()
+                                }
+                            )
                         }
                         items(state.notesList) { note ->
                             ItemNote(
@@ -123,10 +158,10 @@ fun TaskDetailScreen(
                                 clicable = {}
                             )
                         }
-                        item{
+                        item {
                             OutlinedButton(
                                 modifier = Modifier.fillMaxWidth(),
-                                onClick = {viewModel.onEvent(TaskDetailEvent.ShowMore)}
+                                onClick = { viewModel.onEvent(TaskDetailEvent.ShowMore) }
                             ) {
                                 Text("Показать больше")
                             }
@@ -138,10 +173,36 @@ fun TaskDetailScreen(
                     label = "Введите подробности обновлений связаных с задачей",
                     isError = state.error.isNotEmpty(),
                     onValueChange = { viewModel.onEvent(TaskDetailEvent.SetInputText(it)) },
-                    onClear = {viewModel.onEvent(TaskDetailEvent.SetInputText(""))},
-                    onSend = {viewModel.onEvent(TaskDetailEvent.SendNote)}
+                    onClear = { viewModel.onEvent(TaskDetailEvent.SetInputText("")) },
+                    onSend = { viewModel.onEvent(TaskDetailEvent.SendNote) }
                 )
             }
         }
+
+        if(state.setTaskStatusDialogState.isOpen){
+            SetTaskStatusDialog(
+                state = state.setTaskStatusDialogState,
+                dismiss = {viewModel.onEvent(TaskDetailEvent.OpenCloseSetTaskStatusDialog) },
+                setTaskStatus = {viewModel.onEvent(TaskDetailEvent.SetTaskStatus)},
+                radioButtonClick = { viewModel.onEvent(TaskDetailEvent.SetTaskStatusDialog(newStatus = it))}
+            )
+        }
+
+
+
+        DataTimePickerDialog(
+            dialogDateState = dialogDateState,
+            dialogTimeState = dialogTimeState,
+            onDateChange = { date ->
+                dateState.value = date
+            },
+            onTimeChange = { time ->
+                val dateTime = LocalDateTime.of(
+                    dateState.value,
+                    time
+                )
+                viewModel.onEvent(TaskDetailEvent.SetTaskDeadLine(dateTime))
+            }
+        )
     }
 }

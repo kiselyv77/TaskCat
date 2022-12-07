@@ -3,6 +3,7 @@ package com.example.tasksapp.presentation.screens.workSpaceDetail
 import com.example.tasksapp.domain.model.TaskModel
 import com.example.tasksapp.domain.model.UserModel
 import com.example.tasksapp.domain.model.WorkSpaceModel
+import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
 import com.example.tasksapp.util.TaskStatus
 import java.time.LocalDateTime
 
@@ -54,11 +55,4 @@ data class AddUserDialogState(
     val error:String = "",
 )
 
-data class SetTaskStatusDialogState(
-    val taskId:String = "",
-    val selectedStatus:String = "",
-    val isOpen:Boolean = false,
-    val isSuccess:Boolean = false,
-    val isLoading:Boolean = false,
-    val error:String = ""
-)
+

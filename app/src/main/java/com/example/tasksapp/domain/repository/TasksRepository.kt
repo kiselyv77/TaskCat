@@ -45,4 +45,6 @@ interface TasksRepository {
     suspend fun uploadFileVoiceMessage(token:String, stream: InputStream, fileName:String):SuccessResponseDTO
 
     suspend fun getNotesFromTask(token: String, taskId: String, offset: String): List<NoteDTO>
+
+    suspend fun setDeadLine(token: String, taskId: String, newDeadLine: String): SuccessResponseDTO
 }
