@@ -43,7 +43,10 @@ data class AddTaskDialogState(
     val error:String = "",
     val isSuccess:Boolean = false,
     val isLoading:Boolean = false,
-    val deadLine: LocalDateTime = LocalDateTime.MIN
+    val deadLine: LocalDateTime = LocalDateTime.MIN,
+    val selectedUsers:List<String> = emptyList(),
+    val users:List<UserModel> = emptyList(),
+
 )
 
 

@@ -1,4 +1,4 @@
-package com.example.tasksapp.presentation.screens.workSpaceDetail.components
+package com.example.tasksapp.presentation.commonComponents
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,8 +10,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasksapp.data.remote.Spec
-import com.example.tasksapp.presentation.commonComponents.AvatarImage
-import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 
 @Composable
 fun UsersPanel(

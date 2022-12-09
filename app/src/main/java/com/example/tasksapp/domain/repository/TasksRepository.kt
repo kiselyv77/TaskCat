@@ -24,7 +24,7 @@ interface TasksRepository {
 
     suspend fun getTasksFromWorkSpace(token: String, workSpaceId: String): List<TaskDTO>
 
-    suspend fun addTaskToWorkSpace(token: String, name: String, description: String, workSpaceId: String, deadLine: String): TaskDTO
+    suspend fun addTaskToWorkSpace(token: String, name: String, description: String, workSpaceId: String, deadLine: String, userList:List<String>): TaskDTO
 
     suspend fun addUserToWorkSpace(token:String, userLogin: String, workSpaceId: String): UserDTO
 
@@ -47,4 +47,6 @@ interface TasksRepository {
     suspend fun getNotesFromTask(token: String, taskId: String, offset: String): List<NoteDTO>
 
     suspend fun setDeadLine(token: String, taskId: String, newDeadLine: String): SuccessResponseDTO
+
+    suspend fun getUsersFromTask(token: String, taskId: String): List<UserDTO>
 }

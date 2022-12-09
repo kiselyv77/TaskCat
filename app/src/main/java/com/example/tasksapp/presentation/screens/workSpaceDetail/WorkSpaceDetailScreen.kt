@@ -23,10 +23,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
-import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
-import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialog
-import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.commonComponents.*
 import com.example.tasksapp.presentation.screens.destinations.MessengerScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.TaskDetailScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.UsersListScreenDestination
@@ -203,6 +200,7 @@ fun WorkSpaceDetailScreen(
                 onDescriptionChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetTaskDescriptionInDialog(it)) },
                 onDeadLineChanged = {viewModel.onEvent(WorkSpaceDetailEvent.SetTaskDeadLineDialog(it))},
                 addTask = { viewModel.onEvent(WorkSpaceDetailEvent.AddTask) },
+                onUserSelect = {viewModel.onEvent(WorkSpaceDetailEvent.UserSelectDialog(it))}
             )
         }
 

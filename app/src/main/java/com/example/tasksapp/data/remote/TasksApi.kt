@@ -64,4 +64,7 @@ interface TasksApi {
 
     @POST("/setTaskDeadLine/{token}/{taskId}/{newDeadLine}")
     suspend fun setTaskDeadLine(@Path("token") token: String, @Path("taskId") taskId: String, @Path("newDeadLine") newDeadLine:String): SuccessResponseDTO
+
+    @GET("/getUsersFromTask/{token}/{taskId}")
+    suspend fun getUsersFromTask(@Path("token") token: String, @Path("taskId") taskId: String): List<UserDTO>
 }

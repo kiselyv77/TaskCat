@@ -37,6 +37,7 @@ class TaskDetailViewModel @Inject constructor(
     private val getNotesFromTask: GetNotesFromTask,
     private val setTaskStatusUseCase: SetTaskStatus,
     private val setTaskDeadLineUseCase: SetTaskDeadLine,
+    private val getUsersFromTaskUse: GetUsersFromTask,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = mutableStateOf(TaskDetailState())
@@ -54,6 +55,7 @@ class TaskDetailViewModel @Inject constructor(
     init {
         getMyLogin()
         getTask()
+        getUsers()
         viewModelScope.launch(Dispatchers.IO) {
             val taskId = savedStateHandle.get<String>("id") ?: return@launch
             try {
@@ -327,6 +329,45 @@ class TaskDetailViewModel @Inject constructor(
                         )
                     }
                 }
+            }
+        }
+    }
+
+    private fun getUsers() {
+        viewModelScope.launch {
+            val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
+            getUsersFromTaskUse(Token.token, workSpaceId).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let { users ->
+                            _state.value = _state.value.copy(
+                                usersState = _state.value.usersState.copy(
+                                    users = users,
+                                    error = "",
+                                    isLoading = false
+                                )
+                            )
+
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value =
+                            _state.value.copy(
+                                usersState = _state.value.usersState.copy(
+                                    error = result.message ?: "", isLoading = false
+                                )
+                            )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            usersState = _state.value.usersState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
+
             }
         }
     }

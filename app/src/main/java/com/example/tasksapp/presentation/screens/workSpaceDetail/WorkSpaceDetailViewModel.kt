@@ -55,7 +55,10 @@ class WorkSpaceDetailViewModel @Inject constructor(
 
             is WorkSpaceDetailEvent.OpenCloseAddTaskDialog -> {
                 _state.value = _state.value.copy(
-                    addTaskDialogState = AddTaskDialogState().copy(isOpen = !_state.value.addTaskDialogState.isOpen)
+                    addTaskDialogState = AddTaskDialogState().copy(
+                        isOpen = !_state.value.addTaskDialogState.isOpen,
+                        users = _state.value.usersState.users.filter { it.login != state.value.myLogin }
+                    )
                 )
             }
             is WorkSpaceDetailEvent.OpenCloseAddUserDialog -> {
@@ -66,7 +69,8 @@ class WorkSpaceDetailViewModel @Inject constructor(
             is WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog -> {
                 _state.value = _state.value.copy(
                     setTaskStatusDialogState = SetTaskStatusDialogState().copy(
-                        selectedStatus = _state.value.tasksState.tasks.lastOrNull{it.id == event.taskId}?.taskStatus ?: "",
+                        selectedStatus = _state.value.tasksState.tasks.lastOrNull { it.id == event.taskId }?.taskStatus
+                            ?: "",
                         taskId = event.taskId,
                         isOpen = !_state.value.setTaskStatusDialogState.isOpen
                     )
@@ -86,7 +90,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 if (_state.value.addTaskDialogState.name.isNotEmpty()
                     && _state.value.addTaskDialogState.description.isNotEmpty()
                 ) {
-                    if(_state.value.addTaskDialogState.deadLine != LocalDateTime.MIN) addTask()
+                    if (_state.value.addTaskDialogState.deadLine != LocalDateTime.MIN) addTask()
                     else _state.value = _state.value.copy(
                         addTaskDialogState = _state.value.addTaskDialogState.copy(error = "Назначте сроки выполнения")
                     )
@@ -136,6 +140,22 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     addTaskDialogState = _state.value.addTaskDialogState.copy(deadLine = event.deadLine)
                 )
+            }
+            is WorkSpaceDetailEvent.UserSelectDialog -> {
+                _state.value = _state.value.copy(
+                    addTaskDialogState = _state.value.addTaskDialogState.copy(
+
+                        selectedUsers = if (_state.value.addTaskDialogState.selectedUsers.contains(
+                                event.userLogin
+                            )
+                        ) {
+                            _state.value.addTaskDialogState.selectedUsers.filter { it != event.userLogin }
+                        } else {
+                            _state.value.addTaskDialogState.selectedUsers.plus(event.userLogin)
+                        }
+                    )
+                )
+
             }
         }
     }
@@ -223,7 +243,8 @@ class WorkSpaceDetailViewModel @Inject constructor(
                 name = _state.value.addTaskDialogState.name,
                 description = _state.value.addTaskDialogState.description,
                 workSpaceId = workSpaceId,
-                deadLine = _state.value.addTaskDialogState.deadLine.format(DateTimeFormatter.ISO_DATE_TIME)
+                deadLine = _state.value.addTaskDialogState.deadLine.format(DateTimeFormatter.ISO_DATE_TIME),
+                userList = _state.value.addTaskDialogState.selectedUsers
             ).collect { result ->
                 when (result) {
                     is Resource.Success -> {

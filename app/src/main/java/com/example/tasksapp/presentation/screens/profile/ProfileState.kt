@@ -7,5 +7,5 @@ data class ProfileState(
     val error: String = "",
     val profileImgKey:Int = 0,
     val isLoading: Boolean = true,
-    val isLogOut: Boolean = false
+    val isLogOut: Boolean = false,
 )

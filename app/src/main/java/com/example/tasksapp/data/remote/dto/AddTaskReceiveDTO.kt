@@ -5,5 +5,6 @@ data class AddTaskReceiveDTO(
     val name: String,
     val description:String,
     val workSpaceId: String,
-    val deadLine: String
+    val deadLine: String,
+    val userList: List<String>,
 )

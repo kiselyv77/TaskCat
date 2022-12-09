@@ -66,9 +66,10 @@ class TasksRepositoryImpl(
         name: String,
         description: String,
         workSpaceId: String,
-        deadLine: String
+        deadLine: String,
+        userList:List<String>
     ): TaskDTO {
-        return api.addTaskToWorkSpace(AddTaskReceiveDTO(token, name, description, workSpaceId, deadLine))
+        return api.addTaskToWorkSpace(AddTaskReceiveDTO(token, name, description, workSpaceId, deadLine, userList))
     }
 
     override suspend fun addUserToWorkSpace(
@@ -138,5 +139,9 @@ class TasksRepositoryImpl(
 
     override suspend fun setDeadLine(token: String, taskId: String, newDeadLine: String): SuccessResponseDTO {
         return api.setTaskDeadLine(token, taskId, newDeadLine)
+    }
+
+    override suspend fun getUsersFromTask(token: String, taskId: String): List<UserDTO> {
+        return api.getUsersFromTask(token, taskId)
     }
 }

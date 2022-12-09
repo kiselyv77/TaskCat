@@ -34,6 +34,8 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
 @OptIn(ExperimentalCoilApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -50,6 +52,7 @@ fun ProfileScreen(
     )
     val scaffoldState = rememberScaffoldState()
     val context = LocalContext.current
+    val dialogState = rememberMaterialDialogState()
 
     val launcher = rememberLauncherForActivityResult(
         contract =
@@ -120,15 +123,8 @@ fun ProfileScreen(
                     isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
                     color = if (state.status == UserStatus.ONLINE_STATUS) Color.Green else MaterialTheme.colors.onBackground
                 )
-
                 OutlinedButton(onClick = {
-
-                }) {
-                    Text("Редактировать профиль")
-                }
-
-                OutlinedButton(onClick = {
-                    viewModel.onEvent(ProfileEvent.LogOut)
+                    dialogState.show()
                 }) {
                     Text("Выйти из аккаунта")
                 }
@@ -146,6 +142,23 @@ fun ProfileScreen(
             navigator.clearBackStack(NavGraphs.root)
             navigator.navigate(RegistrationScreenDestination)
             //Наконецто
+        }
+
+
+        MaterialDialog(
+            dialogState = dialogState,
+            buttons = {
+                positiveButton("Да"){
+                    viewModel.onEvent(ProfileEvent.LogOut)
+                }
+                negativeButton("Отмена")
+            }
+        ) {
+            Text(
+                modifier = Modifier.padding(all = 16.dp),
+                fontSize = 20.sp,
+                text = "Вы действительно хотите выйти из аккаунта?"
+            )
         }
     }
 }

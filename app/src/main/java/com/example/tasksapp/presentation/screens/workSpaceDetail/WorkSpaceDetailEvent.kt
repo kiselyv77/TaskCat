@@ -19,6 +19,7 @@ sealed class WorkSpaceDetailEvent {
     data class SetTaskStatusDialog(val newStatus: String): WorkSpaceDetailEvent()
 
     data class SetTasksFilter(val filter:String): WorkSpaceDetailEvent()
+    data class UserSelectDialog(val userLogin: String) : WorkSpaceDetailEvent()
 
     object AddTask: WorkSpaceDetailEvent()
     object AddUser: WorkSpaceDetailEvent()

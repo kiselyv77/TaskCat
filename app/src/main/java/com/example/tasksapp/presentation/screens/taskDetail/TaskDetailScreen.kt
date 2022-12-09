@@ -1,5 +1,6 @@
 package com.example.tasksapp.presentation.screens.taskDetail
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
@@ -134,6 +136,7 @@ fun TaskDetailScreen(
                                             .padding(horizontal = 16.dp, vertical = 8.dp)
                                             .heightIn(max = screenHeight / 3),
                                         text = "${TaskStatus.getTaskStatusName(state.task.taskStatus)} \nдо ${state.task.deadLine}",
+                                        color = if(isOverdue(state.task.deadLine)) Color.Red else Color.Unspecified,
                                         fontSize = 20.sp,
                                         isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
                                         textPlaceHolderLength = 10
@@ -148,6 +151,19 @@ fun TaskDetailScreen(
                                 openDialogSetTaskDeadLine = {
                                     dialogDateState.show()
                                 }
+                            )
+
+                            val firstUsers = listOf(
+                                state.usersState.users.getOrNull(0)?.login,
+                                state.usersState.users.getOrNull(1)?.login,
+                                state.usersState.users.getOrNull(2)?.login,
+                            )
+
+                            UsersPanel(
+                                firstUsers = firstUsers,
+                                isPlaceholderVisible = state.usersState.isLoading||state.usersState.error.isNotEmpty(),
+                                usersCount = state.usersState.users.size,
+                                clickable = { Log.d("sadasdasdasd", state.usersState.users.toString())}
                             )
                         }
                         items(state.notesList) { note ->
@@ -187,8 +203,6 @@ fun TaskDetailScreen(
                 radioButtonClick = { viewModel.onEvent(TaskDetailEvent.SetTaskStatusDialog(newStatus = it))}
             )
         }
-
-
 
         DataTimePickerDialog(
             dialogDateState = dialogDateState,
