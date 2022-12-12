@@ -32,7 +32,6 @@ class WorkSpaceDetailViewModel @Inject constructor(
     val state: State<WorkSpaceDetailState> = _state
 
     init {
-
         getWorkSpace()
         getTasks()
         getUsers()

@@ -67,4 +67,7 @@ interface TasksApi {
 
     @GET("/getUsersFromTask/{token}/{taskId}")
     suspend fun getUsersFromTask(@Path("token") token: String, @Path("taskId") taskId: String): List<UserDTO>
+
+    @POST("/addUserToTask/{token}/{userLogin}/{taskId}")
+    suspend fun addUserToTask(@Path("token") token: String,@Path("userLogin") userLogin: String,@Path("taskId") taskId: String): SuccessResponseDTO
 }

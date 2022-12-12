@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,10 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.*
-import com.example.tasksapp.presentation.screens.taskDetail.components.AddInfoTextField
-import com.example.tasksapp.presentation.screens.taskDetail.components.ItemNote
-import com.example.tasksapp.presentation.screens.taskDetail.components.TaskControlPanel
+import com.example.tasksapp.presentation.screens.taskDetail.components.*
 import com.example.tasksapp.util.TaskStatus
+import com.example.tasksapp.util.UserTypes
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -41,7 +41,8 @@ import java.time.LocalDateTime
 fun TaskDetailScreen(
     navigator: DestinationsNavigator,
     viewModel: TaskDetailViewModel = hiltViewModel(),
-    id: String
+    id: String,
+    workSpaceId: String
 ) {
     val state = viewModel.state.value
     val focusManager = LocalFocusManager.current
@@ -55,6 +56,7 @@ fun TaskDetailScreen(
 
     val dialogDateState = rememberMaterialDialogState()
     val dialogTimeState = rememberMaterialDialogState()
+
     val dateState = remember {
         mutableStateOf<LocalDate>(LocalDate.now())
     }
@@ -145,6 +147,7 @@ fun TaskDetailScreen(
                             }
 
                             TaskControlPanel(
+                                isCreator = state.usersState.users.lastOrNull { it.login == state.my.login }?.userStatusToTask == UserTypes.CREATOR_TYPE,
                                 openDialogSetTaskStatus = {
                                     viewModel.onEvent(TaskDetailEvent.OpenCloseSetTaskStatusDialog)
                                 },
@@ -153,18 +156,10 @@ fun TaskDetailScreen(
                                 }
                             )
 
-                            val firstUsers = listOf(
-                                state.usersState.users.getOrNull(0)?.login,
-                                state.usersState.users.getOrNull(1)?.login,
-                                state.usersState.users.getOrNull(2)?.login,
-                            )
+                            UsersRow(state.usersState.users, addUserOpenDialog = {
+                                viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)
+                            })
 
-                            UsersPanel(
-                                firstUsers = firstUsers,
-                                isPlaceholderVisible = state.usersState.isLoading||state.usersState.error.isNotEmpty(),
-                                usersCount = state.usersState.users.size,
-                                clickable = { Log.d("sadasdasdasd", state.usersState.users.toString())}
-                            )
                         }
                         items(state.notesList) { note ->
                             ItemNote(
@@ -215,8 +210,24 @@ fun TaskDetailScreen(
                     dateState.value,
                     time
                 )
+                Log.d("asdasdasdasdads", "SetTaskDeadLine")
                 viewModel.onEvent(TaskDetailEvent.SetTaskDeadLine(dateTime))
             }
         )
+        if(state.addUserDialogState.isOpen){
+            AddUserToTaskDialog(
+                state = state.addUserDialogState,
+                onUserSelect = {},
+                dismiss = {viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)}
+            )
+        }
+
+
+    }
+    if (state.error.isNotEmpty()) {
+        LaunchedEffect(scaffoldState.snackbarHostState) {
+            val result = scaffoldState.snackbarHostState.showSnackbar("")
+            if (result == SnackbarResult.ActionPerformed) viewModel.onEvent(TaskDetailEvent.OnAllRefresh)
+        }
     }
 }

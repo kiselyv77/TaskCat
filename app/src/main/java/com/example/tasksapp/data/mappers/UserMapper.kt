@@ -8,6 +8,7 @@ fun UserDTO.toUserModel(): UserModel {
         name = name,
         status = status,
         login = login,
-        userStatusToWorkSpace = userStatusToWorkSpace
+        userStatusToWorkSpace = userStatusToWorkSpace,
+        userStatusToTask = userStatusToTask
     )
 }

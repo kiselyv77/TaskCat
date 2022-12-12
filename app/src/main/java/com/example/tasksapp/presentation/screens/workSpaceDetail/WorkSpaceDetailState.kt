@@ -49,7 +49,6 @@ data class AddTaskDialogState(
 
 )
 
-
 data class AddUserDialogState(
     val isOpen:Boolean = false,
     val userLogin:String = "",
@@ -57,5 +56,8 @@ data class AddUserDialogState(
     val isLoading:Boolean = false,
     val error:String = "",
 )
+
+
+
 
 

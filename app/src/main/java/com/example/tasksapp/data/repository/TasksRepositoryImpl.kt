@@ -144,4 +144,8 @@ class TasksRepositoryImpl(
     override suspend fun getUsersFromTask(token: String, taskId: String): List<UserDTO> {
         return api.getUsersFromTask(token, taskId)
     }
+
+    override suspend fun addUserToTask(token: String, userLogin: String, taskId: String): SuccessResponseDTO {
+        return api.addUserToTask(token, userLogin, taskId)
+    }
 }

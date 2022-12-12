@@ -4,7 +4,7 @@ import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.domain.model.UserModel
 
 data class MessengerState(
-    val my: UserModel = UserModel("", "", "", ""),
+    val my: UserModel = UserModel("", "", "", "", ""),
     val messagesList: List<MessageModel> = listOf<MessageModel>(),
     val inputMessage: String = "",
     val isLoading: Boolean = true,

@@ -49,4 +49,8 @@ interface TasksRepository {
     suspend fun setDeadLine(token: String, taskId: String, newDeadLine: String): SuccessResponseDTO
 
     suspend fun getUsersFromTask(token: String, taskId: String): List<UserDTO>
+
+    suspend fun addUserToTask(token: String, userLogin: String, taskId: String): SuccessResponseDTO
+
+
 }

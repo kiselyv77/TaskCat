@@ -23,7 +23,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.tasksapp.presentation.commonComponents.*
+import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
+import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
+import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialog
+import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.destinations.MessengerScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.TaskDetailScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.UsersListScreenDestination
@@ -165,7 +168,7 @@ fun WorkSpaceDetailScreen(
                                 count = index+1,
                                 name = task.name,
                                 description = task.description,
-                                onClick = { navigator.navigate(TaskDetailScreenDestination(task.id)) },
+                                onClick = { navigator.navigate(TaskDetailScreenDestination(task.id, id)) },
                                 onLongClick = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog(task.id)) },
                                 taskStatus = TaskStatus.getTaskStatusName(task.taskStatus),
                                 deadLine = task.deadLine
