@@ -15,6 +15,6 @@ sealed class TaskDetailEvent {
 
     object OpenCloseAddUserToTaskDialog: TaskDetailEvent()
 
-    object AddUserToTask : TaskDetailEvent()
+    data class AddUserToTask(val userLogin: String) : TaskDetailEvent()
 
 }

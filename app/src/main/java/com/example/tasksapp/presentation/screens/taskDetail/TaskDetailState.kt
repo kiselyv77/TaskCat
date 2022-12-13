@@ -25,10 +25,10 @@ data class UsersState(
 
 data class AddUserToTaskDialogState(
     val error: String = "",
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val isSuccess:Boolean = false,
     val isOpen:Boolean = false,
-    val usersFromWorkSpaceList:List<UserModel> = emptyList()
+    val displayedList:List<UserModel> = emptyList()
 )
 
 

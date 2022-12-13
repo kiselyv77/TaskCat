@@ -27,6 +27,7 @@ import com.example.tasksapp.presentation.commonComponents.*
 import com.example.tasksapp.presentation.screens.taskDetail.components.*
 import com.example.tasksapp.util.TaskStatus
 import com.example.tasksapp.util.UserTypes
+import com.example.tasksapp.util.isOverdue
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -217,11 +218,10 @@ fun TaskDetailScreen(
         if(state.addUserDialogState.isOpen){
             AddUserToTaskDialog(
                 state = state.addUserDialogState,
-                onUserSelect = {},
-                dismiss = {viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)}
+                onUserSelect = {viewModel.onEvent(TaskDetailEvent.AddUserToTask(userLogin = it))},
+                dismiss = {viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)},
             )
         }
-
 
     }
     if (state.error.isNotEmpty()) {

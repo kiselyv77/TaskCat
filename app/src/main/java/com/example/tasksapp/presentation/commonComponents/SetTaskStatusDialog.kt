@@ -45,7 +45,6 @@ fun SetTaskStatusDialog(
                 .clip(shape = RoundedCornerShape(4.dp))
                 .background(color = Color.White)
         ) {
-
             TASK_TYPES.forEach {
                 val name = getTaskStatusName(it)
                 Row(

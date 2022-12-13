@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tasksapp.presentation.commonComponents.isOverdue
+import com.example.tasksapp.util.isOverdue
 import com.example.tasksapp.util.getTime
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

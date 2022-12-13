@@ -171,12 +171,11 @@ class TaskDetailViewModel @Inject constructor(
                 getUsers()
             }
             TaskDetailEvent.OpenCloseAddUserToTaskDialog -> {
-                if(_state.value.addUserDialogState.isOpen){
+                if (_state.value.addUserDialogState.isOpen) {
                     _state.value = _state.value.copy(
                         addUserDialogState = AddUserToTaskDialogState(),
                     )
-                }
-                else{
+                } else {
                     getUsersFromWorkSpace()
                     _state.value = _state.value.copy(
                         addUserDialogState = AddUserToTaskDialogState(isOpen = true)
@@ -184,7 +183,7 @@ class TaskDetailViewModel @Inject constructor(
                 }
             }
             is TaskDetailEvent.AddUserToTask -> {
-
+                addUser(userLogin = event.userLogin)
             }
         }
     }
@@ -398,7 +397,9 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val workSpaceId = savedStateHandle.get<String>("workSpaceId") ?: return@launch
             getUsersFromWorkSpace(Token.token, workSpaceId).collect { result ->
+                Log.d("asdasdadssddfdlg,s", result.toString() )
                 when (result) {
+
                     is Resource.Success -> {
                         result.data?.let { users ->
                             Log.d("asdasdasdsdasadsdasda", users.toString())
@@ -406,7 +407,8 @@ class TaskDetailViewModel @Inject constructor(
                                 addUserDialogState = _state.value.addUserDialogState.copy(
                                     isSuccess = true,
                                     isLoading = false,
-                                    usersFromWorkSpaceList = users,
+                                    displayedList =
+                                       users.filter { it.login !in  _state.value.usersState.users.map { item -> item.login } },
                                     error = ""
                                 )
                             )
@@ -415,11 +417,12 @@ class TaskDetailViewModel @Inject constructor(
                     is Resource.Error -> {
                         _state.value = _state.value.copy(
                             addUserDialogState = _state.value.addUserDialogState.copy(
-                                    error = result.message ?: "", isLoading = false
-                                )
+                                error = result.message ?: "", isLoading = false
                             )
+                        )
                     }
                     is Resource.Loading -> {
+
                         _state.value = _state.value.copy(
                             addUserDialogState = _state.value.addUserDialogState.copy(
                                 isLoading = result.isLoading,
@@ -433,7 +436,7 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
-    private fun addUser(userLogin:String) {
+    private fun addUser(userLogin: String) {
         viewModelScope.launch {
             val taskId = _state.value.task.id
             addUserToTaskUseCase(
@@ -446,7 +449,9 @@ class TaskDetailViewModel @Inject constructor(
                         result.data?.let { it ->
                             Log.d("addWorkspace", it.toString())
                             _state.value = _state.value.copy(
-
+                                addUserDialogState = _state.value.addUserDialogState.copy(
+                                    displayedList = _state.value.addUserDialogState.displayedList.filter { it.login != userLogin }
+                                )
                             )
                             onEvent(TaskDetailEvent.OnUsersRefresh)
                         }
