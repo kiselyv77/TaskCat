@@ -69,5 +69,8 @@ interface TasksApi {
     suspend fun getUsersFromTask(@Path("token") token: String, @Path("taskId") taskId: String): List<UserDTO>
 
     @POST("/addUserToTask/{token}/{userLogin}/{taskId}")
-    suspend fun addUserToTask(@Path("token") token: String,@Path("userLogin") userLogin: String,@Path("taskId") taskId: String): SuccessResponseDTO
+    suspend fun addUserToTask(@Path("token") token: String,@Path("userLogin") userLogin: String, @Path("taskId") taskId: String): SuccessResponseDTO
+
+    @POST("/deleteWorkSpace/{token}/{workSpaceId}")
+    suspend fun deleteWorkSpace(@Path("token")token: String, @Path("workSpaceId")workSpaceId: String): SuccessResponseDTO
 }

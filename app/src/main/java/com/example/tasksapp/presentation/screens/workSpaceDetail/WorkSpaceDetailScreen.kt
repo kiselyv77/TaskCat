@@ -127,7 +127,7 @@ fun WorkSpaceDetailScreen(
                     firstUsers = firstUsers,
                     isPlaceholderVisible = state.usersState.isLoading||state.usersState.error.isNotEmpty(),
                     usersCount = state.usersState.users.size,
-                    clickable = {navigator.navigate(UsersListScreenDestination(id))}
+                    clickable = {navigator.navigate(onlyIfResumed = true, direction = UsersListScreenDestination(id))}
                 )
 
                 // Будет true если мы администратор или создатель
@@ -138,7 +138,7 @@ fun WorkSpaceDetailScreen(
                     isAdmin = isAdmin,
                     addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
                     addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) },
-                    messenger = {navigator.navigate(MessengerScreenDestination(id))}
+                    messenger = {navigator.navigate(onlyIfResumed = true, direction = MessengerScreenDestination(id))}
                 )
 
                 TasksInfoBlock(
@@ -168,7 +168,7 @@ fun WorkSpaceDetailScreen(
                                 count = index+1,
                                 name = task.name,
                                 description = task.description,
-                                onClick = { navigator.navigate(TaskDetailScreenDestination(task.id, id)) },
+                                onClick = { navigator.navigate(onlyIfResumed = true, direction = TaskDetailScreenDestination(task.id, id)) },
                                 onLongClick = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseSetTaskStatusDialog(task.id)) },
                                 taskStatus = TaskStatus.getTaskStatusName(task.taskStatus),
                                 deadLine = task.deadLine

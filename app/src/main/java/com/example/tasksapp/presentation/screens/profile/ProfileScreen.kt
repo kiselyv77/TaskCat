@@ -24,6 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
+import com.example.tasksapp.presentation.commonComponents.CustomMaterialDialog
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.NavGraphs
@@ -34,7 +35,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
 @OptIn(ExperimentalCoilApi::class)
@@ -87,7 +87,8 @@ fun ProfileScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val imageUrl = "https://${Spec.BASE_URL}/getAvatar/${state.login}?" + state.profileImgKey
+                val imageUrl =
+                    "https://${Spec.BASE_URL}/getAvatar/${state.login}?" + state.profileImgKey
                 AvatarImage(
                     imageUrl = imageUrl,
                     modifier = Modifier
@@ -144,22 +145,12 @@ fun ProfileScreen(
             //Наконецто
         }
 
-
-        MaterialDialog(
+        CustomMaterialDialog(
             dialogState = dialogState,
-            buttons = {
-                positiveButton("Да"){
-                    viewModel.onEvent(ProfileEvent.LogOut)
-                }
-                negativeButton("Отмена")
-            }
-        ) {
-            Text(
-                modifier = Modifier.padding(all = 16.dp),
-                fontSize = 20.sp,
-                text = "Вы действительно хотите выйти из аккаунта?"
-            )
-        }
+            text = "Вы действительно хотите выйти из аккаунта?",
+            onPositiveButton = {viewModel.onEvent(ProfileEvent.LogOut)}
+        )
+
     }
 }
 

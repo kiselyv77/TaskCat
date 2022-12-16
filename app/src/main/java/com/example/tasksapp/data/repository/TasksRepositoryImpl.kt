@@ -148,4 +148,8 @@ class TasksRepositoryImpl(
     override suspend fun addUserToTask(token: String, userLogin: String, taskId: String): SuccessResponseDTO {
         return api.addUserToTask(token, userLogin, taskId)
     }
+
+    override suspend fun deleteWorkSpace(token: String, workSpaceId: String): SuccessResponseDTO {
+        return api.deleteWorkSpace(token, workSpaceId)
+    }
 }
