@@ -6,4 +6,5 @@ data class WorkSpacesListState(
     val workSpacesList: List<WorkSpaceModel> = emptyList(),
     val error:String = "",
     val isLoading:Boolean = false,
+
 )

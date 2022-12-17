@@ -3,6 +3,7 @@ package com.example.tasksapp.presentation.screens.workSpaceDetail
 import com.example.tasksapp.domain.model.TaskModel
 import com.example.tasksapp.domain.model.UserModel
 import com.example.tasksapp.domain.model.WorkSpaceModel
+import com.example.tasksapp.presentation.commonComponents.CustomAlertDialogState
 import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
 import com.example.tasksapp.util.TaskStatus
 import java.time.LocalDateTime
@@ -16,6 +17,8 @@ data class WorkSpaceDetailState(
     val addTaskDialogState: AddTaskDialogState = AddTaskDialogState(),
     val addUserDialogState: AddUserDialogState = AddUserDialogState(),
     val setTaskStatusDialogState: SetTaskStatusDialogState = SetTaskStatusDialogState(),
+    val deleteWorkSpaceDialog: CustomAlertDialogState = CustomAlertDialogState(),
+    val leaveDialog: CustomAlertDialogState = CustomAlertDialogState(),
     val tasksState: TasksState = TasksState(),
     val usersState:UsersState = UsersState(),
 )
@@ -46,6 +49,7 @@ data class AddTaskDialogState(
     val deadLine: LocalDateTime = LocalDateTime.MIN,
     val selectedUsers:List<String> = emptyList(),
     val users:List<UserModel> = emptyList(),
+
 
 )
 

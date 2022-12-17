@@ -51,7 +51,14 @@ interface TasksRepository {
     suspend fun getUsersFromTask(token: String, taskId: String): List<UserDTO>
 
     suspend fun addUserToTask(token: String, userLogin: String, taskId: String): SuccessResponseDTO
+
     suspend fun deleteWorkSpace(token: String, workSpaceId: String): SuccessResponseDTO
+
+    suspend fun deleteTask(token: String, taskId: String): SuccessResponseDTO
+
+    suspend fun deleteUserFromWorkSpace(token: String, workSpaceId: String, userLogin: String): SuccessResponseDTO
+
+    suspend fun deleteUserFromTask(token: String, taskId: String, userLogin: String): SuccessResponseDTO
 
 
 }

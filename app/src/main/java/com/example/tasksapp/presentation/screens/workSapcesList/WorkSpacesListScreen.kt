@@ -14,8 +14,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -23,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
-import com.example.tasksapp.presentation.commonComponents.CustomMaterialDialog
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.screens.destinations.AddWorkSpaceScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.WorkSpaceDetailScreenDestination
@@ -32,28 +29,36 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
 
 @Destination(start = true)
 @Composable
 fun WorkSpacesListScreen(
     viewModel: WorkSpacesListViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    resultRecipient: ResultRecipient<WorkSpaceDetailScreenDestination, Boolean>
+
 ) {
     Log.d("sdmvdlkdlkvmdlkvm", viewModel.hashCode().toString())
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
 
-
-    val dialogState = rememberMaterialDialogState()
-    val workSpaceIdDialog = remember {
-        mutableStateOf("")
-    }
-
-
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = state.isLoading
     )
+
+    resultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Value -> {
+                if(result.value){
+                    viewModel.onEvent(WorkSpacesListEvent.OnRefresh)
+                }
+            }
+            NavResult.Canceled -> {}
+        }
+    }
+
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -65,7 +70,12 @@ fun WorkSpacesListScreen(
         floatingActionButton = {
             CustomFloatingActionButton(
                 imageVector = Icons.Default.Add,
-                onClick = { navigator.navigate(onlyIfResumed = true, direction = AddWorkSpaceScreenDestination) }
+                onClick = {
+                    navigator.navigate(
+                        onlyIfResumed = true,
+                        direction = AddWorkSpaceScreenDestination
+                    )
+                }
             )
         }
     ) {
@@ -81,7 +91,7 @@ fun WorkSpacesListScreen(
             state = swipeRefreshState,
             onRefresh = { viewModel.onEvent(WorkSpacesListEvent.OnRefresh) }
         ) {
-            if(state.workSpacesList.isEmpty() && !state.isLoading && state.error.isEmpty()) {
+            if (state.workSpacesList.isEmpty() && !state.isLoading && state.error.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         textAlign = TextAlign.Center,
@@ -98,23 +108,18 @@ fun WorkSpacesListScreen(
                     WorkSpaceItem(
                         name = workspace.name,
                         description = workspace.description,
-                        clicable = {navigator.navigate(onlyIfResumed = true, direction = WorkSpaceDetailScreenDestination(workspace.id))},
-                        delete = {
-                            dialogState.show()
-                            workSpaceIdDialog.value = workspace.id
+                        clicable = {
+                            navigator.navigate(
+                                onlyIfResumed = true,
+                                direction = WorkSpaceDetailScreenDestination(workspace.id)
+                            )
                         }
                     )
                 }
             }
         }
-        CustomMaterialDialog(
-            dialogState = dialogState,
-            text = "Вы действительно хотите удалить рабочие пространство?",
-            onPositiveButton = {
-                viewModel.onEvent(WorkSpacesListEvent.DeleteWorkSpace(workSpaceId = workSpaceIdDialog.value))
-            }
-        )
     }
+
     if (state.error.isNotEmpty()) {
         LaunchedEffect(scaffoldState.snackbarHostState) {
             val result = scaffoldState.snackbarHostState.showSnackbar("")

@@ -67,9 +67,18 @@ class TasksRepositoryImpl(
         description: String,
         workSpaceId: String,
         deadLine: String,
-        userList:List<String>
+        userList: List<String>
     ): TaskDTO {
-        return api.addTaskToWorkSpace(AddTaskReceiveDTO(token, name, description, workSpaceId, deadLine, userList))
+        return api.addTaskToWorkSpace(
+            AddTaskReceiveDTO(
+                token,
+                name,
+                description,
+                workSpaceId,
+                deadLine,
+                userList
+            )
+        )
     }
 
     override suspend fun addUserToWorkSpace(
@@ -117,7 +126,7 @@ class TasksRepositoryImpl(
         return api.setUserStatusToWorkSpace(token, userLogin, workSpaceId, newStatus)
     }
 
-    override suspend fun uploadNewAvatar(token:String, stream: InputStream): SuccessResponseDTO {
+    override suspend fun uploadNewAvatar(token: String, stream: InputStream): SuccessResponseDTO {
         val part = MultipartBody.Part.createFormData(
             "newAvatar", "newAvatar", stream.readBytes().toRequestBody()
         )
@@ -125,7 +134,11 @@ class TasksRepositoryImpl(
         return api.uploadNewAvatar(token, part)
     }
 
-    override suspend fun uploadFileVoiceMessage(token: String, stream: InputStream, fileName:String): SuccessResponseDTO {
+    override suspend fun uploadFileVoiceMessage(
+        token: String,
+        stream: InputStream,
+        fileName: String
+    ): SuccessResponseDTO {
         val part = MultipartBody.Part.createFormData(
             "newAvatar", fileName, stream.readBytes().toRequestBody()
         )
@@ -133,11 +146,19 @@ class TasksRepositoryImpl(
         return api.uploadFileVoiceMessage(token, part)
     }
 
-    override suspend fun getNotesFromTask(token: String, taskId: String, offset: String): List<NoteDTO> {
+    override suspend fun getNotesFromTask(
+        token: String,
+        taskId: String,
+        offset: String
+    ): List<NoteDTO> {
         return api.getNotesFromTask(token, taskId, offset)
     }
 
-    override suspend fun setDeadLine(token: String, taskId: String, newDeadLine: String): SuccessResponseDTO {
+    override suspend fun setDeadLine(
+        token: String,
+        taskId: String,
+        newDeadLine: String
+    ): SuccessResponseDTO {
         return api.setTaskDeadLine(token, taskId, newDeadLine)
     }
 
@@ -145,11 +166,35 @@ class TasksRepositoryImpl(
         return api.getUsersFromTask(token, taskId)
     }
 
-    override suspend fun addUserToTask(token: String, userLogin: String, taskId: String): SuccessResponseDTO {
+    override suspend fun addUserToTask(
+        token: String,
+        userLogin: String,
+        taskId: String
+    ): SuccessResponseDTO {
         return api.addUserToTask(token, userLogin, taskId)
     }
 
     override suspend fun deleteWorkSpace(token: String, workSpaceId: String): SuccessResponseDTO {
         return api.deleteWorkSpace(token, workSpaceId)
+    }
+
+    override suspend fun deleteTask(token: String, taskId: String): SuccessResponseDTO {
+        return api.deleteWorkSpace(token, taskId)
+    }
+
+    override suspend fun deleteUserFromWorkSpace(
+        token: String,
+        workSpaceId: String,
+        userLogin: String
+    ): SuccessResponseDTO {
+        return api.deleteUserFromWorkSpace(token, workSpaceId, userLogin)
+    }
+
+    override suspend fun deleteUserFromTask(
+        token: String,
+        taskId: String,
+        userLogin: String
+    ): SuccessResponseDTO {
+        return api.deleteUserFromTask(token, taskId, userLogin)
     }
 }

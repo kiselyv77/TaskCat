@@ -6,10 +6,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Message
-import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,8 +20,10 @@ fun WorkSpaceControlPanel(
     modifier: Modifier = Modifier,
     addTask: () -> Unit,
     addUser: () -> Unit,
-    messenger:()-> Unit,
-    isAdmin: Boolean
+    messenger: () -> Unit,
+    isAdmin: Boolean,
+    delete: () -> Unit,
+    leave: () -> Unit
 ) {
     Card(
         modifier
@@ -50,6 +49,7 @@ fun WorkSpaceControlPanel(
                     colorFilter = ColorFilter.tint(color)
                 )
             }
+
             IconButton(
                 onClick = { addTask() },
                 enabled = isAdmin
@@ -66,18 +66,6 @@ fun WorkSpaceControlPanel(
                     colorFilter = ColorFilter.tint(color)
                 )
             }
-            IconButton(
-                onClick = { }
-            ) {
-                Image(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .padding(8.dp),
-                    imageVector = Icons.Default.ExitToApp,
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
-                )
-            }
 
             IconButton(
                 onClick = { messenger() }
@@ -90,6 +78,36 @@ fun WorkSpaceControlPanel(
                     contentDescription = "",
                     colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
 
+                )
+            }
+
+            IconButton(
+                onClick = { delete() },
+                enabled = isAdmin
+            ) {
+                val color =
+                    if(isAdmin) MaterialTheme.colors.primary
+                    else Color.Gray
+                Image(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(8.dp),
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(color)
+                )
+            }
+
+            IconButton(
+                onClick = { leave() }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(8.dp),
+                    imageVector = Icons.Default.ExitToApp,
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
                 )
             }
         }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.domain.use_cases.*
+import com.example.tasksapp.presentation.commonComponents.CustomAlertDialogState
 import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.TaskStatus
@@ -24,6 +25,8 @@ class WorkSpaceDetailViewModel @Inject constructor(
     private val addTaskToWorkSpaceUseCase: AddTask,
     private val addUserToWorkSpace: AddUserToWorkSpace,
     private val getUsersFromWorkSpace: GetUsersFromWorkSpace,
+    private val deleteWorkSpaceUseCase: DeleteWorkSpace,
+    private val deleteUserFromWorkSpaceUseCase: DeleteUserFromWorkSpace,
     private val setTaskStatusUseCase: SetTaskStatus,
     private val getUserByToken: GetUserByToken,
     private val savedStateHandle: SavedStateHandle
@@ -154,7 +157,26 @@ class WorkSpaceDetailViewModel @Inject constructor(
                         }
                     )
                 )
+            }
 
+            is WorkSpaceDetailEvent.OpenCloseDeleteWorkSpaceDialog -> {
+                if (_state.value.deleteWorkSpaceDialog.isOpen) {
+                    _state.value = _state.value.copy(deleteWorkSpaceDialog = CustomAlertDialogState())
+                } else {
+                    _state.value = _state.value.copy(deleteWorkSpaceDialog = CustomAlertDialogState(isOpen = true))
+                }
+            }
+            is WorkSpaceDetailEvent.DeleteWorkSpace -> deleteWorkSpace()
+
+            is WorkSpaceDetailEvent.OpenCloseLeaveDialog -> {
+                if (_state.value.leaveDialog.isOpen) {
+                    _state.value = _state.value.copy(leaveDialog = CustomAlertDialogState())
+                } else {
+                    _state.value = _state.value.copy(leaveDialog = CustomAlertDialogState(isOpen = true))
+                }
+            }
+            is WorkSpaceDetailEvent.Leave -> {
+                leave()
             }
         }
     }
@@ -394,6 +416,78 @@ class WorkSpaceDetailViewModel @Inject constructor(
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(
                             setTaskStatusDialogState = _state.value.setTaskStatusDialogState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deleteWorkSpace() {
+        viewModelScope.launch {
+            deleteWorkSpaceUseCase(Token.token, _state.value.workspaceDetail.id).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                deleteWorkSpaceDialog = _state.value.deleteWorkSpaceDialog.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            deleteWorkSpaceDialog = _state.value.deleteWorkSpaceDialog.copy(
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            deleteWorkSpaceDialog = _state.value.deleteWorkSpaceDialog.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun leave() {
+        viewModelScope.launch {
+            deleteUserFromWorkSpaceUseCase(Token.token, _state.value.workspaceDetail.id, _state.value.myLogin).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                leaveDialog = _state.value.leaveDialog.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            leaveDialog = _state.value.leaveDialog.copy(
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            leaveDialog = _state.value.leaveDialog.copy(
                                 isLoading = result.isLoading,
                                 error = result.message ?: ""
                             )

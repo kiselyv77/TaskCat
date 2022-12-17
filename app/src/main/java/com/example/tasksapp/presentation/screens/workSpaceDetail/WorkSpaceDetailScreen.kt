@@ -23,10 +23,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
-import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
-import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialog
-import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
+import com.example.tasksapp.presentation.commonComponents.*
 import com.example.tasksapp.presentation.screens.destinations.MessengerScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.TaskDetailScreenDestination
 import com.example.tasksapp.presentation.screens.destinations.UsersListScreenDestination
@@ -37,12 +34,14 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultBackNavigator
 
 @Composable
 @Destination
 fun WorkSpaceDetailScreen(
     navigator: DestinationsNavigator,
     viewModel: WorkSpaceDetailViewModel = hiltViewModel(),
+    resultNavigator: ResultBackNavigator<Boolean>,
     id: String
 ) {
     val state = viewModel.state.value
@@ -138,7 +137,9 @@ fun WorkSpaceDetailScreen(
                     isAdmin = isAdmin,
                     addTask = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddTaskDialog) },
                     addUser = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog) },
-                    messenger = {navigator.navigate(onlyIfResumed = true, direction = MessengerScreenDestination(id))}
+                    messenger = {navigator.navigate(onlyIfResumed = true, direction = MessengerScreenDestination(id))},
+                    delete = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseDeleteWorkSpaceDialog) },
+                    leave = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseLeaveDialog)}
                 )
 
                 TasksInfoBlock(
@@ -213,6 +214,31 @@ fun WorkSpaceDetailScreen(
                 dismiss = {viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseAddUserDialog)},
                 onLoginUserChanged = { viewModel.onEvent(WorkSpaceDetailEvent.SetUserLoginInDialog(it))},
                 addUser = {viewModel.onEvent(WorkSpaceDetailEvent.AddUser)},
+            )
+        }
+        if (state.deleteWorkSpaceDialog.isOpen) {
+            CustomAlertDialog(
+                label = "Вы действительно хотите удалить это пространство?",
+                state = state.deleteWorkSpaceDialog,
+                ok = { viewModel.onEvent(WorkSpaceDetailEvent.DeleteWorkSpace) },
+                dismiss = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseDeleteWorkSpaceDialog) },
+                onSuccess = {
+                    viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseDeleteWorkSpaceDialog)
+                    resultNavigator.navigateBack(result = true)
+                }
+            )
+        }
+
+        if (state.leaveDialog.isOpen) {
+            CustomAlertDialog(
+                label = "Вы действительно хотите покинуть это рабочие пространство?",
+                state = state.leaveDialog,
+                ok = { viewModel.onEvent(WorkSpaceDetailEvent.Leave) },
+                dismiss = { viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseLeaveDialog) },
+                onSuccess = {
+                    viewModel.onEvent(WorkSpaceDetailEvent.OpenCloseLeaveDialog)
+                    resultNavigator.navigateBack(result = true)
+                }
             )
         }
 
