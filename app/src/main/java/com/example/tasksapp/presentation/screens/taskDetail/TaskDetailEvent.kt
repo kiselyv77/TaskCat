@@ -14,7 +14,8 @@ sealed class TaskDetailEvent {
     data class SetTaskDeadLine(val newDeadLine: LocalDateTime) : TaskDetailEvent()
 
     object OpenCloseAddUserToTaskDialog: TaskDetailEvent()
-
+    object OpenCloseDeleteTaskDialog : TaskDetailEvent()
+    object DeleteTask : TaskDetailEvent()
     data class AddUserToTask(val userLogin: String) : TaskDetailEvent()
 
 }

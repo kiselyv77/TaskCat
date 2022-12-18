@@ -32,6 +32,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -41,6 +42,7 @@ import java.time.LocalDateTime
 @Destination
 fun TaskDetailScreen(
     navigator: DestinationsNavigator,
+    resultNavigator: ResultBackNavigator<Boolean>,
     viewModel: TaskDetailViewModel = hiltViewModel(),
     id: String,
     workSpaceId: String
@@ -57,6 +59,8 @@ fun TaskDetailScreen(
 
     val dialogDateState = rememberMaterialDialogState()
     val dialogTimeState = rememberMaterialDialogState()
+
+
 
     val dateState = remember {
         mutableStateOf<LocalDate>(LocalDate.now())
@@ -154,6 +158,9 @@ fun TaskDetailScreen(
                                 },
                                 openDialogSetTaskDeadLine = {
                                     dialogDateState.show()
+                                },
+                                deleteTask = {
+                                    viewModel.onEvent(TaskDetailEvent.OpenCloseDeleteTaskDialog)
                                 }
                             )
 
@@ -197,6 +204,19 @@ fun TaskDetailScreen(
                 dismiss = {viewModel.onEvent(TaskDetailEvent.OpenCloseSetTaskStatusDialog) },
                 setTaskStatus = {viewModel.onEvent(TaskDetailEvent.SetTaskStatus)},
                 radioButtonClick = { viewModel.onEvent(TaskDetailEvent.SetTaskStatusDialog(newStatus = it))}
+            )
+        }
+
+        if (state.deleteTaskDialog.isOpen) {
+            CustomAlertDialog(
+                label = "Вы действительно хотите удалить эту задачу?",
+                state = state.deleteTaskDialog,
+                ok = { viewModel.onEvent(TaskDetailEvent.DeleteTask) },
+                dismiss = { viewModel.onEvent(TaskDetailEvent.OpenCloseDeleteTaskDialog) },
+                onSuccess = {
+                    viewModel.onEvent(TaskDetailEvent.OpenCloseDeleteTaskDialog)
+                    resultNavigator.navigateBack(result = true)
+                }
             )
         }
 

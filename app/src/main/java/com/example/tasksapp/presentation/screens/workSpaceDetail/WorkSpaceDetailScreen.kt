@@ -34,7 +34,9 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import com.ramcosta.composedestinations.result.ResultRecipient
 
 @Composable
 @Destination
@@ -42,6 +44,7 @@ fun WorkSpaceDetailScreen(
     navigator: DestinationsNavigator,
     viewModel: WorkSpaceDetailViewModel = hiltViewModel(),
     resultNavigator: ResultBackNavigator<Boolean>,
+    resultRecipient: ResultRecipient<TaskDetailScreenDestination, Boolean>,
     id: String
 ) {
     val state = viewModel.state.value
@@ -54,6 +57,17 @@ fun WorkSpaceDetailScreen(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
+
+    resultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Value -> {
+                if(result.value){
+                    viewModel.onEvent(WorkSpaceDetailEvent.OnTasksRefresh)
+                }
+            }
+            NavResult.Canceled -> {}
+        }
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,

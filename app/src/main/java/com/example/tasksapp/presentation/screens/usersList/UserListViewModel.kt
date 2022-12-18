@@ -1,11 +1,13 @@
 package com.example.tasksapp.presentation.screens.usersList
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
+import com.example.tasksapp.domain.use_cases.DeleteUserFromWorkSpace
 import com.example.tasksapp.domain.use_cases.GetUserByToken
 import com.example.tasksapp.domain.use_cases.GetUsersFromWorkSpace
 import com.example.tasksapp.domain.use_cases.SetUserStatusToWorkSpace
@@ -19,6 +21,7 @@ import javax.inject.Inject
 class UserListViewModel @Inject constructor(
     private val getUsersFromWorkSpace: GetUsersFromWorkSpace,
     private val setUserStatusToWorkSpaceUseCase: SetUserStatusToWorkSpace,
+    private val deleteUserFromWorkSpaceUseCase: DeleteUserFromWorkSpace,
     private val getUserByToken: GetUserByToken,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -41,13 +44,16 @@ class UserListViewModel @Inject constructor(
             }
             is UserListEvent.CloseOpenDialog -> {
                 _state.value = _state.value.copy(
-                    dialogState = SetUserStatusToWorkSpaceDialogState()
+                    dialogState = UserItemDialogState()
                         .copy(
                             isOpen = !_state.value.dialogState.isOpen,
                             currentStatus = event.currentStatus,
                             userLogin = event.userLogin
                         )
                 )
+            }
+            UserListEvent.DeleteUser -> {
+                deleteUser()
             }
         }
     }
@@ -90,6 +96,7 @@ class UserListViewModel @Inject constructor(
                 else -> UserTypes.MEMBER_TYPE
             }
             setUserStatusToWorkSpaceUseCase(Token.token, userLogin, workSpaceId, newStatus).collect { result ->
+                Log.d("asdasdasdadrrreeewe", result.toString())
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let {
@@ -145,6 +152,46 @@ class UserListViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             isLoading = result.isLoading,
                             error = result.message ?: ""
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deleteUser() {
+        viewModelScope.launch {
+            val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
+            deleteUserFromWorkSpaceUseCase(Token.token, workSpaceId, _state.value.dialogState.userLogin).collect { result ->
+
+                when (result) {
+
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                dialogState = _state.value.dialogState.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                            onEvent(UserListEvent.OnRefresh)
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            dialogState = _state.value.dialogState.copy(
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            dialogState = _state.value.dialogState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
                         )
                     }
                 }

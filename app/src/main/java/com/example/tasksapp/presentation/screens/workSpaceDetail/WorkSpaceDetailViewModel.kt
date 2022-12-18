@@ -22,6 +22,7 @@ import javax.inject.Inject
 class WorkSpaceDetailViewModel @Inject constructor(
     private val getWorkSpaceById: GetWorkSpaceById,
     private val getTasksFromWorkSpace: GetTasksFromWorkSpace,
+    private val getTasksFromWorkSpaceForUser: GetTasksFromWorkSpaceForUser,
     private val addTaskToWorkSpaceUseCase: AddTask,
     private val addUserToWorkSpace: AddUserToWorkSpace,
     private val getUsersFromWorkSpace: GetUsersFromWorkSpace,
@@ -214,7 +215,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
     private fun getTasks() {
         viewModelScope.launch {
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
-            getTasksFromWorkSpace(Token.token, workSpaceId).collect { result ->
+            getTasksFromWorkSpaceForUser(Token.token, workSpaceId).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let { tasks ->

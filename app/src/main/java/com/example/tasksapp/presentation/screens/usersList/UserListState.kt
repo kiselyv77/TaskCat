@@ -7,10 +7,10 @@ data class UserListState (
     val error:String = "",
     val isLoading:Boolean = false,
     val myLogin:String = "",
-    val dialogState: SetUserStatusToWorkSpaceDialogState = SetUserStatusToWorkSpaceDialogState()
+    val dialogState: UserItemDialogState = UserItemDialogState()
 )
 
-data class SetUserStatusToWorkSpaceDialogState(
+data class UserItemDialogState(
     val userLogin:String = "",
     val currentStatus:String = "",
     val isOpen:Boolean = false,

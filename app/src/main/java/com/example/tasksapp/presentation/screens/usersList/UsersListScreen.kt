@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
-import com.example.tasksapp.presentation.screens.usersList.components.SetUserStatusToWorkSpaceDialog
 import com.example.tasksapp.presentation.screens.usersList.components.UserItem
+import com.example.tasksapp.presentation.screens.usersList.components.UserItemDialog
 import com.example.tasksapp.util.UserTypes
 import com.example.tasksapp.util.UserTypes.getUserTypeName
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -94,10 +94,11 @@ fun UsersListScreen(
         }
     }
     if(state.dialogState.isOpen){
-        SetUserStatusToWorkSpaceDialog(
+        UserItemDialog(
             state = state.dialogState,
             dismiss = { viewModel.onEvent(UserListEvent.CloseOpenDialog()) },
-            setStatus = {viewModel.onEvent(UserListEvent.SetUserStatusToWorkSpace)}
+            setStatus = {viewModel.onEvent(UserListEvent.SetUserStatusToWorkSpace)},
+            deleteUser = { viewModel.onEvent(UserListEvent.DeleteUser) }
         )
     }
     if (state.error.isNotEmpty()) {

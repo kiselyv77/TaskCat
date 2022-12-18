@@ -11,6 +11,7 @@ import com.example.tasksapp.data.mappers.toNoteModel
 import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.data.remote.dto.NoteDTO
 import com.example.tasksapp.domain.use_cases.*
+import com.example.tasksapp.presentation.commonComponents.CustomAlertDialogState
 import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.generateRandomUUID
@@ -40,6 +41,7 @@ class TaskDetailViewModel @Inject constructor(
     private val getUsersFromTaskUseCase: GetUsersFromTask,
     private val getUsersFromWorkSpace: GetUsersFromWorkSpace,
     private val addUserToTaskUseCase: AddUserToTask,
+    private val deleteTaskUseCase: DeleteTask,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = mutableStateOf(TaskDetailState())
@@ -184,6 +186,57 @@ class TaskDetailViewModel @Inject constructor(
             }
             is TaskDetailEvent.AddUserToTask -> {
                 addUser(userLogin = event.userLogin)
+            }
+            TaskDetailEvent.DeleteTask -> {
+                deleteTask()
+            }
+            TaskDetailEvent.OpenCloseDeleteTaskDialog -> {
+                if (_state.value.deleteTaskDialog.isOpen) {
+                    _state.value = _state.value.copy(
+                        deleteTaskDialog = CustomAlertDialogState(),
+                    )
+                } else {
+                    getUsersFromWorkSpace()
+                    _state.value = _state.value.copy(
+                        deleteTaskDialog = CustomAlertDialogState(isOpen = true)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun deleteTask() {
+        viewModelScope.launch {
+            deleteTaskUseCase(Token.token, _state.value.task.id).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                deleteTaskDialog = _state.value.deleteTaskDialog.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            deleteTaskDialog = _state.value.deleteTaskDialog.copy(
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            deleteTaskDialog = _state.value.deleteTaskDialog.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
             }
         }
     }

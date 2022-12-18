@@ -60,5 +60,7 @@ interface TasksRepository {
 
     suspend fun deleteUserFromTask(token: String, taskId: String, userLogin: String): SuccessResponseDTO
 
+    suspend fun getTasksFromWorkSpaceForUser(token: String, workSpaceId: String): List<TaskDTO>
+
 
 }
