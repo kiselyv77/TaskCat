@@ -16,7 +16,6 @@ data class TaskDetailState(
     val setTaskStatusDialogState: SetTaskStatusDialogState = SetTaskStatusDialogState(),
     val addUserDialogState:AddUserToTaskDialogState = AddUserToTaskDialogState(),
     val deleteTaskDialog: CustomAlertDialogState = CustomAlertDialogState(),
-
     val inputText: String = ""
 )
 

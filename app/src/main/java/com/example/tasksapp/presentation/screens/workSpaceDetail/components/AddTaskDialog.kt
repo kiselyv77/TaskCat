@@ -82,6 +82,7 @@ fun AddTaskDialog(
             CustomTextField(
                 value = state.description,
                 label = "description",
+                maxChar = 200,
                 isError = state.error.isNotEmpty(),
                 trailingIcon = { /*TODO*/ },
                 onValueChange = { onDescriptionChanged(it) },

@@ -41,6 +41,7 @@ class TaskDetailViewModel @Inject constructor(
     private val getUsersFromTaskUseCase: GetUsersFromTask,
     private val getUsersFromWorkSpace: GetUsersFromWorkSpace,
     private val addUserToTaskUseCase: AddUserToTask,
+    private val deleteUserFromTaskUseCase: DeleteUserFromTask,
     private val deleteTaskUseCase: DeleteTask,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -202,8 +203,15 @@ class TaskDetailViewModel @Inject constructor(
                     )
                 }
             }
+            is TaskDetailEvent.OpenCloseUserItemDialog -> {
+
+            }
+            is TaskDetailEvent.DeleteUser -> {
+
+            }
         }
     }
+
 
     private fun deleteTask() {
         viewModelScope.launch {
@@ -266,7 +274,6 @@ class TaskDetailViewModel @Inject constructor(
                         )
                     }
                 }
-
             }
         }
     }

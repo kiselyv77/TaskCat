@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.CustomFloatingActionButton
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
+import com.example.tasksapp.presentation.commonComponents.UserItemDialog
 import com.example.tasksapp.presentation.screens.usersList.components.UserItem
-import com.example.tasksapp.presentation.screens.usersList.components.UserItemDialog
 import com.example.tasksapp.util.UserTypes
 import com.example.tasksapp.util.UserTypes.getUserTypeName
 import com.google.accompanist.swiperefresh.SwipeRefresh

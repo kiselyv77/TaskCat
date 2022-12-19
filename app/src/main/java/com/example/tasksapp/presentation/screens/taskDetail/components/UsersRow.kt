@@ -2,6 +2,7 @@ package com.example.tasksapp.presentation.screens.taskDetail.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -24,27 +25,33 @@ import com.example.tasksapp.presentation.commonComponents.AvatarImage
 
 @Composable
 fun UsersRow(
-    userList:List<UserModel>,
-    addUserOpenDialog:()->Unit,
+    userList: List<UserModel>,
+    addUserOpenDialog: () -> Unit,
+    onUserClick: (loginUser: String) -> Unit
 ) {
     val avatarsSize = 40.dp
 
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End){
+            .padding(vertical = 8.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
             LazyRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
-            ){
+            ) {
                 items(userList) {
                     AvatarImage(
                         imageUrl = "https://${Spec.BASE_URL}/getAvatar/${it.login}",
                         modifier = Modifier
                             .padding(end = 16.dp)
                             .size(avatarsSize)
+                            .clip(CircleShape)
+                            .clickable { onUserClick(it.login) }
                     )
                 }
             }
@@ -54,7 +61,8 @@ fun UsersRow(
                 Image(
                     modifier = Modifier
                         .size(55.dp)
-                        .padding(8.dp).clip(CircleShape)
+                        .padding(8.dp)
+                        .clip(CircleShape)
                         .border(1.dp, Color.Gray, CircleShape),
                     imageVector = Icons.Default.Add,
                     contentDescription = "",

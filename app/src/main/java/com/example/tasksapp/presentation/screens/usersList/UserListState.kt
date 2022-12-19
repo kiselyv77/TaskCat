@@ -18,3 +18,4 @@ data class UserItemDialogState(
     val isLoading:Boolean = false,
     val error:String = ""
 )
+

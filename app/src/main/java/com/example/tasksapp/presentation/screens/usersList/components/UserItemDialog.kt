@@ -1,4 +1,4 @@
-package com.example.tasksapp.presentation.screens.usersList.components
+package com.example.tasksapp.presentation.commonComponents
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -91,3 +91,4 @@ fun UserItemDialog(
         }
     }
 }
+

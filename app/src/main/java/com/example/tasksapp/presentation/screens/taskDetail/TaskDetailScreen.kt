@@ -61,7 +61,6 @@ fun TaskDetailScreen(
     val dialogTimeState = rememberMaterialDialogState()
 
 
-
     val dateState = remember {
         mutableStateOf<LocalDate>(LocalDate.now())
     }
@@ -143,7 +142,7 @@ fun TaskDetailScreen(
                                             .padding(horizontal = 16.dp, vertical = 8.dp)
                                             .heightIn(max = screenHeight / 3),
                                         text = "${TaskStatus.getTaskStatusName(state.task.taskStatus)} \nдо ${state.task.deadLine}",
-                                        color = if(isOverdue(state.task.deadLine)) Color.Red else Color.Unspecified,
+                                        color = if (isOverdue(state.task.deadLine)) Color.Red else Color.Unspecified,
                                         fontSize = 20.sp,
                                         isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
                                         textPlaceHolderLength = 10
@@ -164,9 +163,15 @@ fun TaskDetailScreen(
                                 }
                             )
 
-                            UsersRow(state.usersState.users, addUserOpenDialog = {
-                                viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)
-                            })
+                            UsersRow(
+                                userList = state.usersState.users,
+                                addUserOpenDialog = {
+                                    viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)
+                                },
+                                onUserClick = {
+                                    viewModel.onEvent(TaskDetailEvent.OpenCloseUserItemDialog(userLogin = it))
+                                }
+                            )
 
                         }
                         items(state.notesList) { note ->
@@ -198,14 +203,15 @@ fun TaskDetailScreen(
             }
         }
 
-        if(state.setTaskStatusDialogState.isOpen){
+        if (state.setTaskStatusDialogState.isOpen) {
             SetTaskStatusDialog(
                 state = state.setTaskStatusDialogState,
-                dismiss = {viewModel.onEvent(TaskDetailEvent.OpenCloseSetTaskStatusDialog) },
-                setTaskStatus = {viewModel.onEvent(TaskDetailEvent.SetTaskStatus)},
-                radioButtonClick = { viewModel.onEvent(TaskDetailEvent.SetTaskStatusDialog(newStatus = it))}
+                dismiss = { viewModel.onEvent(TaskDetailEvent.OpenCloseSetTaskStatusDialog) },
+                setTaskStatus = { viewModel.onEvent(TaskDetailEvent.SetTaskStatus) },
+                radioButtonClick = { viewModel.onEvent(TaskDetailEvent.SetTaskStatusDialog(newStatus = it)) }
             )
         }
+
 
         if (state.deleteTaskDialog.isOpen) {
             CustomAlertDialog(
@@ -235,11 +241,11 @@ fun TaskDetailScreen(
                 viewModel.onEvent(TaskDetailEvent.SetTaskDeadLine(dateTime))
             }
         )
-        if(state.addUserDialogState.isOpen){
+        if (state.addUserDialogState.isOpen) {
             AddUserToTaskDialog(
                 state = state.addUserDialogState,
-                onUserSelect = {viewModel.onEvent(TaskDetailEvent.AddUserToTask(userLogin = it))},
-                dismiss = {viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)},
+                onUserSelect = { viewModel.onEvent(TaskDetailEvent.AddUserToTask(userLogin = it)) },
+                dismiss = { viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog) },
             )
         }
 
