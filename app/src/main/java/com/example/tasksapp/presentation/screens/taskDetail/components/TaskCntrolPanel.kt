@@ -14,7 +14,8 @@ fun TaskControlPanel(
     isCreator: Boolean = false,
     openDialogSetTaskStatus: () -> Unit,
     openDialogSetTaskDeadLine: () -> Unit,
-    deleteTask: () -> Unit
+    deleteTask: () -> Unit,
+    leaveFromTask: () -> Unit
 ) {
     Box(contentAlignment = Alignment.Center) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -43,12 +44,31 @@ fun TaskControlPanel(
                     Text("Изменить сроки")
                 }
             }
-            OutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { deleteTask() },
-                enabled = isCreator
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text("Удалить задачу", color = Color.Red)
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .padding(end = 4.dp),
+                    onClick = { deleteTask() },
+                    enabled = isCreator
+                ) {
+                    val textColor = if(isCreator) Color.Red else Color.Gray
+                    Text("Удалить задачу", color = textColor)
+                }
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 4.dp),
+                    onClick = { leaveFromTask() },
+                ) {
+                    Text("Покинуть задачу")
+                }
             }
         }
     }

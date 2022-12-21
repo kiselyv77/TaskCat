@@ -160,6 +160,9 @@ fun TaskDetailScreen(
                                 },
                                 deleteTask = {
                                     viewModel.onEvent(TaskDetailEvent.OpenCloseDeleteTaskDialog)
+                                },
+                                leaveFromTask = {
+                                    viewModel.onEvent(TaskDetailEvent.OpenCloseLeaveFromTaskDialog)
                                 }
                             )
 
@@ -169,7 +172,7 @@ fun TaskDetailScreen(
                                     viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)
                                 },
                                 onUserClick = {
-                                    viewModel.onEvent(TaskDetailEvent.OpenCloseUserItemDialog(userLogin = it))
+
                                 }
                             )
 
@@ -213,14 +216,27 @@ fun TaskDetailScreen(
         }
 
 
-        if (state.deleteTaskDialog.isOpen) {
+        if (state.deleteTaskDialogState.isOpen) {
             CustomAlertDialog(
                 label = "Вы действительно хотите удалить эту задачу?",
-                state = state.deleteTaskDialog,
+                state = state.deleteTaskDialogState,
                 ok = { viewModel.onEvent(TaskDetailEvent.DeleteTask) },
                 dismiss = { viewModel.onEvent(TaskDetailEvent.OpenCloseDeleteTaskDialog) },
                 onSuccess = {
                     viewModel.onEvent(TaskDetailEvent.OpenCloseDeleteTaskDialog)
+                    resultNavigator.navigateBack(result = true)
+                }
+            )
+        }
+
+        if (state.leaveFromTaskDialogState.isOpen) {
+            CustomAlertDialog(
+                label = "Вы действительно хотите покинуть эту задачу?",
+                state = state.leaveFromTaskDialogState,
+                ok = { viewModel.onEvent(TaskDetailEvent.LeaveFromTask) },
+                dismiss = { viewModel.onEvent(TaskDetailEvent.OpenCloseLeaveFromTaskDialog) },
+                onSuccess = {
+                    viewModel.onEvent(TaskDetailEvent.OpenCloseLeaveFromTaskDialog)
                     resultNavigator.navigateBack(result = true)
                 }
             )

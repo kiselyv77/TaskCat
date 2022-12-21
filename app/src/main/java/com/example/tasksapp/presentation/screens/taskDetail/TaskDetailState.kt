@@ -15,7 +15,8 @@ data class TaskDetailState(
     val isLoading: Boolean = false,
     val setTaskStatusDialogState: SetTaskStatusDialogState = SetTaskStatusDialogState(),
     val addUserDialogState:AddUserToTaskDialogState = AddUserToTaskDialogState(),
-    val deleteTaskDialog: CustomAlertDialogState = CustomAlertDialogState(),
+    val deleteTaskDialogState: CustomAlertDialogState = CustomAlertDialogState(),
+    val leaveFromTaskDialogState: CustomAlertDialogState = CustomAlertDialogState(),
     val inputText: String = ""
 )
 

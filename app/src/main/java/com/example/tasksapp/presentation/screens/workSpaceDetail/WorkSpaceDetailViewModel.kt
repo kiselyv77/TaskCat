@@ -215,7 +215,7 @@ class WorkSpaceDetailViewModel @Inject constructor(
     private fun getTasks() {
         viewModelScope.launch {
             val workSpaceId = savedStateHandle.get<String>("id") ?: return@launch
-            getTasksFromWorkSpaceForUser(Token.token, workSpaceId).collect { result ->
+            getTasksFromWorkSpace(Token.token, workSpaceId).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let { tasks ->

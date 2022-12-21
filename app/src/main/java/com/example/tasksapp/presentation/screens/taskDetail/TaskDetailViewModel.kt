@@ -144,7 +144,7 @@ class TaskDetailViewModel @Inject constructor(
             is TaskDetailEvent.SetInputText -> {
                 _state.value = _state.value.copy(inputText = event.newText)
             }
-            TaskDetailEvent.ShowMore -> {
+            is TaskDetailEvent.ShowMore -> {
                 getMyLogin()
             }
             is TaskDetailEvent.OpenCloseSetTaskStatusDialog -> {
@@ -156,7 +156,7 @@ class TaskDetailViewModel @Inject constructor(
                     )
                 )
             }
-            TaskDetailEvent.SetTaskStatus -> {
+            is TaskDetailEvent.SetTaskStatus -> {
                 setTaskStatus()
             }
             is TaskDetailEvent.SetTaskStatusDialog -> {
@@ -170,10 +170,10 @@ class TaskDetailViewModel @Inject constructor(
                 setTaskDeadLine(event.newDeadLine.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             }
 
-            TaskDetailEvent.OnUsersRefresh -> {
+            is TaskDetailEvent.OnUsersRefresh -> {
                 getUsers()
             }
-            TaskDetailEvent.OpenCloseAddUserToTaskDialog -> {
+            is TaskDetailEvent.OpenCloseAddUserToTaskDialog -> {
                 if (_state.value.addUserDialogState.isOpen) {
                     _state.value = _state.value.copy(
                         addUserDialogState = AddUserToTaskDialogState(),
@@ -188,39 +188,48 @@ class TaskDetailViewModel @Inject constructor(
             is TaskDetailEvent.AddUserToTask -> {
                 addUser(userLogin = event.userLogin)
             }
-            TaskDetailEvent.DeleteTask -> {
+            is TaskDetailEvent.DeleteTask -> {
                 deleteTask()
             }
-            TaskDetailEvent.OpenCloseDeleteTaskDialog -> {
-                if (_state.value.deleteTaskDialog.isOpen) {
+            is TaskDetailEvent.OpenCloseDeleteTaskDialog -> {
+                if (_state.value.deleteTaskDialogState.isOpen) {
                     _state.value = _state.value.copy(
-                        deleteTaskDialog = CustomAlertDialogState(),
+                        deleteTaskDialogState = CustomAlertDialogState(),
                     )
                 } else {
                     getUsersFromWorkSpace()
                     _state.value = _state.value.copy(
-                        deleteTaskDialog = CustomAlertDialogState(isOpen = true)
+                        deleteTaskDialogState = CustomAlertDialogState(isOpen = true)
                     )
                 }
             }
-            is TaskDetailEvent.OpenCloseUserItemDialog -> {
-
+            is TaskDetailEvent.OpenCloseLeaveFromTaskDialog -> {
+                if (_state.value.leaveFromTaskDialogState.isOpen) {
+                    _state.value = _state.value.copy(
+                        leaveFromTaskDialogState = CustomAlertDialogState(),
+                    )
+                } else {
+                    getUsersFromWorkSpace()
+                    _state.value = _state.value.copy(
+                        leaveFromTaskDialogState = CustomAlertDialogState(isOpen = true)
+                    )
+                }
             }
-            is TaskDetailEvent.DeleteUser -> {
-
+            is TaskDetailEvent.LeaveFromTask -> {
+                leaveFromTask()
             }
         }
     }
 
-
-    private fun deleteTask() {
+    private fun leaveFromTask() {
         viewModelScope.launch {
-            deleteTaskUseCase(Token.token, _state.value.task.id).collect { result ->
+            val taskId = savedStateHandle.get<String>("id") ?: return@launch
+            deleteUserFromTaskUseCase(Token.token, taskId, _state.value.my.login).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let {
                             _state.value = _state.value.copy(
-                                deleteTaskDialog = _state.value.deleteTaskDialog.copy(
+                                leaveFromTaskDialogState = _state.value.leaveFromTaskDialogState.copy(
                                     isSuccess = true,
                                     isLoading = false,
                                     error = ""
@@ -230,7 +239,7 @@ class TaskDetailViewModel @Inject constructor(
                     }
                     is Resource.Error -> {
                         _state.value = _state.value.copy(
-                            deleteTaskDialog = _state.value.deleteTaskDialog.copy(
+                            leaveFromTaskDialogState = _state.value.leaveFromTaskDialogState.copy(
                                 error = result.message ?: "",
                                 isLoading = false
                             )
@@ -238,7 +247,43 @@ class TaskDetailViewModel @Inject constructor(
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(
-                            deleteTaskDialog = _state.value.deleteTaskDialog.copy(
+                            leaveFromTaskDialogState = _state.value.leaveFromTaskDialogState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deleteTask() {
+        viewModelScope.launch {
+            deleteTaskUseCase(Token.token, _state.value.task.id).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                deleteTaskDialogState = _state.value.deleteTaskDialogState.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            deleteTaskDialogState = _state.value.deleteTaskDialogState.copy(
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            deleteTaskDialogState = _state.value.deleteTaskDialogState.copy(
                                 isLoading = result.isLoading,
                                 error = result.message ?: ""
                             )
@@ -457,7 +502,7 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val workSpaceId = savedStateHandle.get<String>("workSpaceId") ?: return@launch
             getUsersFromWorkSpace(Token.token, workSpaceId).collect { result ->
-                Log.d("asdasdadssddfdlg,s", result.toString() )
+                Log.d("asdasdadssddfdlg,s", result.toString())
                 when (result) {
 
                     is Resource.Success -> {
@@ -468,7 +513,7 @@ class TaskDetailViewModel @Inject constructor(
                                     isSuccess = true,
                                     isLoading = false,
                                     displayedList =
-                                       users.filter { it.login !in  _state.value.usersState.users.map { item -> item.login } },
+                                    users.filter { it.login !in _state.value.usersState.users.map { item -> item.login } },
                                     error = ""
                                 )
                             )

@@ -143,7 +143,7 @@ interface TasksApi {
     ): SuccessResponseDTO
 
 
-    @GET("getTasksFromWorkSpace/{token}/{workSpaceId}")
+    @GET("getTasksFromWorkSpaceForUser/{token}/{workSpaceId}")
     suspend fun getTasksFromWorkSpaceForUser(
         @Path("token") token: String,
         @Path("workSpaceId") workSpaceId: String
