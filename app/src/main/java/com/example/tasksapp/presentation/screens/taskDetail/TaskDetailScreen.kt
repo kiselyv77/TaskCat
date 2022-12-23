@@ -65,6 +65,8 @@ fun TaskDetailScreen(
         mutableStateOf<LocalDate>(LocalDate.now())
     }
 
+    val isCreator = state.usersState.users.lastOrNull { it.login == state.my.login }?.userStatusToTask == UserTypes.CREATOR_TYPE
+
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
@@ -151,7 +153,7 @@ fun TaskDetailScreen(
                             }
 
                             TaskControlPanel(
-                                isCreator = state.usersState.users.lastOrNull { it.login == state.my.login }?.userStatusToTask == UserTypes.CREATOR_TYPE,
+                                isCreator = isCreator,
                                 openDialogSetTaskStatus = {
                                     viewModel.onEvent(TaskDetailEvent.OpenCloseSetTaskStatusDialog)
                                 },
@@ -172,7 +174,7 @@ fun TaskDetailScreen(
                                     viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)
                                 },
                                 onUserClick = {
-
+                                    viewModel.onEvent( TaskDetailEvent.OpenCloseUserItemDialog(userModel = it) )
                                 }
                             )
 
@@ -239,6 +241,17 @@ fun TaskDetailScreen(
                     viewModel.onEvent(TaskDetailEvent.OpenCloseLeaveFromTaskDialog)
                     resultNavigator.navigateBack(result = true)
                 }
+            )
+        }
+
+        if (state.userItemDialogState.isOpen) {
+            UserItemDialog2(
+                state = state.userItemDialogState,
+                myLogin = state.my.login,
+                isCreator = isCreator ,
+                onSuccess = { viewModel.onEvent( TaskDetailEvent.OpenCloseUserItemDialog()) },
+                dismiss = { viewModel.onEvent( TaskDetailEvent.OpenCloseUserItemDialog() ) },
+                deleteUser = { viewModel.onEvent(TaskDetailEvent.DeleteUser) }
             )
         }
 

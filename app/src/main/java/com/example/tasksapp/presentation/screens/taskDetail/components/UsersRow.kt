@@ -27,7 +27,7 @@ import com.example.tasksapp.presentation.commonComponents.AvatarImage
 fun UsersRow(
     userList: List<UserModel>,
     addUserOpenDialog: () -> Unit,
-    onUserClick: (loginUser: String) -> Unit
+    onUserClick: (userModel: UserModel) -> Unit
 ) {
     val avatarsSize = 40.dp
 
@@ -51,7 +51,7 @@ fun UsersRow(
                             .padding(end = 16.dp)
                             .size(avatarsSize)
                             .clip(CircleShape)
-                            .clickable { onUserClick(it.login) }
+                            .clickable { onUserClick(it) }
                     )
                 }
             }

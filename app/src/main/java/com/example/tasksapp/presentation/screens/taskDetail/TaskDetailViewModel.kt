@@ -218,6 +218,58 @@ class TaskDetailViewModel @Inject constructor(
             is TaskDetailEvent.LeaveFromTask -> {
                 leaveFromTask()
             }
+            is TaskDetailEvent.OpenCloseUserItemDialog -> {
+                if (_state.value.userItemDialogState.isOpen) {
+                    _state.value = _state.value.copy(
+                        userItemDialogState = UserItemDialogState2(),
+                    )
+                } else {
+                    _state.value = _state.value.copy(
+                        userItemDialogState = UserItemDialogState2(isOpen = true, userModel = event.userModel)
+                    )
+                }
+            }
+            is TaskDetailEvent.DeleteUser -> {
+                deleteUserFromTask()
+            }
+        }
+    }
+
+    private fun deleteUserFromTask(){
+        viewModelScope.launch {
+            val taskId = savedStateHandle.get<String>("id") ?: return@launch
+            deleteUserFromTaskUseCase(Token.token, taskId, _state.value.userItemDialogState.userModel.login).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            _state.value = _state.value.copy(
+                                userItemDialogState = _state.value.userItemDialogState.copy(
+                                    isSuccess = true,
+                                    isLoading = false,
+                                    error = ""
+                                )
+                            )
+                            onEvent(TaskDetailEvent.OnUsersRefresh)
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            userItemDialogState = _state.value.userItemDialogState.copy(
+                                error = result.message ?: "",
+                                isLoading = false
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            userItemDialogState = _state.value.userItemDialogState.copy(
+                                isLoading = result.isLoading,
+                                error = result.message ?: ""
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 

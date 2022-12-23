@@ -72,7 +72,7 @@ enum class BottomBarItem(
     val icon: ImageVector,
     val label: String
 ) {
-    WorkSpaceList(WorkSpacesListScreenDestination, Icons.Default.List, "WorkSpaceList"),
+    WorkSpaceList(WorkSpacesListScreenDestination, Icons.Default.List, "Список"),
     //Notifications(NotificationsScreenDestination, Icons.Default.Notifications, "Notifications"),
-    Profile(ProfileScreenDestination, Icons.Default.Person, "Profile"),
+    Profile(ProfileScreenDestination, Icons.Default.Person, "Профиль"),
 }

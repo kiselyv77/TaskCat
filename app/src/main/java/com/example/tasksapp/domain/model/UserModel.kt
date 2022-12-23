@@ -6,4 +6,16 @@ data class UserModel(
     val login: String,
     val userStatusToWorkSpace:String,
     val userStatusToTask: String
-)
+){
+    companion object {
+        fun getEmptyModel():UserModel{
+            return UserModel(
+                name = "",
+                status = "",
+                login = "",
+                userStatusToWorkSpace = "",
+                userStatusToTask = ""
+            )
+        }
+    }
+}

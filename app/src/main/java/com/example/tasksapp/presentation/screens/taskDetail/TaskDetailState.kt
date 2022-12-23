@@ -17,6 +17,7 @@ data class TaskDetailState(
     val addUserDialogState:AddUserToTaskDialogState = AddUserToTaskDialogState(),
     val deleteTaskDialogState: CustomAlertDialogState = CustomAlertDialogState(),
     val leaveFromTaskDialogState: CustomAlertDialogState = CustomAlertDialogState(),
+    val userItemDialogState: UserItemDialogState2 = UserItemDialogState2(),
     val inputText: String = ""
 )
 
@@ -24,6 +25,14 @@ data class UsersState(
     val users: List<UserModel> = emptyList(),
     val error: String = "",
     val isLoading: Boolean = false
+)
+
+data class UserItemDialogState2(
+    val userModel: UserModel = UserModel.getEmptyModel(),
+    val isOpen:Boolean = false,
+    val isSuccess:Boolean = false,
+    val isLoading:Boolean = false,
+    val error:String = ""
 )
 
 data class AddUserToTaskDialogState(
