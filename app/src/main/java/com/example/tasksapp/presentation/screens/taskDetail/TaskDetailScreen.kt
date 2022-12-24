@@ -1,6 +1,9 @@
 package com.example.tasksapp.presentation.screens.taskDetail
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -19,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,6 +71,17 @@ fun TaskDetailScreen(
 
     val isCreator = state.usersState.users.lastOrNull { it.login == state.my.login }?.userStatusToTask == UserTypes.CREATOR_TYPE
 
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val stream = context.contentResolver.openInputStream(it)
+            stream?.let {
+                // Выбрали файл
+            }
+        }
+    }
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
@@ -174,7 +189,11 @@ fun TaskDetailScreen(
                                     viewModel.onEvent(TaskDetailEvent.OpenCloseAddUserToTaskDialog)
                                 },
                                 onUserClick = {
-                                    viewModel.onEvent( TaskDetailEvent.OpenCloseUserItemDialog(userModel = it) )
+                                    viewModel.onEvent(
+                                        TaskDetailEvent.OpenCloseUserItemDialog(
+                                            userModel = it
+                                        )
+                                    )
                                 }
                             )
 
@@ -203,7 +222,8 @@ fun TaskDetailScreen(
                     isError = state.error.isNotEmpty(),
                     onValueChange = { viewModel.onEvent(TaskDetailEvent.SetInputText(it)) },
                     onClear = { viewModel.onEvent(TaskDetailEvent.SetInputText("")) },
-                    onSend = { viewModel.onEvent(TaskDetailEvent.SendNote) }
+                    onSend = { viewModel.onEvent(TaskDetailEvent.SendNote) },
+                    onPickFile = { launcher.launch("*/*") }
                 )
             }
         }
@@ -248,9 +268,9 @@ fun TaskDetailScreen(
             UserItemDialog2(
                 state = state.userItemDialogState,
                 myLogin = state.my.login,
-                isCreator = isCreator ,
-                onSuccess = { viewModel.onEvent( TaskDetailEvent.OpenCloseUserItemDialog()) },
-                dismiss = { viewModel.onEvent( TaskDetailEvent.OpenCloseUserItemDialog() ) },
+                isCreator = isCreator,
+                onSuccess = { viewModel.onEvent(TaskDetailEvent.OpenCloseUserItemDialog()) },
+                dismiss = { viewModel.onEvent(TaskDetailEvent.OpenCloseUserItemDialog()) },
                 deleteUser = { viewModel.onEvent(TaskDetailEvent.DeleteUser) }
             )
         }

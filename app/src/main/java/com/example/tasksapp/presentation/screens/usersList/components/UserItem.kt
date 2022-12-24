@@ -4,12 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasksapp.data.remote.Spec
@@ -50,7 +48,7 @@ fun UserItem(
                 Text(
                     text = UserStatus.getUserStatusName(status),
                     fontSize = 15.sp,
-                    color = if (status == UserStatus.ONLINE_STATUS) Color.Green else MaterialTheme.colors.onBackground
+                    color = UserStatus.getUserStatusColor(status)
                 )
             }
         }

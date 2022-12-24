@@ -18,7 +18,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +30,7 @@ import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 import com.example.tasksapp.presentation.screens.NavGraphs
 import com.example.tasksapp.presentation.screens.destinations.RegistrationScreenDestination
-import com.example.tasksapp.util.UserStatus
+import com.example.tasksapp.util.UserStatus.getUserStatusColor
 import com.example.tasksapp.util.UserStatus.getUserStatusName
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -125,7 +124,7 @@ fun ProfileScreen(
                     text = getUserStatusName(state.status),
                     fontSize = 20.sp,
                     isPlaceholderVisible = state.isLoading || state.error.isNotEmpty(),
-                    color = if (state.status == UserStatus.ONLINE_STATUS) Color.Green else MaterialTheme.colors.onBackground
+                    color = getUserStatusColor(state.status)
                 )
                 OutlinedButton(onClick = {
                     dialogState.show()

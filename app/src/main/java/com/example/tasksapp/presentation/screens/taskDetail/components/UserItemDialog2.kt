@@ -2,7 +2,6 @@ package com.example.tasksapp.presentation.screens.taskDetail.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -14,8 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.tasksapp.data.remote.Spec
@@ -32,6 +33,9 @@ fun UserItemDialog2(
     dismiss: () -> Unit,
     deleteUser: (loginUser: String) -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val screenWidth = configuration.screenWidthDp.dp
     if (state.isSuccess) {
         onSuccess()
     }
@@ -42,7 +46,7 @@ fun UserItemDialog2(
         },
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.size(height = screenHeight / 3f, width = screenWidth / 1.5f)
                 .clip(shape = RoundedCornerShape(4.dp))
                 .background(color = Color.White)
                 .padding(16.dp),
@@ -56,14 +60,17 @@ fun UserItemDialog2(
             )
             Text(
                 text = state.userModel.name,
+                fontSize = 25.sp,
                 textAlign = TextAlign.Center
             )
             Text(
                 text = state.userModel.login,
+                fontSize = 20.sp,
                 textAlign = TextAlign.Center
             )
             Text(
                 text = UserStatus.getUserStatusName(state.userModel.status),
+                color = UserStatus.getUserStatusColor(state.userModel.status),
                 textAlign = TextAlign.Center
             )
             if (isCreator && myLogin != state.userModel.login) {

@@ -1,13 +1,15 @@
 package com.example.tasksapp
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
@@ -29,7 +31,8 @@ fun SampleScaffold(
     bottomBar: @Composable (Destination) -> Unit,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val destination = navController.appCurrentDestinationAsState().value ?: startRoute.startAppDestination
+    val destination =
+        navController.appCurrentDestinationAsState().value ?: startRoute.startAppDestination
     val navBackStackEntry = navController.currentBackStackEntry
 
     // 👇 only for debugging, you shouldn't use backQueue API as it is restricted by annotation
@@ -44,15 +47,38 @@ fun SampleScaffold(
         sheetShape = RoundedCornerShape(16.dp)
     ) {
         Scaffold(
-            topBar = { TopAppBar() { Text(modifier = Modifier.padding(start = 16.dp), text = getScreenTitle(destination.route) , fontSize = 22.sp)}},
+            topBar = {
+                TopAppBar() {
+                    Text(
+                        modifier = Modifier.padding(start = 16.dp),
+                        text = getScreenTitle(destination.route),
+                        fontSize = 22.sp
+                    )
+                    if (destination.route == MessengerScreenDestination.route) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Image(
+                                    modifier = Modifier.wrapContentSize().size(45.dp).padding(8.dp),
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = "",
+                                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                                )
+                            }
+                        }
+                    }
+                }
+            },
             bottomBar = { bottomBar(destination) },
             content = content
         )
     }
 }
 
-private fun getScreenTitle(route: String):String{
-    return when (route){
+private fun getScreenTitle(route: String): String {
+    return when (route) {
         WorkSpacesListScreenDestination.route -> "Список рабочих пространств"
         ProfileScreenDestination.route -> "Профиль"
         LoginScreenDestination.route -> "Войти"

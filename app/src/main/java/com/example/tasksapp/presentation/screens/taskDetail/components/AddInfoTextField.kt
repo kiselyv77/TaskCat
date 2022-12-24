@@ -27,6 +27,7 @@ fun AddInfoTextField(
     onValueChange: (value: String) -> Unit,
     onClear: () -> Unit,
     onSend: () -> Unit,
+    onPickFile: () -> Unit,
     maxChar: Int = 50,
     isError: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
@@ -47,7 +48,7 @@ fun AddInfoTextField(
                     .size(50.dp)
                     .padding(8.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .clickable { },
+                    .clickable { onPickFile() },
                 imageVector = Icons.Default.AttachFile,
                 contentDescription = "AttachFile",
             )
