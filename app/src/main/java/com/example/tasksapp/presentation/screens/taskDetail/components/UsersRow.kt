@@ -40,7 +40,9 @@ fun UsersRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
+
             LazyRow(
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
@@ -69,6 +71,7 @@ fun UsersRow(
                     colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
                 )
             }
+
         }
 
     }

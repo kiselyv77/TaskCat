@@ -41,7 +41,7 @@ fun AddInfoTextField(
     ) {
         Row(
             modifier = Modifier.background(color = MaterialTheme.colors.surface),
-            verticalAlignment = Alignment.Bottom
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 modifier = Modifier

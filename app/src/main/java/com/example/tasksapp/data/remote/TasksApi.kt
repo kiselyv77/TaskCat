@@ -148,4 +148,11 @@ interface TasksApi {
         @Path("token") token: String,
         @Path("workSpaceId") workSpaceId: String
     ): List<TaskDTO>
+
+    @Multipart
+    @POST("/uploadNoteAttachmentFile/{token}")
+    suspend fun uploadNoteAttachmentFile(
+        @Path("token") token: String,
+        @Part part: MultipartBody.Part
+    ): SuccessResponseDTO
 }

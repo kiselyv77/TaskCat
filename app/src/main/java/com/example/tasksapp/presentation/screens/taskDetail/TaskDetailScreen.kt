@@ -12,8 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +29,7 @@ import com.example.tasksapp.presentation.commonComponents.*
 import com.example.tasksapp.presentation.screens.taskDetail.components.*
 import com.example.tasksapp.util.TaskStatus
 import com.example.tasksapp.util.UserTypes
+import com.example.tasksapp.util.getFileName
 import com.example.tasksapp.util.isOverdue
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -76,22 +75,16 @@ fun TaskDetailScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
+            val fileName = getFileName(context, it)
+            Log.d("fileName", fileName)
             val stream = context.contentResolver.openInputStream(it)
             stream?.let {
-                // Выбрали файл
+                viewModel.onEvent(TaskDetailEvent.AttachFile(it, fileName))
             }
         }
     }
     Scaffold(
         scaffoldState = scaffoldState,
-        floatingActionButton = {
-            Box(modifier = Modifier.padding(bottom = 50.dp)) {
-                CustomFloatingActionButton(
-                    imageVector = Icons.Default.ArrowBack,
-                    onClick = { navigator.popBackStack() }
-                )
-            }
-        },
         snackbarHost = { snackbarHostState ->
             CustomSnackbarHost(snackbarHostState)
         }
@@ -216,6 +209,14 @@ fun TaskDetailScreen(
                         }
                     }
                 }
+                if(state.attachmentFileInfo.attachmentFile != null){
+                    AttachmentFileInfoBlock(
+                        fileName = state.attachmentFileInfo.originalFileName,
+                        detachFile = {
+                            viewModel.onEvent(TaskDetailEvent.DetachFile)
+                        }
+                    )
+                }
                 AddInfoTextField(
                     value = state.inputText,
                     label = "Введите подробности обновлений связаных с задачей",
@@ -306,3 +307,5 @@ fun TaskDetailScreen(
         }
     }
 }
+
+

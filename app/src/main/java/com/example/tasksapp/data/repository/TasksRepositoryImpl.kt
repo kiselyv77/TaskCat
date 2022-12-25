@@ -204,4 +204,15 @@ class TasksRepositoryImpl(
     ): List<TaskDTO> {
         return api.getTasksFromWorkSpaceForUser(token, workSpaceId)
     }
+
+    override suspend fun uploadNoteAttachmentFile(
+        token: String,
+        stream: InputStream,
+        fileName: String
+    ): SuccessResponseDTO {
+        val part = MultipartBody.Part.createFormData(
+            "attachmentFile", fileName, stream.readBytes().toRequestBody()
+        )
+        return api.uploadNoteAttachmentFile(token, part)
+    }
 }

@@ -54,7 +54,7 @@ fun SampleScaffold(
                         text = getScreenTitle(destination.route),
                         fontSize = 22.sp
                     )
-                    if (destination.route == MessengerScreenDestination.route) {
+                    if (destination.route == MessengerScreenDestination.route || destination.route == TaskDetailScreenDestination.route) {
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.CenterEnd

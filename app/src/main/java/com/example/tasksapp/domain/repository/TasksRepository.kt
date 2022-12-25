@@ -62,5 +62,6 @@ interface TasksRepository {
 
     suspend fun getTasksFromWorkSpaceForUser(token: String, workSpaceId: String): List<TaskDTO>
 
+    suspend fun uploadNoteAttachmentFile(token: String, stream: InputStream, fileName: String): SuccessResponseDTO
 
 }

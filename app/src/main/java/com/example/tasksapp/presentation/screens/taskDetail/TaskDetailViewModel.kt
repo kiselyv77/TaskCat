@@ -27,6 +27,7 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -43,6 +44,7 @@ class TaskDetailViewModel @Inject constructor(
     private val addUserToTaskUseCase: AddUserToTask,
     private val deleteUserFromTaskUseCase: DeleteUserFromTask,
     private val deleteTaskUseCase: DeleteTask,
+    private val uploadNoteAttachmentFile: UploadNoteAttachmentFile,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = mutableStateOf(TaskDetailState())
@@ -88,14 +90,15 @@ class TaskDetailViewModel @Inject constructor(
                     }
                     val userInputRoutine = launch {
                         _notesFlow.collectLatest { sendNote ->
-                            val noteId = sendNote.attachmentFile
+                            val noteId = sendNote.noteId
+                            val attachmentFileName = sendNote.attachmentFileName
                             val noteDTO = NoteDTO(
                                 id = noteId,
                                 info = sendNote.info,
                                 loginUser = _state.value.my.login,
                                 userName = _state.value.my.name,
                                 taskId = taskId,
-                                attachmentFile = "",
+                                attachmentFile = attachmentFileName,
                                 dateTime = getIsoDateTime()
                             )
                             val messageList = _state.value.notesList.toMutableList()
@@ -128,14 +131,26 @@ class TaskDetailViewModel @Inject constructor(
     fun onEvent(event: TaskDetailEvent) {
         when (event) {
             is TaskDetailEvent.SendNote -> {
+                val noteId = generateRandomUUID()
+                val attachmentFile = _state.value.attachmentFileInfo.attachmentFile
+                val fileName = _state.value.attachmentFileInfo.originalFileName
                 viewModelScope.launch(Dispatchers.IO) {
                     _notesFlow.emit(
                         SendNote(
                             info = _state.value.inputText,
-                            attachmentFile = generateRandomUUID()
+                            noteId = noteId,
+                            attachmentFileName = fileName
                         )
                     )
+                    if (attachmentFile != null) {
+                        sendAttachmentFile(
+                            attachmentFile = attachmentFile,
+                            attachmentFileName = noteId+fileName
+                        )
+                    }
+
                     _state.value = _state.value.copy(inputText = "")
+                    _state.value = _state.value.copy(attachmentFileInfo = AttachmentFileInfo())
                 }
             }
             is TaskDetailEvent.OnAllRefresh -> {
@@ -225,20 +240,64 @@ class TaskDetailViewModel @Inject constructor(
                     )
                 } else {
                     _state.value = _state.value.copy(
-                        userItemDialogState = UserItemDialogState2(isOpen = true, userModel = event.userModel)
+                        userItemDialogState = UserItemDialogState2(
+                            isOpen = true,
+                            userModel = event.userModel
+                        )
                     )
                 }
             }
             is TaskDetailEvent.DeleteUser -> {
                 deleteUserFromTask()
             }
+            is TaskDetailEvent.AttachFile -> {
+                _state.value = _state.value.copy(
+                    attachmentFileInfo = AttachmentFileInfo(
+                        attachmentFile = event.inputStream,
+                        originalFileName = event.originalFileName
+                    )
+                )
+            }
+            is TaskDetailEvent.DetachFile -> {
+                _state.value = _state.value.copy(
+                    attachmentFileInfo = AttachmentFileInfo(
+                        attachmentFile = null,
+                        originalFileName = ""
+                    )
+                )
+            }
         }
     }
 
-    private fun deleteUserFromTask(){
+    private fun sendAttachmentFile(attachmentFile: InputStream, attachmentFileName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            uploadNoteAttachmentFile(Token.token, attachmentFile, attachmentFileName).collect { result ->
+                Log.d("dsfvsedfsrvsdfsv", result.data.toString())
+                when (result) {
+                    is Resource.Success -> {
+                        _state.value = _state.value.copy(error = "", isLoading = false)
+                        result.data?.let {}
+                    }
+                    is Resource.Error -> {
+                        _state.value =
+                            _state.value.copy(error = result.message.toString(), isLoading = false)
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(error = "")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deleteUserFromTask() {
         viewModelScope.launch {
             val taskId = savedStateHandle.get<String>("id") ?: return@launch
-            deleteUserFromTaskUseCase(Token.token, taskId, _state.value.userItemDialogState.userModel.login).collect { result ->
+            deleteUserFromTaskUseCase(
+                Token.token,
+                taskId,
+                _state.value.userItemDialogState.userModel.login
+            ).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let {
@@ -276,7 +335,11 @@ class TaskDetailViewModel @Inject constructor(
     private fun leaveFromTask() {
         viewModelScope.launch {
             val taskId = savedStateHandle.get<String>("id") ?: return@launch
-            deleteUserFromTaskUseCase(Token.token, taskId, _state.value.my.login).collect { result ->
+            deleteUserFromTaskUseCase(
+                Token.token,
+                taskId,
+                _state.value.my.login
+            ).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let {

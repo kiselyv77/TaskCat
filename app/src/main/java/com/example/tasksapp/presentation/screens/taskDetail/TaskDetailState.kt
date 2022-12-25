@@ -5,6 +5,7 @@ import com.example.tasksapp.domain.model.TaskModel
 import com.example.tasksapp.domain.model.UserModel
 import com.example.tasksapp.presentation.commonComponents.CustomAlertDialogState
 import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
+import java.io.InputStream
 
 data class TaskDetailState(
     val task: TaskModel = TaskModel("", "", "", "", ""),
@@ -18,7 +19,13 @@ data class TaskDetailState(
     val deleteTaskDialogState: CustomAlertDialogState = CustomAlertDialogState(),
     val leaveFromTaskDialogState: CustomAlertDialogState = CustomAlertDialogState(),
     val userItemDialogState: UserItemDialogState2 = UserItemDialogState2(),
-    val inputText: String = ""
+    val inputText: String = "",
+    val attachmentFileInfo:AttachmentFileInfo = AttachmentFileInfo()
+)
+
+data class AttachmentFileInfo(
+    val attachmentFile: InputStream? = null,
+    val originalFileName:String = ""
 )
 
 data class UsersState(
