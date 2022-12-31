@@ -34,13 +34,13 @@
 <hr align="center" color="#fff" size="1" width="860px" />
 
 <img src="https://github.com/kiselyv77/TasksApp/blob/master/screenshots/screen3.jpg" width="30%" height="30%" align="left" />
-<big><h2>Мессенджер рабочего пространства</h2></big>
+<big><h2>Экран задачи</h2></big>
 <br>
 <p></p>
 <hr align="center" color="#fff" size="1" width="860px" />
 
 <img src="https://github.com/kiselyv77/TasksApp/blob/master/screenshots/screen4.jpg" width="30%" height="30%" align="left" />
-<big><h2>Экран задачи</h2></big>
+<big><h2>Чат рабочего пространства</h2></big>
 <br>
 <p></p>
 <hr align="center" color="#fff" size="1" width="860px" />
