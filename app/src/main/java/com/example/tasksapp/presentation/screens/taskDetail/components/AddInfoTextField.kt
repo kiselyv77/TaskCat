@@ -33,7 +33,8 @@ fun AddInfoTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
         imeAction = ImeAction.Done,
         keyboardType = KeyboardType.Text
-    )
+    ),
+    isFileAttach: Boolean
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -72,16 +73,18 @@ fun AddInfoTextField(
                     backgroundColor = Color.Transparent,
                 )
             )
-            if (value.isNotEmpty()) {
-                Icon(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .padding(8.dp)
-                        .clip(RoundedCornerShape(30.dp))
-                        .clickable { onClear() },
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "clear text",
-                )
+            if (value.isNotEmpty() || isFileAttach) {
+                if(!isFileAttach){
+                    Icon(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(30.dp))
+                            .clickable { onClear() },
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "clear text",
+                    )
+                }
                 Icon(
                     modifier = Modifier
                         .size(50.dp)

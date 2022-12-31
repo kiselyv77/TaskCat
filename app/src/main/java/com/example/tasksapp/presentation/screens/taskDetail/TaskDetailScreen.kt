@@ -192,10 +192,9 @@ fun TaskDetailScreen(
 
                         }
                         items(state.notesList) { note ->
+
                             ItemNote(
-                                userName = note.userName,
-                                info = note.info,
-                                dateTime = note.dateTime,
+                                note = note,
                                 clicable = {}
                             )
                         }
@@ -219,6 +218,7 @@ fun TaskDetailScreen(
                 }
                 AddInfoTextField(
                     value = state.inputText,
+                    isFileAttach = state.attachmentFileInfo.attachmentFile != null,
                     label = "Введите подробности обновлений связаных с задачей",
                     isError = state.error.isNotEmpty(),
                     onValueChange = { viewModel.onEvent(TaskDetailEvent.SetInputText(it)) },

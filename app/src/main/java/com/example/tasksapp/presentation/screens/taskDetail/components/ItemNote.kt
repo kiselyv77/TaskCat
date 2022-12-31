@@ -1,41 +1,76 @@
 package com.example.tasksapp.presentation.screens.taskDetail.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tasksapp.domain.model.NoteModel
 import com.example.tasksapp.util.getTime
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ItemNote(userName:String, info: String,dateTime: String, clicable: () -> Unit) {
-    val parsedDataTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME)
+fun ItemNote(
+    clicable: () -> Unit,
+    note: NoteModel
+) {
+    val parsedDataTime = LocalDateTime.parse(note.dateTime, DateTimeFormatter.ISO_DATE_TIME)
     val date = parsedDataTime.toLocalDate()
     val time = getTime(parsedDataTime)
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp).clip(RoundedCornerShape(3))
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(3))
             .clickable { clicable() }
     ) {
-        Column(modifier = Modifier.padding(16.dp),) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "$userName добавил обновление:",
+                text = "${note.userName} добавил обновление:",
                 fontSize = 20.sp
             )
-            Text(
-                text = info,
-                fontSize = 23.sp
-            )
+            if (note.attachmentFile.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(30.dp))
+                        .background(Color.Gray)
+                        .clickable { },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(RoundedCornerShape(30.dp))
+                            .clickable { },
+                        imageVector = Icons.Default.FileOpen,
+                        contentDescription = "clear text",
+                    )
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        text = note.attachmentFile,
+                        fontSize = 20.sp
+                    )
+                }
+
+            }
+            if (note.info.isNotEmpty()) {
+                Text(
+                    text = note.info,
+                    fontSize = 23.sp
+                )
+            }
             Text(
                 text = "$date в $time",
                 fontSize = 20.sp
