@@ -8,5 +8,15 @@ data class NoteModel(
     val taskId: String,
     val attachmentFile: String,
     val dateTime: String,
-    val isArrived: Boolean
-)
+    val isArrived: Boolean,
+    val downloadState: DownLoadState = DownLoadState.NOTSAVED
+){
+    companion object {
+        enum class DownLoadState{
+            LOAD,
+            SAVED,
+            NOTSAVED,
+            ERROR
+        }
+    }
+}

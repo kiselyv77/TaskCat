@@ -2,6 +2,8 @@ package com.example.tasksapp.data.remote
 
 import com.example.tasksapp.data.remote.dto.*
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.*
 
 
@@ -155,4 +157,9 @@ interface TasksApi {
         @Path("token") token: String,
         @Part part: MultipartBody.Part
     ): SuccessResponseDTO
+
+    @Streaming
+    @GET("/getNoteAttachmentFile/{fileName}")
+    suspend fun getNoteAttachmentFile(@Path("fileName") fileName: String): Response<ResponseBody>
+
 }

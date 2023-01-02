@@ -1,6 +1,8 @@
 package com.example.tasksapp.domain.repository
 
 import com.example.tasksapp.data.remote.dto.*
+import okhttp3.ResponseBody
+import retrofit2.Response
 import java.io.InputStream
 
 interface TasksRepository {
@@ -63,5 +65,7 @@ interface TasksRepository {
     suspend fun getTasksFromWorkSpaceForUser(token: String, workSpaceId: String): List<TaskDTO>
 
     suspend fun uploadNoteAttachmentFile(token: String, stream: InputStream, fileName: String): SuccessResponseDTO
+
+    suspend fun getNoteAttachmentFile(fileName: String): Response<ResponseBody>
 
 }

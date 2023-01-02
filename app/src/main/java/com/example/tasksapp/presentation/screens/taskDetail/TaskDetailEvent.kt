@@ -23,13 +23,17 @@ sealed class TaskDetailEvent {
     object DeleteUser : TaskDetailEvent()
 
     object OpenCloseDeleteTaskDialog : TaskDetailEvent()
+
     object DeleteTask : TaskDetailEvent()
 
     object OpenCloseLeaveFromTaskDialog : TaskDetailEvent()
+
     object LeaveFromTask : TaskDetailEvent()
 
     data class AttachFile(val inputStream: InputStream, val originalFileName: String) : TaskDetailEvent()
-    object DetachFile : TaskDetailEvent()
 
+    data class DownloadFile(val fileName: String) : TaskDetailEvent()
+
+    object DetachFile : TaskDetailEvent()
 
 }

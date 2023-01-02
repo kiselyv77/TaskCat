@@ -68,7 +68,8 @@ fun TaskDetailScreen(
         mutableStateOf<LocalDate>(LocalDate.now())
     }
 
-    val isCreator = state.usersState.users.lastOrNull { it.login == state.my.login }?.userStatusToTask == UserTypes.CREATOR_TYPE
+    val isCreator =
+        state.usersState.users.lastOrNull { it.login == state.my.login }?.userStatusToTask == UserTypes.CREATOR_TYPE
 
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
@@ -189,12 +190,14 @@ fun TaskDetailScreen(
                                     )
                                 }
                             )
-
                         }
                         items(state.notesList) { note ->
-
                             ItemNote(
                                 note = note,
+                                downloadFile = { viewModel.onEvent(TaskDetailEvent.DownloadFile(note.id + note.attachmentFile)) },
+                                openFile = {
+                                    //openFileWith(note.attachmentFile, context)
+                                },
                                 clicable = {}
                             )
                         }
@@ -208,7 +211,7 @@ fun TaskDetailScreen(
                         }
                     }
                 }
-                if(state.attachmentFileInfo.attachmentFile != null){
+                if (state.attachmentFileInfo.attachmentFile != null) {
                     AttachmentFileInfoBlock(
                         fileName = state.attachmentFileInfo.originalFileName,
                         detachFile = {

@@ -7,6 +7,8 @@ import com.example.tasksapp.data.remote.dto.*
 import com.example.tasksapp.domain.repository.TasksRepository
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import retrofit2.Response
 import java.io.InputStream
 
 
@@ -214,5 +216,9 @@ class TasksRepositoryImpl(
             "attachmentFile", fileName, stream.readBytes().toRequestBody()
         )
         return api.uploadNoteAttachmentFile(token, part)
+    }
+
+    override suspend fun getNoteAttachmentFile(fileName: String): Response<ResponseBody> {
+        return api.getNoteAttachmentFile(fileName)
     }
 }

@@ -5,9 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +27,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ItemNote(
     clicable: () -> Unit,
+    downloadFile: () -> Unit,
+    openFile:()->Unit,
     note: NoteModel
 ) {
     val parsedDataTime = LocalDateTime.parse(note.dateTime, DateTimeFormatter.ISO_DATE_TIME)
@@ -46,17 +51,39 @@ fun ItemNote(
                     modifier = Modifier
                         .clip(RoundedCornerShape(30.dp))
                         .background(Color.Gray)
-                        .clickable { },
+                        .clickable {
+                            when(note.downloadState){
+                                NoteModel.Companion.DownLoadState.SAVED -> openFile()
+                                NoteModel.Companion.DownLoadState.LOAD -> {}
+                                NoteModel.Companion.DownLoadState.NOTSAVED -> downloadFile()
+                                NoteModel.Companion.DownLoadState.ERROR -> downloadFile()
+                            }
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(RoundedCornerShape(30.dp))
-                            .clickable { },
-                        imageVector = Icons.Default.FileOpen,
-                        contentDescription = "clear text",
-                    )
+                    if(note.downloadState == NoteModel.Companion.DownLoadState.LOAD){
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                    else{
+                        val icon = when(note.downloadState){
+                            NoteModel.Companion.DownLoadState.SAVED -> Icons.Default.FileOpen
+                            NoteModel.Companion.DownLoadState.LOAD -> Icons.Default.FileOpen
+                            NoteModel.Companion.DownLoadState.NOTSAVED -> Icons.Default.Download
+                            NoteModel.Companion.DownLoadState.ERROR -> Icons.Default.ErrorOutline
+                        }
+                        Icon(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clip(RoundedCornerShape(30.dp))
+                                .clickable { },
+                            imageVector = icon,
+                            contentDescription = "clear text",
+                            tint = if(note.downloadState == NoteModel.Companion.DownLoadState.ERROR) Color.Red else Color.Unspecified
+                        )
+                    }
+
                     Text(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         text = note.attachmentFile,
@@ -78,3 +105,4 @@ fun ItemNote(
         }
     }
 }
+

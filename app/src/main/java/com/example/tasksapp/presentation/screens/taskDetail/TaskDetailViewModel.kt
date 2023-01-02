@@ -1,5 +1,6 @@
 package com.example.tasksapp.presentation.screens.taskDetail
 
+import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +11,7 @@ import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.data.mappers.toNoteModel
 import com.example.tasksapp.data.remote.Spec
 import com.example.tasksapp.data.remote.dto.NoteDTO
+import com.example.tasksapp.domain.model.NoteModel
 import com.example.tasksapp.domain.use_cases.*
 import com.example.tasksapp.presentation.commonComponents.CustomAlertDialogState
 import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
@@ -27,6 +29,10 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -45,6 +51,7 @@ class TaskDetailViewModel @Inject constructor(
     private val deleteUserFromTaskUseCase: DeleteUserFromTask,
     private val deleteTaskUseCase: DeleteTask,
     private val uploadNoteAttachmentFile: UploadNoteAttachmentFile,
+    private val downloadNoteAttachmentFile: DownloadNoteAttachmentFile,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = mutableStateOf(TaskDetailState())
@@ -266,7 +273,76 @@ class TaskDetailViewModel @Inject constructor(
                     )
                 )
             }
+            is TaskDetailEvent.DownloadFile -> {
+                downloadFile(event.fileName)
+            }
         }
+    }
+
+    private fun downloadFile(fileName:String){
+        viewModelScope.launch(Dispatchers.IO) {
+            downloadNoteAttachmentFile(fileName).collect{ result ->
+                Log.d("dsfvsedfsrvsdfsv", result.toString())
+                when (result) {
+                    is Resource.Success -> {
+                        val isSuccessful = saveFile(result.data, fileName.drop(36))
+                        if(isSuccessful){
+                            setNoteDownloadState(fileName.substring(0, 36), NoteModel.Companion.DownLoadState.SAVED)
+                        }
+                        else{
+                            setNoteDownloadState(fileName.substring(0, 36), NoteModel.Companion.DownLoadState.ERROR)
+                        }
+                    }
+                    is Resource.Error -> {
+                        setNoteDownloadState(fileName.substring(0, 36), NoteModel.Companion.DownLoadState.ERROR)
+                    }
+                    is Resource.Loading -> {
+                        setNoteDownloadState(fileName.substring(0, 36), NoteModel.Companion.DownLoadState.LOAD)
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun saveFile(body: ResponseBody?, fileName: String): Boolean{
+        val root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
+        val directory = File("$root/Taskcat")
+        if (!directory.exists()) {
+            directory.mkdir()
+        }
+        val file = File(directory, fileName)
+        if (body==null) return false
+        var input: InputStream? = null
+        try {
+            input = body.byteStream()
+            val fos = withContext(Dispatchers.IO) {
+                FileOutputStream(file.absolutePath)
+            }
+            fos.use { output ->
+                val buffer = ByteArray(4 * 1024) // or other buffer size
+                var read: Int
+                while (input.read(buffer).also { read = it } != -1) {
+                    output.write(buffer, 0, read)
+                }
+                output.flush()
+            }
+            return true
+        }catch (e:Exception){
+            Log.e("saveFile",e.toString())
+            return false
+        }
+        finally {
+            withContext(Dispatchers.IO) {
+                input?.close()
+            }
+        }
+    }
+
+    private fun isFileExist(fileName: String) :Boolean {
+        val root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
+        val directory = File("$root/Taskcat")
+        val file = File(directory, fileName)
+        return file.exists()
     }
 
     private fun sendAttachmentFile(attachmentFile: InputStream, attachmentFileName: String) {
@@ -471,13 +547,23 @@ class TaskDetailViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         val notesList = _state.value.notesList.toMutableList()
-                        result.data?.let { messages ->
-                            notesList.addAll(messages)
+                        result.data?.let { notes ->
+                            notesList.addAll(notes)
                             _state.value = _state.value.copy(
                                 notesList = notesList,
                                 error = result.message ?: "",
                                 isLoading = false
                             )
+                            notes.forEach() { note->
+                                if(note.attachmentFile.isNotEmpty()){
+                                    if(isFileExist(note.attachmentFile)){
+                                        setNoteDownloadState(note.id, NoteModel.Companion.DownLoadState.SAVED)
+                                    }
+                                    else{
+                                        setNoteDownloadState(note.id, NoteModel.Companion.DownLoadState.NOTSAVED)
+                                    }
+                                }
+                            }
                         }
                     }
                     is Resource.Error -> {
@@ -690,5 +776,13 @@ class TaskDetailViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun setNoteDownloadState(noteId:String, noteStatus: NoteModel.Companion.DownLoadState){
+        val notesList = _state.value.notesList.toMutableList()
+        val noteModel = notesList.last{it.id == noteId}
+        val index = notesList.indexOf(noteModel)
+        notesList[index] = noteModel.copy(downloadState = noteStatus)
+        _state.value = _state.value.copy(notesList = notesList)
     }
 }
