@@ -314,7 +314,9 @@ class TaskDetailViewModel @Inject constructor(
         if (body==null) return false
         var input: InputStream? = null
         try {
+
             input = body.byteStream()
+
             val fos = withContext(Dispatchers.IO) {
                 FileOutputStream(file.absolutePath)
             }
@@ -327,8 +329,8 @@ class TaskDetailViewModel @Inject constructor(
                 output.flush()
             }
             return true
-        }catch (e:Exception){
-            Log.e("saveFile",e.toString())
+        }catch (e: Exception){
+            Log.e("saveFile", e.toString())
             return false
         }
         finally {

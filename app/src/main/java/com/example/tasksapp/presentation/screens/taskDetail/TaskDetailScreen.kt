@@ -27,10 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.presentation.commonComponents.*
 import com.example.tasksapp.presentation.screens.taskDetail.components.*
-import com.example.tasksapp.util.TaskStatus
-import com.example.tasksapp.util.UserTypes
-import com.example.tasksapp.util.getFileName
-import com.example.tasksapp.util.isOverdue
+import com.example.tasksapp.util.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -194,9 +191,13 @@ fun TaskDetailScreen(
                         items(state.notesList) { note ->
                             ItemNote(
                                 note = note,
-                                downloadFile = { viewModel.onEvent(TaskDetailEvent.DownloadFile(note.id + note.attachmentFile)) },
+                                downloadFile = {
+                                    viewModel.onEvent(TaskDetailEvent.DownloadFile(note.id + note.attachmentFile))
+                                    Log.d("smflaksdksdlkfmf", "downloadFile")
+                                },
                                 openFile = {
-                                    //openFileWith(note.attachmentFile, context)
+                                    openFileWith(note.attachmentFile, context)
+                                    Log.d("smflaksdksdlkfmf", "openFileWith")
                                 },
                                 clicable = {}
                             )
