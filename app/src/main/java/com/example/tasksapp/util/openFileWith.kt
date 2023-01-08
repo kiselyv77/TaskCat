@@ -10,7 +10,7 @@ import java.io.File
 
 fun openFileWith(fileName: String, context: Context) {
     val root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
-    val directory = File("$root/Taskcat")
+    val directory = File("$root/Task-cat")
     val file = File(directory, fileName)
 
     // Get URI and MIME type of file

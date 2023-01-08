@@ -1,11 +1,17 @@
 package com.example.tasksapp.presentation.screens.taskDetail
 
+import android.app.Application
+import android.content.ContentResolver
+import android.content.ContentValues
+import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.data.mappers.toNoteModel
@@ -35,11 +41,13 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.inject.Inject
 
 
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(
+    private val myapplication: Application,
     private val getUserByToken: GetUserByToken,
     private val getTaskByIdUseCase: GetTaskById,
     private val getNotesFromTask: GetNotesFromTask,
@@ -53,7 +61,7 @@ class TaskDetailViewModel @Inject constructor(
     private val uploadNoteAttachmentFile: UploadNoteAttachmentFile,
     private val downloadNoteAttachmentFile: DownloadNoteAttachmentFile,
     private val savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : AndroidViewModel(myapplication) {
     private val _state = mutableStateOf(TaskDetailState())
     val state: State<TaskDetailState> = _state
 
@@ -304,45 +312,72 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun saveFile(body: ResponseBody?, fileName: String): Boolean{
-        val root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
-        val directory = File("$root/Taskcat")
-        if (!directory.exists()) {
-            directory.mkdir()
-        }
-        val file = File(directory, fileName)
-        if (body==null) return false
-        var input: InputStream? = null
-        try {
-
-            input = body.byteStream()
-
-            val fos = withContext(Dispatchers.IO) {
-                FileOutputStream(file.absolutePath)
-            }
-            fos.use { output ->
-                val buffer = ByteArray(4 * 1024) // or other buffer size
-                var read: Int
-                while (input.read(buffer).also { read = it } != -1) {
-                    output.write(buffer, 0, read)
+    private suspend fun saveFile(body: ResponseBody?, fileName: String) : Boolean{
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try{
+                if (body == null) return false
+                val resolver: ContentResolver = myapplication.contentResolver
+                val contentValues = ContentValues()
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/Task-cat")
+                val uri: Uri? = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                Log.d("urirui", uri.toString())
+                val fos = Objects.requireNonNull(uri)?.let { resolver.openOutputStream(it) }
+                fos.use { output ->
+                    val buffer = ByteArray(4 * 1024) // or other buffer size
+                    var read: Int
+                    while (body.byteStream().read(buffer).also { read = it } != -1) {
+                        output?.write(buffer, 0, read)
+                    }
+                    output?.flush()
                 }
-                output.flush()
+                return true
+            }catch (e: Exception){
+                Log.e("saveFile", e.toString())
+                return false
             }
-            return true
-        }catch (e: Exception){
-            Log.e("saveFile", e.toString())
-            return false
         }
-        finally {
-            withContext(Dispatchers.IO) {
-                input?.close()
+        else{
+            val root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
+            val directory = File("$root/Taskcat")
+
+            if (!directory.exists()) {
+                directory.mkdir()
+            }
+            val file = File(directory, fileName)
+            if (body==null) return false
+            var input: InputStream? = null
+            try {
+                input = body.byteStream()
+
+                val fos = withContext(Dispatchers.IO) {
+                    FileOutputStream(file.absolutePath)
+                }
+                fos.use { output ->
+                    val buffer = ByteArray(4 * 1024) // or other buffer size
+                    var read: Int
+                    while (input.read(buffer).also { read = it } != -1) {
+                        output.write(buffer, 0, read)
+                    }
+                    output.flush()
+                }
+                return true
+            }catch (e: Exception){
+                e.printStackTrace()
+                Log.e("saveFile", e.toString())
+                return false
+            }
+            finally {
+                withContext(Dispatchers.IO) {
+                    input?.close()
+                }
             }
         }
     }
 
     private fun isFileExist(fileName: String) :Boolean {
         val root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
-        val directory = File("$root/Taskcat")
+        val directory = File("$root/Task-cat")
         val file = File(directory, fileName)
         return file.exists()
     }

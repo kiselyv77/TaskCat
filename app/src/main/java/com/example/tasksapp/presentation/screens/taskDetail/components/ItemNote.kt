@@ -48,17 +48,20 @@ fun ItemNote(
                 fontSize = 20.sp
             )
             if (note.attachmentFile.isNotEmpty()) {
+                val onClick = {
+                    when(note.downloadState){
+                        NoteModel.Companion.DownLoadState.SAVED -> openFile()
+                        NoteModel.Companion.DownLoadState.LOAD -> {}
+                        NoteModel.Companion.DownLoadState.NOTSAVED -> downloadFile()
+                        NoteModel.Companion.DownLoadState.ERROR -> downloadFile()
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(30.dp))
                         .background(Color.Gray)
                         .clickable {
-                            when(note.downloadState){
-                                NoteModel.Companion.DownLoadState.SAVED -> openFile()
-                                NoteModel.Companion.DownLoadState.LOAD -> {}
-                                NoteModel.Companion.DownLoadState.NOTSAVED -> downloadFile()
-                                NoteModel.Companion.DownLoadState.ERROR -> downloadFile()
-                            }
+                            onClick()
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -78,7 +81,9 @@ fun ItemNote(
                             modifier = Modifier
                                 .size(30.dp)
                                 .clip(RoundedCornerShape(30.dp))
-                                .clickable { },
+                                .clickable {
+                                    onClick()
+                                },
                             imageVector = icon,
                             contentDescription = "clear text",
                             tint = if(note.downloadState == NoteModel.Companion.DownLoadState.ERROR) Color.Red else Color.Unspecified

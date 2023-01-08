@@ -12,5 +12,4 @@ import androidx.core.content.ContextCompat
             ActivityCompat.requestPermissions(activity, arrayOf(permission), PERMISSION_REQUIRED)
             false
         } else true
-
     }

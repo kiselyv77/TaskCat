@@ -1,5 +1,7 @@
 package com.example.tasksapp.presentation.screens.taskDetail
 
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.Activity
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -192,8 +194,10 @@ fun TaskDetailScreen(
                             ItemNote(
                                 note = note,
                                 downloadFile = {
-                                    viewModel.onEvent(TaskDetailEvent.DownloadFile(note.id + note.attachmentFile))
-                                    Log.d("smflaksdksdlkfmf", "downloadFile")
+                                    if(checkPermission(WRITE_EXTERNAL_STORAGE, context as Activity)){
+                                        viewModel.onEvent(TaskDetailEvent.DownloadFile(note.id + note.attachmentFile))
+                                        Log.d("smflaksdksdlkfmf", "downloadFile")
+                                    }
                                 },
                                 openFile = {
                                     openFileWith(note.attachmentFile, context)
