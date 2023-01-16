@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.example.tasksapp.data.local.TasksDatabase
 import com.example.tasksapp.data.remote.Spec.BASE_URL
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.data.remote.TasksApi
 import com.example.tasksapp.data.repository.TasksRepositoryImpl
 import com.example.tasksapp.domain.repository.TasksRepository
@@ -29,7 +30,7 @@ object AppModule {
     @Singleton
     fun provideCryptoApi(): TasksApi {
         return Retrofit.Builder()
-            .baseUrl("https://$BASE_URL")
+            .baseUrl("$PROTOCOL$BASE_URL")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(TasksApi::class.java)

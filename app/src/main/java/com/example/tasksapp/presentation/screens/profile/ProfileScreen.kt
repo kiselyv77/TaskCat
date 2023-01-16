@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.commonComponents.CustomMaterialDialog
 import com.example.tasksapp.presentation.commonComponents.CustomSnackbarHost
@@ -89,7 +90,7 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val imageUrl =
-                    "https://${Spec.BASE_URL}/getAvatar/${state.login}?" + state.profileImgKey
+                    "$PROTOCOL${Spec.BASE_URL}/getAvatar/${state.login}?" + state.profileImgKey
                 AvatarImage(
                     imageUrl = imageUrl,
                     modifier = Modifier

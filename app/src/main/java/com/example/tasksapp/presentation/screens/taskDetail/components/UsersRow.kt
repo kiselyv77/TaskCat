@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.domain.model.UserModel
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 
@@ -48,7 +49,7 @@ fun UsersRow(
             ) {
                 items(userList) {
                     AvatarImage(
-                        imageUrl = "https://${Spec.BASE_URL}/getAvatar/${it.login}",
+                        imageUrl = "$PROTOCOL${Spec.BASE_URL}/getAvatar/${it.login}",
                         modifier = Modifier
                             .padding(end = 16.dp)
                             .size(avatarsSize)

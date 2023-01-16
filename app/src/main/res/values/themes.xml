@@ -3,6 +3,7 @@
     <style name="Theme.TasksApp" parent="android:Theme.Material.NoActionBar">
         <item name="android:statusBarColor">@color/primaryColor</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
 
 </resources>

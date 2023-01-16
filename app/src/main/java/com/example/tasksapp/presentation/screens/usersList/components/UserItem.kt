@@ -11,6 +11,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.util.UserStatus
 
@@ -32,7 +33,7 @@ fun UserItem(
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
             AvatarImage(
-                imageUrl = "https://${Spec.BASE_URL}/getAvatar/${login}", modifier = Modifier
+                imageUrl = "$PROTOCOL${Spec.BASE_URL}/getAvatar/${login}", modifier = Modifier
                     .padding(end = 16.dp)
                     .size(60.dp)
             )

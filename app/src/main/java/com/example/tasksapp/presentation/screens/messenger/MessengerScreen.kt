@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.domain.model.MessageModel
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.screens.messenger.components.CustomMessageField
@@ -175,7 +176,7 @@ fun MessageCard(
         ) {
             if (!isMyMessage) {
                 AvatarImage(
-                    imageUrl = "https://${Spec.BASE_URL}/getAvatar/${message.sendingUser}",
+                    imageUrl = "$PROTOCOL${Spec.BASE_URL}/getAvatar/${message.sendingUser}",
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .size(45.dp)

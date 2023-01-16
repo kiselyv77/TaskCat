@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.screens.taskDetail.AddUserToTaskDialogState
 
@@ -98,7 +99,7 @@ fun AddUserToTaskDialog(
                                 horizontalArrangement = Arrangement.Start
                             ) {
                                 AvatarImage(
-                                    imageUrl = "https://${Spec.BASE_URL}/getAvatar/${user.login}",
+                                    imageUrl = "$PROTOCOL${Spec.BASE_URL}/getAvatar/${user.login}",
                                     modifier = Modifier
                                         .padding(end = 16.dp)
                                         .size(40.dp)

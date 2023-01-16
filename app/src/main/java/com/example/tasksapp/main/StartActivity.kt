@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.example.tasksapp.App
 import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.presentation.theme.TasksAppTheme
 import com.example.tasksapp.util.UserStatus

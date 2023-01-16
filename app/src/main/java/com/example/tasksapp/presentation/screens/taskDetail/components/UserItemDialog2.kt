@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.screens.taskDetail.UserItemDialogState2
 import com.example.tasksapp.util.UserStatus
@@ -53,7 +54,7 @@ fun UserItemDialog2(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AvatarImage(
-                imageUrl = "https://${Spec.BASE_URL}/getAvatar/${state.userModel.login}",
+                imageUrl = "$PROTOCOL${Spec.BASE_URL}/getAvatar/${state.userModel.login}",
                 modifier = Modifier
                     .clip(CircleShape)
                     .size(120.dp)

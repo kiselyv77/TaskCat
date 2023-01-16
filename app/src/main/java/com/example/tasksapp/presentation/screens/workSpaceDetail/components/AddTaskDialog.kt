@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.commonComponents.CustomTextField
 import com.example.tasksapp.presentation.commonComponents.DataTimePickerDialog
@@ -194,7 +195,7 @@ fun UserDialogItem(
             horizontalArrangement = Arrangement.Start
         ) {
             AvatarImage(
-                imageUrl = "https://${Spec.BASE_URL}/getAvatar/${login}", modifier = Modifier
+                imageUrl = "$PROTOCOL${Spec.BASE_URL}/getAvatar/${login}", modifier = Modifier
                     .padding(end = 16.dp)
                     .size(35.dp)
             )

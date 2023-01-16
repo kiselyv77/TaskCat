@@ -1,4 +1,4 @@
-package com.example.tasksapp
+package com.example.tasksapp.main
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -13,7 +13,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.tasksapp.main.StartViewModel
+import com.example.tasksapp.SampleScaffold
 import com.example.tasksapp.main.components.BottomBar
 import com.example.tasksapp.presentation.screens.NavGraphs
 import com.example.tasksapp.presentation.screens.destinations.*

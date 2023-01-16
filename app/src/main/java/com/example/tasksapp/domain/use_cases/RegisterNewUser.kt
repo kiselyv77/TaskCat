@@ -22,6 +22,7 @@ class RegisterNewUser @Inject constructor(
             val massage = exception.response()?.errorBody()?.charStream()?.readText()?:"Не удалось распознать ошибку"
             emit(Resource.Error<String>(massage))
         }catch (exception: IOException){
+            exception.printStackTrace()
             val debugMessage = exception.message
             val message = "Ошибка подключения проверьте подключение к сети"
             emit(Resource.Error<String>(message.toString()))

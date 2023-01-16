@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.presentation.commonComponents.AvatarImage
 import com.example.tasksapp.presentation.commonComponents.TextPlaceHolder
 
@@ -45,7 +46,7 @@ fun UsersPanel(
             firstUsers.forEach { user->
                 user?.let{
                     AvatarImage(
-                        imageUrl = "https://${Spec.BASE_URL}/getAvatar/${it}",
+                        imageUrl = "$PROTOCOL${Spec.BASE_URL}/getAvatar/${it}",
                         modifier = Modifier
                             .padding(end = 16.dp)
                             .size(avatarsSize)

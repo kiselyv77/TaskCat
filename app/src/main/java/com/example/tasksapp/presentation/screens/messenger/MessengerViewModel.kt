@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.tasksapp.data.local.global.Token
 import com.example.tasksapp.data.mappers.toMessageModel
 import com.example.tasksapp.data.remote.Spec
+import com.example.tasksapp.data.remote.Spec.PROTOCOL
 import com.example.tasksapp.data.remote.dto.MessageDTO
 import com.example.tasksapp.domain.use_cases.GetMessagesFromWorkSpace
 import com.example.tasksapp.domain.use_cases.GetUserByToken
@@ -276,7 +277,7 @@ class MessengerViewModel @Inject constructor(
         val message = _state.value.messagesList.last { it.id == messageId }
         val fileName = message.fileName
         viewModelScope.launch(Dispatchers.IO) {
-            val url = "https://${Spec.BASE_URL}/getVoiceMessage/$fileName"
+            val url = "$PROTOCOL${Spec.BASE_URL}/getVoiceMessage/$fileName"
             voicePlayer.play(url, message.progress).collect { progress ->
                 setMessageProgress(messageId, progress)
                 if (progress == 1f) {
