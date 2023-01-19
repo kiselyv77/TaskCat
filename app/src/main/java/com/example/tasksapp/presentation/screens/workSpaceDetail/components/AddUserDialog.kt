@@ -47,7 +47,7 @@ fun AddUserDialog(
             CustomTextField(
                 modifier = Modifier,
                 value = state.userLogin,
-                label = "login user",
+                label = "имя пользователя",
                 isError = state.error.isNotEmpty(),
                 trailingIcon = { /*TODO*/ },
                 onValueChange = { onLoginUserChanged(it) },

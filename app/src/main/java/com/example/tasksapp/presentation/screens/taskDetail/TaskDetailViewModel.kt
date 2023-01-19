@@ -23,7 +23,6 @@ import com.example.tasksapp.presentation.commonComponents.CustomAlertDialogState
 import com.example.tasksapp.presentation.commonComponents.SetTaskStatusDialogState
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.generateRandomUUID
-import com.example.tasksapp.util.getIsoDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -114,7 +113,7 @@ class TaskDetailViewModel @Inject constructor(
                                 userName = _state.value.my.name,
                                 taskId = taskId,
                                 attachmentFile = attachmentFileName,
-                                dateTime = getIsoDateTime()
+                                timeStamp = System.currentTimeMillis().toString()
                             )
                             val messageList = _state.value.notesList.toMutableList()
                             messageList.add(

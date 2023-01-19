@@ -7,5 +7,5 @@ data class NoteDTO(
     val userName: String,
     val taskId: String,
     val attachmentFile: String,
-    val dateTime: String
+    val timeStamp: String
 )

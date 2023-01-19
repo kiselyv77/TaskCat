@@ -6,7 +6,7 @@ data class MessageDTO(
     val sendingUser: String,
     val workSpaceId: String,
     val type: String,
-    val dateTime:String,
+    val timeStamp:String,
     val text: String,
     val fileName: String
 )

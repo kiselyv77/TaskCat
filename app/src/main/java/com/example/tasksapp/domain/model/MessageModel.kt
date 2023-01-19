@@ -5,7 +5,7 @@ data class MessageModel(
     val userName: String,
     val sendingUser: String,
     val workSpaceId: String,
-    val dateTime:String,
+    val timeStamp:String,
     val text: String,
     val isArrived: Boolean,
     val type: String,

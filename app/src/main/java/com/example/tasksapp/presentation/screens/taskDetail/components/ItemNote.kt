@@ -22,8 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasksapp.domain.model.NoteModel
 import com.example.tasksapp.util.getTime
+import java.time.Instant
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.ZoneId
 
 @Composable
 fun ItemNote(
@@ -32,9 +33,10 @@ fun ItemNote(
     openFile:()->Unit,
     note: NoteModel
 ) {
-    val parsedDataTime = LocalDateTime.parse(note.dateTime, DateTimeFormatter.ISO_DATE_TIME)
+     //= LocalDateTime.parse(note.dateTime, DateTimeFormatter.ISO_DATE_TIME)
+    val parsedDataTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(note.timeStamp.toLong()), ZoneId.systemDefault())
     val date = parsedDataTime.toLocalDate()
-    val time = getTime(parsedDataTime)
+    val time = getTime(note.timeStamp)
     Card(
         Modifier
             .fillMaxWidth()

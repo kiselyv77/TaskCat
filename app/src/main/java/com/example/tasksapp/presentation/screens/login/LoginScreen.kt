@@ -53,7 +53,7 @@ fun LoginScreen(
     ) {
         CustomTextField(
             value = state.login,
-            label = "login",
+            label = "логин",
             isError = viewModel.state.value.error.isNotEmpty(),
             trailingIcon = { CloseIconTextField { viewModel.onEvent(LoginEvent.SetLogin("")) } },
             onValueChange = { viewModel.onEvent(LoginEvent.SetLogin(it)) },
@@ -65,7 +65,7 @@ fun LoginScreen(
         )
         CustomTextField(
             value = state.password,
-            label = "password",
+            label = "пароль",
             isError = viewModel.state.value.error.isNotEmpty(),
             visualTransformation = PasswordVisualTransformation(),
             trailingIcon = { CloseIconTextField { viewModel.onEvent(LoginEvent.SetPassword("")) } },

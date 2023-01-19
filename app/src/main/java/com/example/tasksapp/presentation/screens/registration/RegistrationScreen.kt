@@ -56,7 +56,7 @@ fun RegistrationScreen(
         ) {
             CustomTextField(
                 value = state.name,
-                label = "name",
+                label = "имя",
                 isError = viewModel.state.value.error.isNotEmpty(),
                 trailingIcon = { CloseIconTextField { viewModel.onEvent(RegistrationEvent.SetName("")) } },
                 onValueChange = { viewModel.onEvent(RegistrationEvent.SetName(it)) },
@@ -68,7 +68,7 @@ fun RegistrationScreen(
             )
             CustomTextField(
                 value = state.login,
-                label = "login",
+                label = "логин",
                 isError = viewModel.state.value.error.isNotEmpty(),
                 trailingIcon = { CloseIconTextField { viewModel.onEvent(RegistrationEvent.SetLogin("")) } },
                 onValueChange = { viewModel.onEvent(RegistrationEvent.SetLogin(it)) },
@@ -80,7 +80,7 @@ fun RegistrationScreen(
             )
             CustomTextField(
                 value = state.password,
-                label = "password",
+                label = "пароль",
                 isError = viewModel.state.value.error.isNotEmpty(),
                 visualTransformation = PasswordVisualTransformation(),
                 trailingIcon = { CloseIconTextField { viewModel.onEvent(RegistrationEvent.SetPassword("")) } },

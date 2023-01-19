@@ -40,8 +40,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -156,7 +154,7 @@ fun MessageCard(
     voiceMessagePlayPause: (messageId: String) -> Unit,
     seekTo: (progress: Float) -> Unit
 ) {
-    val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
+    //val dateTime = LocalDateTime.parse(message.dateTime, DateTimeFormatter.ISO_DATE_TIME)
     val isMyMessage = message.sendingUser == state.my.login
     val playingMessageId = state.playingMessageId
     val configuration = LocalConfiguration.current
@@ -250,7 +248,7 @@ fun MessageCard(
 
         Row() {
             Text(
-                text = getTime(dateTime),
+                text = getTime(message.timeStamp),
                 fontSize = 10.sp,
             )
             if (message.isArrived && isMyMessage) {

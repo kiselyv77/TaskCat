@@ -17,7 +17,6 @@ import com.example.tasksapp.domain.use_cases.UploadFileVoiceMessage
 import com.example.tasksapp.util.MessageTypes
 import com.example.tasksapp.util.Resource
 import com.example.tasksapp.util.generateRandomUUID
-import com.example.tasksapp.util.getIsoDateTime
 import com.example.tasksapp.util.media.MediaRecordResult
 import com.example.tasksapp.util.media.VoicePlayer
 import com.example.tasksapp.util.media.VoiceRecorder
@@ -32,8 +31,6 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.io.InputStream
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -99,7 +96,7 @@ class MessengerViewModel @Inject constructor(
                                         val messageDTO = MessageDTO(
                                             id = generateRandomUUID(),
                                             userName = _state.value.my.name,
-                                            dateTime = getIsoDateTime(),
+                                            timeStamp = System.currentTimeMillis().toString(),
                                             sendingUser = _state.value.my.login,
                                             workSpaceId = workSpaceId,
                                             text = messageText,
@@ -124,8 +121,7 @@ class MessengerViewModel @Inject constructor(
                                     val messageDTO = MessageDTO(
                                         id = messageId,
                                         userName = _state.value.my.name,
-                                        dateTime = LocalDateTime.now()
-                                            .format(DateTimeFormatter.ISO_DATE_TIME),
+                                        timeStamp = System.currentTimeMillis().toString(),
                                         sendingUser = _state.value.my.login,
                                         workSpaceId = workSpaceId,
                                         text = "",

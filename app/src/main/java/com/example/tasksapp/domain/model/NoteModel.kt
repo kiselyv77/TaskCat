@@ -7,7 +7,7 @@ data class NoteModel(
     val userName: String,
     val taskId: String,
     val attachmentFile: String,
-    val dateTime: String,
+    val timeStamp: String,
     val isArrived: Boolean,
     val downloadState: DownLoadState = DownLoadState.NOTSAVED
 ){

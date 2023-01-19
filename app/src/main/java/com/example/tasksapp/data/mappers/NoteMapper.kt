@@ -11,7 +11,7 @@ fun NoteDTO.toNoteModel(): NoteModel{
         userName = userName,
         taskId = taskId,
         attachmentFile = attachmentFile,
-        dateTime = dateTime,
+        timeStamp = timeStamp,
         isArrived = true
     )
 }

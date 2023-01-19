@@ -75,14 +75,15 @@ fun AddTaskDialog(
             CustomTextField(
                 modifier = Modifier,
                 value = state.name,
-                label = "name",
+                label = "название",
+                maxChar = 50,
                 isError = state.error.isNotEmpty(),
                 trailingIcon = { /*TODO*/ },
                 onValueChange = { onNameChanged(it) },
                 onAction = { focusManager.moveFocus(FocusDirection.Down) })
             CustomTextField(
                 value = state.description,
-                label = "description",
+                label = "описание",
                 maxChar = 200,
                 isError = state.error.isNotEmpty(),
                 trailingIcon = { /*TODO*/ },

@@ -9,8 +9,8 @@ fun MessageDTO.toMessageModel(): MessageModel {
         userName = userName,
         sendingUser= sendingUser,
         workSpaceId= workSpaceId,
-        dateTime= dateTime,
-        text= text,
+        timeStamp = timeStamp,
+        text = text,
         isArrived = true,
         type = type,
         fileName = fileName
